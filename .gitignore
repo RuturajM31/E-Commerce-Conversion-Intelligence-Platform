@@ -1,0 +1,153 @@
+# ============================================================
+# Python
+# ============================================================
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ============================================================
+# Virtual environments
+# ============================================================
+venv/
+.venv/
+env/
+ENV/
+dashboard-venv/
+
+# ============================================================
+# Environment / secrets
+# ============================================================
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+
+# ============================================================
+# macOS / editor files
+# ============================================================
+.DS_Store
+.vscode/
+.idea/
+
+# ============================================================
+# Raw and processed data
+# Large project data should not be committed
+# ============================================================
+data/raw/
+data/interim/
+data/processed/
+data/external/
+*.csv
+*.parquet
+*.feather
+*.pkl
+*.joblib
+
+# Keep placeholder files if needed
+!data/.gitkeep
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# ============================================================
+# Model artifacts
+# ============================================================
+models/
+*.model
+*.onnx
+
+# Keep model folder placeholder if needed
+!models/.gitkeep
+
+# ============================================================
+# Reports / generated outputs
+# ============================================================
+reports/
+outputs/
+artifacts/
+mlruns/
+mlartifacts/
+
+# Keep report folder placeholder if needed
+!reports/.gitkeep
+
+# ============================================================
+# Monitoring generated cache
+# ============================================================
+monitoring/metrics_cache/
+monitoring/grafana/data/
+monitoring/prometheus/data/
+monitoring/alertmanager/data/
+
+# ============================================================
+# Docker / local runtime
+# ============================================================
+docker-data/
+*.log
+logs/
+
+# ============================================================
+# Jupyter notebooks checkpoints
+# ============================================================
+.ipynb_checkpoints/
+
+# ============================================================
+# Databases
+# ============================================================
+*.db
+*.sqlite
+*.sqlite3
+
+# ============================================================
+# Archives and local packages
+# ============================================================
+*.zip
+*.tar
+*.tar.gz
+*.7z
+
+# ============================================================
+# Keep important project files tracked
+# ============================================================
+!README.md
+!requirements.txt
+!Dockerfile
+!docker-compose.yml
+!.github/
+!.github/workflows/
+!.github/workflows/*.yml
+!app/
+!src/
+!tests/
+!monitoring/
+!helm/
+!k8s/
+
+# ============================================================
+# Local backups / duplicate downloads
+# ============================================================
+backups/
+README(*).md
+
+# ============================================================
+# Local Kubernetes port-forward logs
+# ============================================================
+.k8s-port-forward-logs/
+
+# ============================================================
+# Keep source-code model modules tracked
+# ============================================================
+!src/models/
+!src/models/**
+
+# ============================================================
+# Still ignore Python cache inside unignored source folders
+# ============================================================
+src/**/__pycache__/
+src/**/*.pyc

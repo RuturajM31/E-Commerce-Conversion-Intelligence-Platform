@@ -1,0 +1,22 @@
+# =============================================================================
+# Helm Chart metadata
+# =============================================================================
+#
+# What this file does:
+# This file describes the Helm chart itself.
+#
+# A Helm chart is like an installable package for Kubernetes.
+# Kubernetes YAML files can become long and repetitive.
+# Helm helps us turn those YAML files into reusable templates.
+#
+# Business/project meaning:
+# This proves that the project is not only a local notebook/app project.
+# It can be packaged and deployed using a production-style deployment tool.
+# =============================================================================
+
+apiVersion: v2
+name: ecommerce-conversion-platform
+description: Local Kubernetes deployment for the E-Commerce Conversion Intelligence MLOps platform
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

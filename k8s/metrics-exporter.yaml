@@ -1,0 +1,114 @@
+# =============================================================================
+# Metrics Exporter Deployment + Service
+# =============================================================================
+#
+# What this file does:
+# Deploys the lightweight Prometheus metrics exporter.
+#
+# Simple explanation:
+# The exporter exposes project KPIs at:
+# /metrics
+#
+# Prometheus scrapes that endpoint.
+# Grafana visualizes the metrics.
+#
+# Important performance design:
+# The exporter does NOT scan huge CSV files repeatedly.
+# It reads only:
+# monitoring/metrics_cache/ecommerce_metrics_snapshot.json
+#
+# That JSON is created by:
+# python3 -m src.monitoring.build_monitoring_snapshot
+#
+# Business value:
+# This shows a production-style monitoring pattern:
+# heavy batch analytics are separated from lightweight live monitoring.
+# =============================================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-exporter
+  namespace: ecommerce-mlops
+  labels:
+    app: metrics-exporter
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: metrics-exporter
+
+  template:
+    metadata:
+      labels:
+        app: metrics-exporter
+
+    spec:
+      containers:
+        - name: metrics-exporter
+          image: "ecommerce_conversion_intelligence_platform-metrics-exporter:latest"
+          imagePullPolicy: Never
+
+          command:
+            - python
+            - -m
+            - src.monitoring.metrics_exporter
+
+          env:
+            - name: PROJECT_ROOT
+              value: /app
+
+            - name: METRICS_EXPORTER_PORT
+              value: "8000"
+
+          ports:
+            - containerPort: 8000
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 10
+
+          volumeMounts:
+            - name: metrics-cache
+              mountPath: /app/monitoring/metrics_cache
+              readOnly: true
+
+      volumes:
+        - name: metrics-cache
+          hostPath:
+            path: "/Users/ruturajmokashi/Ai Data Science Course Documents/Machine Learning/ECommerce_Conversion_Intelligence_Platform/monitoring/metrics_cache"
+            type: Directory
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: metrics-exporter-service
+  namespace: ecommerce-mlops
+  labels:
+    app: metrics-exporter
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: metrics-exporter
+
+  ports:
+    - name: metrics
+      port: 8000
+      targetPort: 8000

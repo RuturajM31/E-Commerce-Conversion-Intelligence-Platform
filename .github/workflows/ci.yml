@@ -1,0 +1,159 @@
+name: CI/CD - E-Commerce Conversion Intelligence Platform
+
+# This workflow runs automatically when code is pushed to main
+# or when a pull request is opened against main.
+"on":
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate-project:
+    # This job checks the Python app, tests, Docker setup, and MLOps infrastructure files.
+    name: Validate Code, Tests, Docker, and MLOps Infrastructure
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Download the repository code into the GitHub Actions runner.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Install the same Python version used for this project.
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      # Step 3: Install Helm so the CI pipeline can validate the Helm chart.
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+
+      # Step 4: Install kubectl so the CI pipeline can validate Kubernetes YAML files.
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      # Step 5: Upgrade Python packaging tools before installing dependencies.
+      - name: Upgrade pip
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+
+      # Step 6: Install project dependencies from requirements.txt.
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      # Step 7: Check that the most important third-party libraries can be imported.
+      - name: Validate core imports
+        run: |
+          python -c "import pandas; import numpy; import sklearn; import streamlit; print('Core imports OK')"
+
+      # Step 8: Check that our own src package can be imported correctly.
+      - name: Validate project imports
+        run: |
+          python -c "import src; print('src package import OK')"
+          python -c "from src.config.paths import PROJECT_ROOT; print('Project root import OK:', PROJECT_ROOT)"
+
+      # Step 9: Check that the important project folders and files exist.
+      - name: Validate project structure
+        run: |
+          test -d app
+          test -d src
+          test -d tests
+          test -d monitoring
+          test -d helm
+          test -d k8s
+          test -f docker-compose.yml
+          test -f Dockerfile
+          test -f requirements.txt
+          test -f README.md
+
+      # Step 10: Compile Python files to catch syntax errors before running tests.
+      - name: Validate Python syntax
+        run: |
+          python -m compileall app src tests
+
+      # Step 11: Run the automated test suite.
+      # This protects the project from broken logic entering GitHub.
+      - name: Run automated tests
+        run: |
+          pytest -q
+
+      # Step 12: Build the Docker image.
+      # This proves the Streamlit app and source code can be containerized.
+      - name: Validate Docker build
+        run: |
+          docker build -t ecommerce-conversion-platform-ci .
+
+      # Step 13: Validate docker-compose.yml.
+      # Dockerfile checks one container.
+      # Docker Compose checks the full local platform configuration.
+      - name: Validate Docker Compose configuration
+        run: |
+          docker compose config
+
+      # Step 14: Validate the Helm chart.
+      # This checks whether the Kubernetes deployment package is structurally correct.
+      - name: Validate Helm chart
+        run: |
+          helm lint helm/ecommerce-conversion-platform
+
+      # Step 15: Validate Kubernetes YAML files.
+      # This checks Kubernetes manifests without actually deploying them.
+      - name: Validate Kubernetes YAML syntax
+        run: |
+          kubectl apply --dry-run=client --validate=false -f k8s/
+
+      # Step 16: Validate Prometheus configuration.
+      # This checks whether prometheus.yml is readable and valid.
+      - name: Validate Prometheus configuration
+        run: |
+          docker run --rm \
+            --entrypoint promtool \
+            -v "${{ github.workspace }}/monitoring/prometheus:/etc/prometheus" \
+            prom/prometheus:v2.55.1 \
+            check config /etc/prometheus/prometheus.yml
+
+      # Step 17: Validate Prometheus alert rules.
+      # This checks whether alert rules are written correctly.
+      - name: Validate Prometheus alert rules
+        run: |
+          docker run --rm \
+            --entrypoint promtool \
+            -v "${{ github.workspace }}/monitoring/prometheus:/etc/prometheus" \
+            prom/prometheus:v2.55.1 \
+            check rules /etc/prometheus/alert_rules.yml
+
+      # Step 18: Validate Alertmanager configuration.
+      # This checks whether the alert notification configuration is valid.
+      - name: Validate Alertmanager configuration
+        run: |
+          docker run --rm \
+            --entrypoint amtool \
+            -v "${{ github.workspace }}/monitoring/alertmanager:/etc/alertmanager" \
+            prom/alertmanager:v0.27.0 \
+            check-config /etc/alertmanager/alertmanager.yml
+
+      # Step 19: Validate Grafana dashboard JSON files.
+      # This confirms that dashboard files are valid JSON and not broken.
+      - name: Validate Grafana dashboard JSON files
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          dashboard_dir = Path("monitoring/grafana/dashboards")
+          dashboard_files = sorted(dashboard_dir.glob("*.json"))
+
+          if not dashboard_files:
+              raise SystemExit("No Grafana dashboard JSON files found.")
+
+          for file_path in dashboard_files:
+              with file_path.open("r", encoding="utf-8") as file:
+                  json.load(file)
+              print(f"Valid Grafana dashboard JSON: {file_path}")
+
+          print("All Grafana dashboard JSON files are valid.")
+          PY

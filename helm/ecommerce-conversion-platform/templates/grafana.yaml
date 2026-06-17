@@ -1,0 +1,137 @@
+# =============================================================================
+# Grafana ConfigMap + Deployment + Service
+# =============================================================================
+#
+# What this file does:
+# Deploys Grafana and automatically connects it to Prometheus.
+#
+# Simple explanation:
+# Grafana is the visual dashboard layer.
+# It does not collect metrics itself.
+# It queries Prometheus and turns metrics into charts/KPI cards.
+#
+# This file also mounts your dashboard JSON from:
+# monitoring/grafana/dashboards/
+#
+# Business value:
+# This creates an executive mission-control dashboard for:
+# - app health
+# - model quality
+# - visitor intent
+# - anomaly rate
+# - forecast totals
+# - monitoring health
+# =============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-provisioning
+  namespace: {{ .Values.namespace }}
+
+data:
+  prometheus.yml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus-service:9090
+        isDefault: true
+        editable: true
+
+  dashboard.yml: |
+    apiVersion: 1
+    providers:
+      - name: ecommerce-mlops-dashboards
+        orgId: 1
+        folder: E-Commerce MLOps
+        type: file
+        disableDeletion: false
+        editable: true
+        updateIntervalSeconds: 30
+        options:
+          path: /var/lib/grafana/dashboards
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: grafana
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: grafana
+
+  template:
+    metadata:
+      labels:
+        app: grafana
+
+    spec:
+      containers:
+        - name: grafana
+          image: "{{ .Values.images.grafana.repository }}:{{ .Values.images.grafana.tag }}"
+          imagePullPolicy: {{ .Values.images.grafana.pullPolicy }}
+
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: "{{ .Values.grafana.adminUser }}"
+
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: "{{ .Values.grafana.adminPassword }}"
+
+            - name: GF_USERS_ALLOW_SIGN_UP
+              value: "false"
+
+          ports:
+            - containerPort: {{ .Values.ports.grafana }}
+
+          volumeMounts:
+            - name: grafana-provisioning
+              mountPath: /etc/grafana/provisioning/datasources/prometheus.yml
+              subPath: prometheus.yml
+
+            - name: grafana-provisioning
+              mountPath: /etc/grafana/provisioning/dashboards/dashboard.yml
+              subPath: dashboard.yml
+
+            - name: grafana-dashboards
+              mountPath: /var/lib/grafana/dashboards
+              readOnly: true
+
+      volumes:
+        - name: grafana-provisioning
+          configMap:
+            name: grafana-provisioning
+
+        - name: grafana-dashboards
+          hostPath:
+            path: "{{ .Values.hostPathBase }}/monitoring/grafana/dashboards"
+            type: Directory
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: grafana
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: grafana
+
+  ports:
+    - name: http
+      port: {{ .Values.ports.grafana }}
+      targetPort: {{ .Values.ports.grafana }}

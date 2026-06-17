@@ -1,0 +1,39 @@
+# =============================================================================
+# Alertmanager configuration
+# =============================================================================
+#
+# Purpose:
+# Prometheus detects alerts.
+# Alertmanager receives those alerts, groups them, and shows them in the
+# Alertmanager UI.
+#
+# Local project setup:
+# We are not sending alerts to Slack, email, Teams, or any real webhook yet.
+#
+# This file uses a local no-operation receiver.
+#
+# Meaning:
+# - Alerts still appear in Alertmanager.
+# - Alerts still appear in Grafana and Prometheus.
+# - Alertmanager does not call a fake webhook.
+#
+# This prevents this warning:
+# dial tcp 127.0.0.1:9999: connect: connection refused
+# =============================================================================
+
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: local-noop
+
+  group_by:
+    - alertname
+    - component
+
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+
+receivers:
+  - name: local-noop

@@ -1,0 +1,16 @@
+.git
+.github
+.pytest_cache
+.streamlit
+.vscode
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+data
+reports
+models
+outputs
+logs
+notebooks

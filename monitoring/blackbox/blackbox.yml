@@ -1,0 +1,35 @@
+# =============================================================================
+# Blackbox Exporter configuration
+# =============================================================================
+#
+# Purpose:
+# Blackbox Exporter checks whether the Streamlit app is reachable through HTTP.
+#
+# Prometheus sends the Streamlit health URL to Blackbox Exporter.
+# Blackbox Exporter returns:
+#   probe_success = 1  when the app is reachable
+#   probe_success = 0  when the app is down
+#
+# Grafana uses this value for the App Health panel.
+# =============================================================================
+
+modules:
+  http_2xx:
+    # Use HTTP request probing.
+    prober: http
+
+    # Fail the check if the app does not respond within 5 seconds.
+    timeout: 5s
+
+    http:
+      # Empty list means any normal HTTP 2xx response is accepted.
+      valid_status_codes: []
+
+      # Use a GET request for the health check.
+      method: GET
+
+      # Follow redirects if the app redirects.
+      follow_redirects: true
+
+      # Prefer IPv4 to avoid Docker IPv6 confusion.
+      preferred_ip_protocol: ip4

@@ -1,0 +1,165 @@
+# =============================================================================
+# Prometheus alert rules
+# =============================================================================
+#
+# Purpose:
+# This file defines WHEN Prometheus should create alerts.
+#
+# Simple flow:
+# Prometheus watches metrics.
+# If a rule becomes true for long enough, Prometheus creates an alert.
+# Alertmanager receives that alert.
+# Grafana can also show that alert.
+#
+# Important:
+# This file only defines alert conditions.
+# It does not decide where alerts are sent.
+# That is handled by:
+# monitoring/alertmanager/alertmanager.yml
+# =============================================================================
+
+groups:
+  # ---------------------------------------------------------------------------
+  # Group 1: Platform and service health alerts
+  # ---------------------------------------------------------------------------
+  - name: ecommerce_platform_health
+    rules:
+      # Alert when the Streamlit app health endpoint is not reachable.
+      #
+      # probe_success comes from Blackbox Exporter.
+      #
+      # Meaning:
+      # 1 = Streamlit app is reachable
+      # 0 = Streamlit app is not reachable
+      - alert: StreamlitAppDown
+        expr: probe_success{job="streamlit_app_health"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: streamlit
+        annotations:
+          summary: "Streamlit app is not responding"
+          description: "The ecommerce Streamlit dashboard health endpoint is failing."
+
+      # Alert when the metrics exporter is unavailable.
+      #
+      # ecommerce_metrics_exporter_up should be exposed by:
+      # src/monitoring/metrics_exporter.py
+      #
+      # The absent(...) part means:
+      # Alert also if the metric does not exist at all.
+      - alert: MetricsExporterDown
+        expr: ecommerce_metrics_exporter_up == 0 or absent(ecommerce_metrics_exporter_up)
+        for: 2m
+        labels:
+          severity: critical
+          component: metrics_exporter
+        annotations:
+          summary: "Metrics exporter is unavailable"
+          description: "The ecommerce metrics exporter is not being scraped by Prometheus."
+
+      # Alert when any Prometheus scrape target is down.
+      #
+      # up is a built-in Prometheus metric.
+      #
+      # Meaning:
+      # 1 = target is reachable
+      # 0 = target is down
+      - alert: MonitoringTargetDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: warning
+          component: monitoring
+        annotations:
+          summary: "A monitoring target is down"
+          description: "Prometheus target {{ $labels.job }} / {{ $labels.instance }} is down."
+
+  # ---------------------------------------------------------------------------
+  # Group 2: Business, model, and data-quality alerts
+  # ---------------------------------------------------------------------------
+  - name: ecommerce_business_and_model_monitoring
+    rules:
+      # Alert when more than 5% of logged predictions fail.
+      #
+      # clamp_min(..., 1) prevents division by zero when there are no predictions.
+      - alert: PredictionErrorRateHigh
+        expr: ecommerce_prediction_errors_total / clamp_min(ecommerce_predictions_total, 1) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: model_serving
+        annotations:
+          summary: "Prediction error rate is high"
+          description: "More than 5% of logged prediction requests are failing."
+
+      # Alert when model drift is detected.
+      #
+      # Note:
+      # This metric only fires if the exporter or future drift job exposes:
+      # ecommerce_model_drift_detected = 1
+      - alert: ModelDriftDetected
+        expr: ecommerce_model_drift_detected == 1
+        for: 10m
+        labels:
+          severity: warning
+          component: model_monitoring
+        annotations:
+          summary: "Model drift has been detected"
+          description: "Visitor behaviour or prediction distribution has drifted."
+
+      # Alert when missing value rate becomes too high.
+      #
+      # Threshold:
+      # 0.02 = 2%
+      - alert: MissingValueRateHigh
+        expr: ecommerce_missing_value_rate > 0.02
+        for: 10m
+        labels:
+          severity: warning
+          component: data_quality
+        annotations:
+          summary: "Missing value rate is high"
+          description: "Input data missing value rate is above 2%."
+
+      # Alert when duplicate visitor rows exist.
+      #
+      # Expected data grain:
+      # one row = one visitor
+      - alert: DuplicateVisitorRowsDetected
+        expr: ecommerce_duplicate_visitor_count > 0
+        for: 10m
+        labels:
+          severity: warning
+          component: data_quality
+        annotations:
+          summary: "Duplicate visitor rows detected"
+          description: "The visitor feature table should keep one row per visitor."
+
+      # Alert when anomaly rate is too high.
+      #
+      # Threshold:
+      # 0.10 = 10%
+      - alert: AnomalyRateHigh
+        expr: ecommerce_anomaly_rate > 0.10
+        for: 10m
+        labels:
+          severity: warning
+          component: anomaly_monitoring
+        annotations:
+          summary: "Anomaly rate is high"
+          description: "More than 10% of visitors are flagged as anomalous."
+
+      # Alert when prediction scores are outside valid probability range.
+      #
+      # Valid prediction scores should be between:
+      # 0 and 1
+      - alert: InvalidPredictionScoresDetected
+        expr: ecommerce_invalid_score_count > 0
+        for: 5m
+        labels:
+          severity: warning
+          component: model_serving
+        annotations:
+          summary: "Invalid prediction scores detected"
+          description: "Prediction scores should stay between 0 and 1."

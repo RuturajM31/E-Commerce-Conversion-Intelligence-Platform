@@ -1,0 +1,85 @@
+# =============================================================================
+# Helm values file
+# =============================================================================
+#
+# What this file does:
+# This file stores configurable values for the Helm chart.
+#
+# Simple explanation:
+# Templates are the recipe.
+# values.yaml provides the ingredients.
+#
+# Example:
+# Instead of hardcoding the Streamlit image name in every YAML file,
+# we define it once here and reuse it in templates.
+#
+# Why this matters:
+# In real companies, the same Helm chart can be reused across environments:
+# dev, test, staging, production.
+# Only values.yaml changes.
+# =============================================================================
+
+# Kubernetes namespace where all project resources will be deployed.
+namespace: ecommerce-mlops
+
+# Local project folder mounted into Kubernetes pods.
+# This is needed because our local Docker Desktop Kubernetes cluster must access:
+# - data/
+# - reports/
+# - models/
+# - monitoring/metrics_cache/
+#
+# We use hostPath for local demo deployment.
+# In production, this would normally be replaced by persistent volumes,
+# object storage, or a proper data platform.
+hostPathBase: "/Users/ruturajmokashi/Ai Data Science Course Documents/Machine Learning/ECommerce_Conversion_Intelligence_Platform"
+
+# Docker images used by the Kubernetes pods.
+images:
+  streamlit:
+    # Local image built by Docker Compose / Dockerfile.
+    repository: ecommerce_conversion_intelligence_platform-streamlit-app
+    tag: latest
+
+    # Never means Kubernetes uses the local Docker image.
+    # It does not try to pull from Docker Hub.
+    pullPolicy: Never
+
+  metricsExporter:
+    # Local image for the lightweight Prometheus metrics exporter.
+    repository: ecommerce_conversion_intelligence_platform-metrics-exporter
+    tag: latest
+    pullPolicy: Never
+
+  prometheus:
+    # Official Prometheus image.
+    repository: prom/prometheus
+    tag: v2.55.1
+    pullPolicy: IfNotPresent
+
+  blackbox:
+    # Official Blackbox Exporter image for HTTP health probing.
+    repository: prom/blackbox-exporter
+    tag: v0.25.0
+    pullPolicy: IfNotPresent
+
+  grafana:
+    # Official Grafana image.
+    repository: grafana/grafana
+    tag: "11.3.0"
+    pullPolicy: IfNotPresent
+
+# Internal container and service ports.
+ports:
+  streamlit: 8501
+  metricsExporter: 8000
+  prometheus: 9090
+  blackbox: 9115
+  grafana: 3000
+
+# Local demo Grafana credentials.
+# Do not use hardcoded passwords like this in production.
+# In production, use Kubernetes Secrets or an external secret manager.
+grafana:
+  adminUser: admin
+  adminPassword: "Techno#123"

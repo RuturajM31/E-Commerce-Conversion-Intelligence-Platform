@@ -1,0 +1,20 @@
+# requirements-app.txt
+# Lightweight packages needed only for the Streamlit dashboard.
+# We keep this separate from heavy MLOps packages to avoid install problems on older machines.
+
+pandas==2.1.4
+numpy==1.26.4
+
+# Streamlit dashboard
+streamlit==1.37.1
+
+# Charts
+plotly==5.24.1
+
+# Streamlit uses pyarrow internally.
+# This older version is more stable for local Mac environments.
+pyarrow==14.0.2
+
+# Needed because the Streamlit app loads the trained scikit-learn model
+scikit-learn
+joblib

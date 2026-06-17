@@ -1,0 +1,22 @@
+# =============================================================================
+# Kubernetes Namespace
+# =============================================================================
+#
+# What this file does:
+# Creates a separate Kubernetes namespace for this project.
+#
+# Simple explanation:
+# A namespace is like a separate folder inside Kubernetes.
+# It keeps this project separate from other workloads.
+#
+# Project value:
+# This makes the deployment cleaner and easier to manage.
+# =============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ecommerce-mlops
+  labels:
+    app.kubernetes.io/name: ecommerce-conversion-platform
+    app.kubernetes.io/part-of: ecommerce-mlops

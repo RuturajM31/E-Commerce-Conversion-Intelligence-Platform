@@ -1,0 +1,120 @@
+# =============================================================================
+# Prometheus configuration
+# =============================================================================
+#
+# Purpose:
+# Prometheus collects metrics from the project services.
+#
+# In this project, Prometheus collects metrics from:
+# - Prometheus itself
+# - Alertmanager
+# - Blackbox Exporter
+# - Metrics Exporter
+# - Streamlit health endpoint through Blackbox Exporter
+#
+# Simple flow:
+# Metrics Exporter exposes business/model/data metrics at /metrics.
+# Prometheus scrapes those metrics.
+# Grafana reads from Prometheus and shows the mission-control dashboard.
+# =============================================================================
+
+global:
+  # How often Prometheus collects metrics from targets.
+  scrape_interval: 15s
+
+  # How often Prometheus evaluates alert rules.
+  evaluation_interval: 15s
+
+# Alert rules loaded by Prometheus.
+rule_files:
+  - /etc/prometheus/alert_rules.yml
+
+# Alertmanager connection.
+# Prometheus sends fired alerts to Alertmanager.
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+scrape_configs:
+  # ---------------------------------------------------------------------------
+  # Prometheus self-monitoring
+  # ---------------------------------------------------------------------------
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - prometheus:9090
+
+  # ---------------------------------------------------------------------------
+  # Alertmanager monitoring
+  # ---------------------------------------------------------------------------
+  - job_name: alertmanager
+    static_configs:
+      - targets:
+          - alertmanager:9093
+
+  # ---------------------------------------------------------------------------
+  # Blackbox Exporter monitoring
+  # ---------------------------------------------------------------------------
+  - job_name: blackbox_exporter
+    static_configs:
+      - targets:
+          - blackbox-exporter:9115
+
+  # ---------------------------------------------------------------------------
+  # E-commerce metrics exporter
+  # ---------------------------------------------------------------------------
+  #
+  # This service exposes project KPIs:
+  # - model performance
+  # - visitor counts
+  # - prediction scores
+  # - anomaly rate
+  # - missing value rate
+  # - file availability
+  # - forecast totals
+  #
+  # Endpoint inside Docker:
+  # http://metrics-exporter:8000/metrics
+  - job_name: ecommerce_metrics_exporter
+    static_configs:
+      - targets:
+          - metrics-exporter:8000
+
+  # ---------------------------------------------------------------------------
+  # Streamlit app health check
+  # ---------------------------------------------------------------------------
+  #
+  # Prometheus does not directly check the Streamlit URL.
+  # Instead, Prometheus asks Blackbox Exporter:
+  # "Can you reach this Streamlit health endpoint?"
+  #
+  # Blackbox Exporter returns:
+  # probe_success = 1 when Streamlit is reachable
+  # probe_success = 0 when Streamlit is down
+  - job_name: streamlit_app_health
+    metrics_path: /probe
+
+    params:
+      module:
+        - http_2xx
+
+    static_configs:
+      - targets:
+          - http://streamlit-app:8501/_stcore/health
+
+    relabel_configs:
+      # Pass the Streamlit URL as the probe target.
+      - source_labels:
+          - __address__
+        target_label: __param_target
+
+      # Store the original target URL as the instance label.
+      - source_labels:
+          - __param_target
+        target_label: instance
+
+      # Send the actual scrape request to Blackbox Exporter.
+      - target_label: __address__
+        replacement: blackbox-exporter:9115

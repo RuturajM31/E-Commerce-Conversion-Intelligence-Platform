@@ -1,0 +1,28 @@
+# =============================================================================
+# Grafana datasource provisioning configuration
+# =============================================================================
+#
+# Purpose:
+# This file tells Grafana how to connect to Prometheus.
+#
+# Without this file:
+# You would need to manually add Prometheus inside the Grafana UI.
+#
+# With this file:
+# Grafana automatically knows that Prometheus is available at:
+# http://prometheus:9090
+#
+# Important:
+# This URL works inside Docker because the Prometheus service name is:
+# prometheus
+# =============================================================================
+
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true

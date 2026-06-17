@@ -1,0 +1,35 @@
+# =============================================================================
+# Grafana dashboard provisioning configuration
+# =============================================================================
+#
+# What this file does:
+# This file tells Grafana where to find dashboard JSON files.
+#
+# Without this file:
+# You would need to manually import dashboards inside Grafana.
+#
+# With this file:
+# Grafana automatically loads dashboards from:
+# /var/lib/grafana/dashboards
+#
+# In our Docker setup, this container path is connected to your project folder:
+# monitoring/grafana/dashboards/
+#
+# So this dashboard file:
+# monitoring/grafana/dashboards/ecommerce_mlops_dashboard.json
+#
+# becomes visible inside Grafana automatically.
+# =============================================================================
+
+apiVersion: 1
+
+providers:
+  - name: ecommerce-mlops-dashboards
+    orgId: 1
+    folder: E-Commerce MLOps
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /var/lib/grafana/dashboards
