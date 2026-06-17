@@ -151,3 +151,23 @@ README(*).md
 # ============================================================
 src/**/__pycache__/
 src/**/*.pyc
+
+# ============================================================
+# Keep required top-level artifact folders visible in GitHub
+# ============================================================
+!data/
+!data/.gitkeep
+!models/
+!models/.gitkeep
+!reports/
+!reports/.gitkeep
+
+# ============================================================
+# Generated model metadata and final report artifacts
+# ============================================================
+models/metadata/*.json
+reports/final/key_business_findings.md
+
+# Keep only folder placeholders tracked
+!models/metadata/.gitkeep
+!reports/final/.gitkeep
