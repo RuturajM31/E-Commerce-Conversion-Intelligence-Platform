@@ -100,11 +100,49 @@ jobs:
         run: |
           helm lint helm/ecommerce-conversion-platform
 
-      # Step 15: Validate Kubernetes YAML files.
-      # This checks Kubernetes manifests without actually deploying them.
+      # Step 15: Validate Kubernetes YAML files without needing a live cluster.
+      # This checks YAML readability and required Kubernetes keys:
+      # apiVersion, kind, and metadata.
+      # We avoid kubectl apply here because GitHub Actions has no Kubernetes API server.
       - name: Validate Kubernetes YAML syntax
         run: |
-          kubectl apply --dry-run=client --validate=false -f k8s/
+          python - <<'PYAML'
+          from pathlib import Path
+          import yaml
+
+          k8s_dir = Path("k8s")
+          yaml_files = sorted(list(k8s_dir.glob("*.yaml")) + list(k8s_dir.glob("*.yml")))
+
+          if not yaml_files:
+              raise SystemExit("No Kubernetes YAML files found in k8s/.")
+
+          for file_path in yaml_files:
+              with file_path.open("r", encoding="utf-8") as file:
+                  documents = list(yaml.safe_load_all(file))
+
+              documents = [doc for doc in documents if doc is not None]
+
+              if not documents:
+                  raise SystemExit(f"No YAML documents found in {file_path}")
+
+              for index, document in enumerate(documents, start=1):
+                  missing = [
+                      key for key in ["apiVersion", "kind", "metadata"]
+                      if key not in document
+                  ]
+
+                  if missing:
+                      raise SystemExit(
+                          f"{file_path} document {index} is missing required Kubernetes keys: {missing}"
+                      )
+
+                  print(
+                      f"Valid Kubernetes YAML: {file_path} "
+                      f"document {index} -> {document['kind']}"
+                  )
+
+          print("All Kubernetes YAML files are readable and contain required Kubernetes keys.")
+          PYAML
 
       # Step 16: Validate Prometheus configuration.
       # This checks whether prometheus.yml is readable and valid.
