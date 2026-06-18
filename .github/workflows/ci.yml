@@ -106,6 +106,7 @@ jobs:
       # We avoid kubectl apply here because GitHub Actions has no Kubernetes API server.
       - name: Validate Kubernetes YAML syntax
         run: |
+          python -m pip install pyyaml
           python - <<'PYAML'
           from pathlib import Path
           import yaml
