@@ -1,0 +1,28 @@
+{
+    "selected_at_utc": "2026-06-16T22:19:43.872895+00:00",
+    "champion_model_name": "Random Forest",
+    "champion_track": "manual_champion_challenger",
+    "champion_model_family": "Bagging ensemble",
+    "champion_model_path": "models/trained/champion_model.joblib",
+    "best_threshold": 0.95,
+    "feature_columns": [
+        "total_events",
+        "view_count",
+        "addtocart_count",
+        "unique_items",
+        "activity_span_ms",
+        "cart_to_view_ratio",
+        "events_per_unique_item"
+    ],
+    "target_column": "converted",
+    "selection_logic": "Final champion selected by comparing the manual champion against the AutoML-style champion using champion_score, PR-AUC, best F1, recall, ROC-AUC, lift vs random targeting, and deployment suitability.",
+    "metrics": {
+        "roc_auc": 0.9583764014298367,
+        "pr_auc": 0.39425532762626436,
+        "best_precision": 0.3480453972257251,
+        "best_recall": 0.7419354838709677,
+        "best_f1_score": 0.4738197424892704,
+        "best_lift_vs_random": 42.10226579343448,
+        "champion_score": 0.4567832240274991
+    }
+}

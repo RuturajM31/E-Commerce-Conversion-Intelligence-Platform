@@ -171,3 +171,9 @@ reports/final/key_business_findings.md
 # Keep only folder placeholders tracked
 !models/metadata/.gitkeep
 !reports/final/.gitkeep
+
+# ============================================================
+# Keep small champion metadata files for CI and demo app tests
+# ============================================================
+!models/metadata/champion_model_metadata.json
+!models/metadata/final_champion_metadata.json

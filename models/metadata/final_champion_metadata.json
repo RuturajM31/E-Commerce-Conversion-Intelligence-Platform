@@ -1,0 +1,28 @@
+{
+    "final_model_name": "Tuned Random Forest",
+    "model_family": "Random Forest",
+    "selection_metric": "business_score",
+    "business_score_weights": {
+        "pr_auc": 0.45,
+        "best_f1_score": 0.3,
+        "best_precision": 0.15,
+        "best_recall": 0.05,
+        "roc_auc": 0.05
+    },
+    "best_threshold": 0.97,
+    "pr_auc": 0.41509626901986413,
+    "roc_auc": 0.9696278175119526,
+    "best_precision": 0.36609283068206583,
+    "best_recall": 0.7216494845360825,
+    "best_f1_score": 0.48575972242301574,
+    "feature_columns": [
+        "total_events",
+        "view_count",
+        "addtocart_count",
+        "unique_items",
+        "activity_span_ms",
+        "cart_to_view_ratio",
+        "events_per_unique_item"
+    ],
+    "notes": "RandomizedSearchCV tuned Random Forest, retrained on full training data."
+}
