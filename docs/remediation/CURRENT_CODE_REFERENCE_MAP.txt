@@ -1,0 +1,873 @@
+E-COMMERCE PROJECT — CURRENT CODE REFERENCE MAP
+Generated before source-code remediation
+
+=== 1. ACTIVE PYTHON FILES ===
+app/Executive_Overview.py
+app/app_utils.py
+app/pages/1_Visitor_Intent_Predictor.py
+app/pages/2_Batch_Scoring.py
+app/pages/3_Model_Benchmark_Selection.py
+app/pages/4_Business_KPI_Forecasting.py
+app/pages/5_Anomaly_Outlier.py
+app/pages/6_Monitoring_Drift_Health.py
+app/pages/7_MLOps_Architecture.py
+app/pages/8_MVD_Coverage_Proof.py
+src/__init__.py
+src/anomaly/build_anomaly_signals.py
+src/config/__init__.py
+src/config/paths.py
+src/data/__init__.py
+src/data/build_visitor_features.py
+src/features/__init__.py
+src/forecasting/build_business_forecasts.py
+src/models/__init__.py
+src/models/analyze_thresholds.py
+src/models/automl_model_registry.py
+src/models/build_mvd_method_coverage.py
+src/models/finalize_true_champion.py
+src/models/manual_model_registry.py
+src/models/model_config.py
+src/models/model_evaluation.py
+src/models/model_selection.py
+src/models/run_model_selection.py
+src/models/train_baseline_model.py
+src/monitoring/__init__.py
+src/monitoring/build_monitoring_snapshot.py
+src/monitoring/metrics_exporter.py
+src/monitoring/prediction_logger.py
+src/segmentation/__init__.py
+src/segmentation/create_visitor_segments.py
+src/visualization/__init__.py
+tests/__init__.py
+tests/test_app_utils.py
+tests/test_business_rules.py
+tests/test_data_quality.py
+tests/test_forecasting_smoke.py
+tests/test_generated_outputs.py
+tests/test_kpi_calculations.py
+tests/test_model_comparison_logic.py
+tests/test_model_training_smoke.py
+tests/test_project_structure.py
+tests/test_python_syntax.py
+tests/test_streamlit_chart_coverage.py
+
+=== 2. FEATURE FORMULA REFERENCES ===
+src/anomaly/build_anomaly_signals.py:118:            "total_events",
+src/anomaly/build_anomaly_signals.py:119:            "view_count",
+src/anomaly/build_anomaly_signals.py:120:            "addtocart_count",
+src/anomaly/build_anomaly_signals.py:121:            "unique_items",
+src/anomaly/build_anomaly_signals.py:123:            "cart_to_view_ratio",
+src/anomaly/build_anomaly_signals.py:124:            "events_per_unique_item",
+src/anomaly/build_anomaly_signals.py:251:    #   total_events_percentile >= 0.99 means top 1% by total events.
+src/anomaly/build_anomaly_signals.py:253:        "total_events",
+src/anomaly/build_anomaly_signals.py:254:        "view_count",
+src/anomaly/build_anomaly_signals.py:255:        "addtocart_count",
+src/anomaly/build_anomaly_signals.py:256:        "unique_items",
+src/anomaly/build_anomaly_signals.py:258:        "cart_to_view_ratio",
+src/anomaly/build_anomaly_signals.py:259:        "events_per_unique_item",
+src/anomaly/build_anomaly_signals.py:267:    output["rule_extreme_total_events"] = output["total_events_percentile"] >= 0.99
+src/anomaly/build_anomaly_signals.py:272:        (output["addtocart_count_percentile"] >= 0.99)
+src/anomaly/build_anomaly_signals.py:273:        & (output["addtocart_count"] > 0)
+src/anomaly/build_anomaly_signals.py:278:    output["rule_extreme_product_browsing"] = output["unique_items_percentile"] >= 0.99
+src/anomaly/build_anomaly_signals.py:292:            output["rule_extreme_total_events"]
+src/anomaly/build_anomaly_signals.py:303:    output["rule_unusual_cart_to_view_ratio"] = (
+src/anomaly/build_anomaly_signals.py:304:        (output["cart_to_view_ratio_percentile"] >= 0.99)
+src/anomaly/build_anomaly_signals.py:305:        & (output["cart_to_view_ratio"] > 0)
+src/anomaly/build_anomaly_signals.py:309:        "rule_extreme_total_events",
+src/anomaly/build_anomaly_signals.py:314:        "rule_unusual_cart_to_view_ratio",
+src/anomaly/build_anomaly_signals.py:334:        "total_events",
+src/anomaly/build_anomaly_signals.py:335:        "view_count",
+src/anomaly/build_anomaly_signals.py:336:        "addtocart_count",
+src/anomaly/build_anomaly_signals.py:337:        "unique_items",
+src/anomaly/build_anomaly_signals.py:339:        "cart_to_view_ratio",
+src/anomaly/build_anomaly_signals.py:340:        "events_per_unique_item",
+src/anomaly/build_anomaly_signals.py:443:        if row["rule_extreme_total_events"]:
+src/anomaly/build_anomaly_signals.py:519:        "rule_extreme_total_events",
+src/anomaly/build_anomaly_signals.py:524:        "rule_unusual_cart_to_view_ratio",
+src/anomaly/build_anomaly_signals.py:550:            avg_total_events=("total_events", "mean"),
+src/anomaly/build_anomaly_signals.py:551:            avg_addtocart_count=("addtocart_count", "mean"),
+src/anomaly/build_anomaly_signals.py:576:        "total_events",
+src/anomaly/build_anomaly_signals.py:577:        "view_count",
+src/anomaly/build_anomaly_signals.py:578:        "addtocart_count",
+src/anomaly/build_anomaly_signals.py:579:        "unique_items",
+src/anomaly/build_anomaly_signals.py:581:        "cart_to_view_ratio",
+src/anomaly/build_anomaly_signals.py:582:        "events_per_unique_item",
+src/anomaly/build_anomaly_signals.py:584:        "rule_extreme_total_events",
+src/anomaly/build_anomaly_signals.py:589:        "rule_unusual_cart_to_view_ratio",
+src/segmentation/create_visitor_segments.py:40:        "total_events",
+src/segmentation/create_visitor_segments.py:41:        "view_count",
+src/segmentation/create_visitor_segments.py:42:        "addtocart_count",
+src/segmentation/create_visitor_segments.py:43:        "unique_items",
+src/segmentation/create_visitor_segments.py:45:        "cart_to_view_ratio",
+src/segmentation/create_visitor_segments.py:46:        "events_per_unique_item",
+src/models/model_config.py:41:    "total_events",
+src/models/model_config.py:42:    "view_count",
+src/models/model_config.py:43:    "addtocart_count",
+src/models/model_config.py:44:    "unique_items",
+src/models/model_config.py:46:    "cart_to_view_ratio",
+src/models/model_config.py:47:    "events_per_unique_item",
+src/models/automl_model_registry.py:84:        #       cart_to_view_ratio is a small decimal.
+src/models/automl_model_registry.py:285:        #       if addtocart_count is high -> more likely buyer
+src/monitoring/build_monitoring_snapshot.py:199:        "total_events": find_col(cols, ["total_events", "event_count"]),
+src/monitoring/build_monitoring_snapshot.py:200:        "view_count": find_col(cols, ["view_count", "views"]),
+src/monitoring/build_monitoring_snapshot.py:201:        "addtocart_count": find_col(cols, ["addtocart_count", "add_to_cart_count"]),
+src/monitoring/build_monitoring_snapshot.py:202:        "unique_items": find_col(cols, ["unique_items", "unique_item_count"]),
+src/forecasting/build_business_forecasts.py:281:            "total_events",
+src/forecasting/build_business_forecasts.py:282:            "view_count",
+src/forecasting/build_business_forecasts.py:283:            "addtocart_count",
+src/forecasting/build_business_forecasts.py:284:            "unique_items",
+src/forecasting/build_business_forecasts.py:286:            "cart_to_view_ratio",
+src/forecasting/build_business_forecasts.py:287:            "events_per_unique_item",
+src/data/build_visitor_features.py:74:            total_events=("event", "count"),
+src/data/build_visitor_features.py:75:            view_count=("is_view", "sum"),
+src/data/build_visitor_features.py:76:            addtocart_count=("is_addtocart", "sum"),
+src/data/build_visitor_features.py:77:            unique_items=("itemid", "nunique"),
+src/data/build_visitor_features.py:91:    features["cart_to_view_ratio"] = features["addtocart_count"] / (features["view_count"] + 1)
+src/data/build_visitor_features.py:94:    features["events_per_unique_item"] = features["total_events"] / (features["unique_items"] + 1)
+app/app_utils.py:269:    total_events: float,
+app/app_utils.py:270:    view_count: float,
+app/app_utils.py:271:    addtocart_count: float,
+app/app_utils.py:272:    unique_items: float,
+app/app_utils.py:278:    safe_view_count = max(float(view_count), 1.0)
+app/app_utils.py:279:    safe_unique_items = max(float(unique_items), 1.0)
+app/app_utils.py:281:    cart_to_view_ratio = float(addtocart_count) / safe_view_count
+app/app_utils.py:282:    events_per_unique_item = float(total_events) / safe_unique_items
+app/app_utils.py:287:                "total_events": float(total_events),
+app/app_utils.py:288:                "view_count": float(view_count),
+app/app_utils.py:289:                "addtocart_count": float(addtocart_count),
+app/app_utils.py:290:                "unique_items": float(unique_items),
+app/app_utils.py:292:                "cart_to_view_ratio": cart_to_view_ratio,
+app/app_utils.py:293:                "events_per_unique_item": events_per_unique_item,
+app/app_utils.py:310:        "total_events",
+app/app_utils.py:311:        "view_count",
+app/app_utils.py:312:        "addtocart_count",
+app/app_utils.py:313:        "unique_items",
+app/app_utils.py:338:    if (data["addtocart_count"] > data["total_events"]).any():
+app/app_utils.py:339:        errors.append("addtocart_count cannot be greater than total_events.")
+app/app_utils.py:350:        "total_events",
+app/app_utils.py:351:        "view_count",
+app/app_utils.py:352:        "addtocart_count",
+app/app_utils.py:353:        "unique_items",
+app/app_utils.py:364:    safe_view_count = batch_data["view_count"].clip(lower=1)
+app/app_utils.py:365:    safe_unique_items = batch_data["unique_items"].clip(lower=1)
+app/app_utils.py:367:    batch_data["cart_to_view_ratio"] = (
+app/app_utils.py:368:        batch_data["addtocart_count"] / safe_view_count
+app/app_utils.py:371:    batch_data["events_per_unique_item"] = (
+app/app_utils.py:372:        batch_data["total_events"] / safe_unique_items
+app/pages/1_Visitor_Intent_Predictor.py:315:        "total_events": 12,
+app/pages/1_Visitor_Intent_Predictor.py:316:        "view_count": 10,
+app/pages/1_Visitor_Intent_Predictor.py:317:        "addtocart_count": 1,
+app/pages/1_Visitor_Intent_Predictor.py:318:        "unique_items": 6,
+app/pages/1_Visitor_Intent_Predictor.py:328:    total_events: int,
+app/pages/1_Visitor_Intent_Predictor.py:329:    view_count: int,
+app/pages/1_Visitor_Intent_Predictor.py:330:    addtocart_count: int,
+app/pages/1_Visitor_Intent_Predictor.py:331:    unique_items: int,
+app/pages/1_Visitor_Intent_Predictor.py:336:    st.session_state.total_events = total_events
+app/pages/1_Visitor_Intent_Predictor.py:337:    st.session_state.view_count = view_count
+app/pages/1_Visitor_Intent_Predictor.py:338:    st.session_state.addtocart_count = addtocart_count
+app/pages/1_Visitor_Intent_Predictor.py:339:    st.session_state.unique_items = unique_items
+app/pages/1_Visitor_Intent_Predictor.py:347:        "total_events": float(st.session_state.total_events),
+app/pages/1_Visitor_Intent_Predictor.py:348:        "view_count": float(st.session_state.view_count),
+app/pages/1_Visitor_Intent_Predictor.py:349:        "addtocart_count": float(st.session_state.addtocart_count),
+app/pages/1_Visitor_Intent_Predictor.py:350:        "unique_items": float(st.session_state.unique_items),
+app/pages/1_Visitor_Intent_Predictor.py:360:    if values["total_events"] <= 0:
+app/pages/1_Visitor_Intent_Predictor.py:363:    if values["view_count"] > values["total_events"]:
+app/pages/1_Visitor_Intent_Predictor.py:366:    if values["addtocart_count"] > values["total_events"]:
+app/pages/1_Visitor_Intent_Predictor.py:369:    if values["unique_items"] > values["total_events"]:
+app/pages/1_Visitor_Intent_Predictor.py:381:        total_events=values["total_events"],
+app/pages/1_Visitor_Intent_Predictor.py:382:        view_count=values["view_count"],
+app/pages/1_Visitor_Intent_Predictor.py:383:        addtocart_count=values["addtocart_count"],
+app/pages/1_Visitor_Intent_Predictor.py:384:        unique_items=values["unique_items"],
+app/pages/1_Visitor_Intent_Predictor.py:722:        key="total_events",
+app/pages/1_Visitor_Intent_Predictor.py:732:        key="view_count",
+app/pages/1_Visitor_Intent_Predictor.py:742:        key="addtocart_count",
+app/pages/1_Visitor_Intent_Predictor.py:752:        key="unique_items",
+app/pages/5_Anomaly_Outlier.py:182:    "rule_extreme_total_events": "Extreme activity volume",
+app/pages/5_Anomaly_Outlier.py:187:    "rule_unusual_cart_to_view_ratio": "Unusual cart-to-view ratio",
+app/pages/5_Anomaly_Outlier.py:493:            "total_events",
+app/pages/5_Anomaly_Outlier.py:494:            "addtocart_count",
+app/pages/5_Anomaly_Outlier.py:495:            "unique_items",
+app/pages/5_Anomaly_Outlier.py:898:        "total_events",
+app/pages/5_Anomaly_Outlier.py:899:        "addtocart_count",
+app/pages/5_Anomaly_Outlier.py:900:        "unique_items",
+app/pages/5_Anomaly_Outlier.py:901:        "cart_to_view_ratio",
+app/pages/2_Batch_Scoring.py:243:    "total_events",
+app/pages/2_Batch_Scoring.py:244:    "view_count",
+app/pages/2_Batch_Scoring.py:245:    "addtocart_count",
+app/pages/2_Batch_Scoring.py:246:    "unique_items",
+app/pages/2_Batch_Scoring.py:257:    "total_events",
+app/pages/2_Batch_Scoring.py:258:    "view_count",
+app/pages/2_Batch_Scoring.py:259:    "addtocart_count",
+app/pages/2_Batch_Scoring.py:260:    "unique_items",
+app/pages/2_Batch_Scoring.py:334:                "total_events": 4,
+app/pages/2_Batch_Scoring.py:335:                "view_count": 4,
+app/pages/2_Batch_Scoring.py:336:                "addtocart_count": 0,
+app/pages/2_Batch_Scoring.py:337:                "unique_items": 4,
+app/pages/2_Batch_Scoring.py:342:                "total_events": 18,
+app/pages/2_Batch_Scoring.py:343:                "view_count": 18,
+app/pages/2_Batch_Scoring.py:344:                "addtocart_count": 0,
+app/pages/2_Batch_Scoring.py:345:                "unique_items": 12,
+app/pages/2_Batch_Scoring.py:350:                "total_events": 34,
+app/pages/2_Batch_Scoring.py:351:                "view_count": 26,
+app/pages/2_Batch_Scoring.py:352:                "addtocart_count": 5,
+app/pages/2_Batch_Scoring.py:353:                "unique_items": 9,
+app/pages/2_Batch_Scoring.py:358:                "total_events": 58,
+app/pages/2_Batch_Scoring.py:359:                "view_count": 42,
+app/pages/2_Batch_Scoring.py:360:                "addtocart_count": 10,
+app/pages/2_Batch_Scoring.py:361:                "unique_items": 8,
+app/pages/2_Batch_Scoring.py:366:                "total_events": 92,
+app/pages/2_Batch_Scoring.py:367:                "view_count": 65,
+app/pages/2_Batch_Scoring.py:368:                "addtocart_count": 16,
+app/pages/2_Batch_Scoring.py:369:                "unique_items": 11,
+app/pages/2_Batch_Scoring.py:414:    if (cleaned_data["total_events"] <= 0).any():
+app/pages/2_Batch_Scoring.py:415:        errors.append("total_events must be greater than 0.")
+app/pages/2_Batch_Scoring.py:417:    if (cleaned_data["unique_items"] <= 0).any():
+app/pages/2_Batch_Scoring.py:418:        errors.append("unique_items must be greater than 0.")
+app/pages/2_Batch_Scoring.py:420:    if (cleaned_data["view_count"] > cleaned_data["total_events"]).any():
+app/pages/2_Batch_Scoring.py:421:        errors.append("view_count cannot be greater than total_events.")
+app/pages/2_Batch_Scoring.py:423:    if (cleaned_data["addtocart_count"] > cleaned_data["total_events"]).any():
+app/pages/2_Batch_Scoring.py:424:        errors.append("addtocart_count cannot be greater than total_events.")
+app/pages/2_Batch_Scoring.py:746:    'Required columns: visitorid, total_events, view_count, addtocart_count, unique_items, activity_span_ms. '
+
+=== 3. MODEL ARTIFACT REFERENCES ===
+src/anomaly/build_anomaly_signals.py:43:import joblib
+src/anomaly/build_anomaly_signals.py:56:CHAMPION_MODEL_PATH = Path("models/trained/champion_model.joblib")
+src/anomaly/build_anomaly_signals.py:57:CHAMPION_METADATA_PATH = Path("models/metadata/champion_model_metadata.json")
+src/anomaly/build_anomaly_signals.py:173:    if not CHAMPION_MODEL_PATH.exists():
+src/anomaly/build_anomaly_signals.py:175:            "champion_model.joblib not found. Run model selection first."
+src/anomaly/build_anomaly_signals.py:182:    model = joblib.load(CHAMPION_MODEL_PATH)
+src/segmentation/create_visitor_segments.py:9:import joblib
+src/segmentation/create_visitor_segments.py:16:MODEL_FILE = TRAINED_MODELS_DIR / "baseline_logistic_regression.joblib"
+src/segmentation/create_visitor_segments.py:31:    model = joblib.load(MODEL_FILE)
+src/models/model_config.py:17:FINAL_CHAMPION_MODEL_PATH = MODEL_DIR / "champion_model.joblib"
+src/models/model_config.py:18:FINAL_CHAMPION_METADATA_PATH = METADATA_DIR / "champion_model_metadata.json"
+src/models/model_config.py:21:INITIAL_CHAMPION_MODEL_PATH = FINAL_CHAMPION_MODEL_PATH
+src/models/model_config.py:27:CHAMPION_METRICS_PATH = REPORT_TABLES_DIR / "champion_model_metrics.csv"
+src/models/model_config.py:31:TRUE_FINAL_MODEL_PATH = MODEL_DIR / "final_champion_model.joblib"
+src/models/train_baseline_model.py:6:import joblib
+src/models/train_baseline_model.py:18:MODEL_FILE = TRAINED_MODELS_DIR / "baseline_logistic_regression.joblib"
+src/models/train_baseline_model.py:41:        ("logistic_regression", LogisticRegression(
+src/models/train_baseline_model.py:69:    joblib.dump(model, MODEL_FILE)
+src/models/model_selection.py:20:import joblib
+src/models/model_selection.py:31:    FINAL_CHAMPION_MODEL_PATH,
+src/models/model_selection.py:239:    joblib.dump(
+src/models/model_selection.py:241:        FINAL_CHAMPION_MODEL_PATH,
+src/models/model_selection.py:255:        "champion_model_name": final_champion_row["model_name"],
+src/models/model_selection.py:257:        "champion_model_family": final_champion_row["model_family"],
+src/models/model_selection.py:258:        "champion_model_path": str(FINAL_CHAMPION_MODEL_PATH),
+src/models/run_model_selection.py:35:    FINAL_CHAMPION_MODEL_PATH,
+src/models/run_model_selection.py:144:    print(f"  Champion model: {FINAL_CHAMPION_MODEL_PATH}")
+src/models/analyze_thresholds.py:6:import joblib
+src/models/analyze_thresholds.py:15:MODEL_FILE = TRAINED_MODELS_DIR / "baseline_logistic_regression.joblib"
+src/models/analyze_thresholds.py:25:    return pd.read_csv(FEATURE_FILE), joblib.load(MODEL_FILE)
+src/models/finalize_true_champion.py:38:#   models/trained/final_champion_model.joblib
+src/models/finalize_true_champion.py:52:import joblib
+src/models/finalize_true_champion.py:136:CURRENT_CHAMPION_MODEL_PATH = Path("models/trained/champion_model.joblib")
+src/models/finalize_true_champion.py:137:CURRENT_CHAMPION_METADATA_PATH = Path("models/metadata/champion_model_metadata.json")
+src/models/finalize_true_champion.py:139:FINAL_MODEL_PATH = Path("models/trained/final_champion_model.joblib")
+src/models/finalize_true_champion.py:184:    FINAL_MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+src/models/finalize_true_champion.py:503:    if not CURRENT_CHAMPION_MODEL_PATH.exists():
+src/models/finalize_true_champion.py:509:    model = joblib.load(CURRENT_CHAMPION_MODEL_PATH)
+src/models/finalize_true_champion.py:519:        notes="Previously selected champion model loaded from models/trained/champion_model.joblib.",
+src/models/finalize_true_champion.py:1015:    joblib.dump(final_model, FINAL_MODEL_PATH)
+src/models/finalize_true_champion.py:1051:    print(f"- {FINAL_MODEL_PATH}")
+src/monitoring/build_monitoring_snapshot.py:185:    model_name = metadata.get("model_name") or metadata.get("champion_model") or metadata.get("final_model_name") or "unknown"
+src/forecasting/build_business_forecasts.py:44:import joblib
+src/forecasting/build_business_forecasts.py:61:CHAMPION_MODEL_PATH = Path("models/trained/champion_model.joblib")
+src/forecasting/build_business_forecasts.py:62:CHAMPION_METADATA_PATH = Path("models/metadata/champion_model_metadata.json")
+src/forecasting/build_business_forecasts.py:249:    #   this function creates visitor scores from visitor_features.csv and champion_model.joblib.
+src/forecasting/build_business_forecasts.py:266:    if not CHAMPION_MODEL_PATH.exists():
+src/forecasting/build_business_forecasts.py:268:            "champion_model.joblib is missing. "
+src/forecasting/build_business_forecasts.py:303:    model = joblib.load(CHAMPION_MODEL_PATH)
+app/Executive_Overview.py:35:    get_champion_model_name,
+app/Executive_Overview.py:595:champion_model_name = get_champion_model_name()
+app/Executive_Overview.py:607:threshold_row = get_final_threshold_row(champion_model_name)
+app/Executive_Overview.py:634:st.sidebar.markdown(f"**Final champion:** {champion_model_name}")
+app/Executive_Overview.py:656:    f'<span class="glass-pill">Final champion: {escape_text(champion_model_name)}</span>'
+app/app_utils.py:24:import joblib
+app/app_utils.py:35:FINAL_CHAMPION_MODEL_PATH = Path("models/trained/final_champion_model.joblib")
+app/app_utils.py:38:OLD_CHAMPION_MODEL_PATH = Path("models/trained/champion_model.joblib")
+app/app_utils.py:39:OLD_CHAMPION_METADATA_PATH = Path("models/metadata/champion_model_metadata.json")
+app/app_utils.py:50:OLD_CHAMPION_METRICS_PATH = Path("reports/tables/champion_model_metrics.csv")
+app/app_utils.py:105:def get_active_model_path() -> Path:
+app/app_utils.py:109:        1. final_champion_model.joblib
+app/app_utils.py:110:        2. champion_model.joblib as fallback
+app/app_utils.py:113:    if FINAL_CHAMPION_MODEL_PATH.exists():
+app/app_utils.py:114:        return FINAL_CHAMPION_MODEL_PATH
+app/app_utils.py:116:    return OLD_CHAMPION_MODEL_PATH
+app/app_utils.py:124:        2. champion_model_metadata.json as fallback
+app/app_utils.py:134:def load_champion_model():
+app/app_utils.py:137:    model_path = get_active_model_path()
+app/app_utils.py:139:    if not model_path.exists():
+app/app_utils.py:142:            f"- {FINAL_CHAMPION_MODEL_PATH}\n"
+app/app_utils.py:143:            f"- {OLD_CHAMPION_MODEL_PATH}\n\n"
+app/app_utils.py:147:    return joblib.load(model_path)
+app/app_utils.py:168:    metadata["active_model_path"] = str(get_active_model_path())
+app/app_utils.py:194:def get_champion_model_name() -> str:
+app/app_utils.py:201:        champion_model_name
+app/app_utils.py:208:        or metadata.get("champion_model_name")
+app/app_utils.py:258:    model_name = get_champion_model_name()
+app/app_utils.py:387:    model = load_champion_model()
+app/app_utils.py:396:    model = load_champion_model()
+app/app_utils.py:531:        final_model_name = get_champion_model_name()
+app/app_utils.py:568:    champion_model_name = (
+app/app_utils.py:570:        or metadata.get("champion_model_name")
+app/app_utils.py:576:            (all_results["model_name"] == champion_model_name)
+app/app_utils.py:581:            all_results["model_name"] == champion_model_name
+app/pages/4_Business_KPI_Forecasting.py:38:    get_champion_model_name,
+app/pages/4_Business_KPI_Forecasting.py:630:champion_model_name = get_champion_model_name()
+app/pages/4_Business_KPI_Forecasting.py:642:st.sidebar.markdown(f"**Final champion:** {champion_model_name}")
+app/pages/8_MVD_Coverage_Proof.py:38:    get_champion_model_name,
+app/pages/8_MVD_Coverage_Proof.py:191:champion_model_name = get_champion_model_name()
+app/pages/8_MVD_Coverage_Proof.py:416:    data["is_selected"] = data["model_name"].astype(str).eq(champion_model_name)
+app/pages/8_MVD_Coverage_Proof.py:608:st.sidebar.markdown(f"**Champion:** {champion_model_name}")
+app/pages/8_MVD_Coverage_Proof.py:629:        f'<span class="success-pill">Final champion: {escape_text(champion_model_name)}</span>'
+app/pages/8_MVD_Coverage_Proof.py:648:            f'<div class="proof-value">{escape_text(champion_model_name)}</div>'
+app/pages/6_Monitoring_Drift_Health.py:39:    get_champion_model_name,
+app/pages/6_Monitoring_Drift_Health.py:661:champion_model_name = get_champion_model_name()
+app/pages/6_Monitoring_Drift_Health.py:734:st.sidebar.markdown(f"**Final champion:** {champion_model_name}")
+app/pages/6_Monitoring_Drift_Health.py:755:        f'<span class="success-pill">Champion: {escape_text(champion_model_name)}</span>'
+app/pages/3_Model_Benchmark_Selection.py:42:    get_champion_model_name,
+app/pages/3_Model_Benchmark_Selection.py:228:champion_model_name = get_champion_model_name()
+app/pages/3_Model_Benchmark_Selection.py:316:        selected = data[data["model_name"].astype(str) == champion_model_name]
+app/pages/3_Model_Benchmark_Selection.py:413:            matching = data[data["model_name"].astype(str) == champion_model_name]
+app/pages/3_Model_Benchmark_Selection.py:722:st.sidebar.markdown(f"**Final champion:** {champion_model_name}")
+app/pages/3_Model_Benchmark_Selection.py:745:        f'<span class="success-pill">Final champion: {escape_text(champion_model_name)}</span>'
+app/pages/3_Model_Benchmark_Selection.py:764:            f'<div class="winner-value">{escape_text(champion_model_name)}</div>'
+app/pages/1_Visitor_Intent_Predictor.py:38:    get_champion_model_name,
+app/pages/1_Visitor_Intent_Predictor.py:246:champion_model_name = get_champion_model_name()
+app/pages/1_Visitor_Intent_Predictor.py:527:st.sidebar.markdown(f"**Final champion:** {champion_model_name}")
+app/pages/1_Visitor_Intent_Predictor.py:548:        f'<span class="success-pill">Champion: {escape_text(champion_model_name)}</span>'
+app/pages/1_Visitor_Intent_Predictor.py:567:            f'<div class="metric-value">{escape_text(champion_model_name)}</div>'
+app/pages/1_Visitor_Intent_Predictor.py:942:                "champion_model": champion_model_name,
+app/pages/5_Anomaly_Outlier.py:38:    get_champion_model_name,
+app/pages/5_Anomaly_Outlier.py:596:champion_model_name = get_champion_model_name()
+app/pages/5_Anomaly_Outlier.py:655:st.sidebar.markdown(f"**Final champion:** {champion_model_name}")
+app/pages/2_Batch_Scoring.py:41:    get_champion_model_name,
+app/pages/2_Batch_Scoring.py:228:champion_model_name = get_champion_model_name()
+app/pages/2_Batch_Scoring.py:486:        "champion_model": champion_model_name,
+app/pages/2_Batch_Scoring.py:508:                champion_model=champion_model_name,
+app/pages/2_Batch_Scoring.py:664:st.sidebar.markdown(f"**Final champion:** {champion_model_name}")
+app/pages/2_Batch_Scoring.py:686:        f'<span class="success-pill">Champion: {escape_text(champion_model_name)}</span>'
+app/pages/2_Batch_Scoring.py:969:                "champion_model": champion_model_name,
+app/pages/7_MLOps_Architecture.py:39:    get_champion_model_name,
+app/pages/7_MLOps_Architecture.py:229:    "Final champion model": Path("models/trained/final_champion_model.joblib"),
+app/pages/7_MLOps_Architecture.py:409:champion_model_name = get_champion_model_name()
+app/pages/7_MLOps_Architecture.py:437:st.sidebar.markdown(f"**Final champion:** {champion_model_name}")
+app/pages/7_MLOps_Architecture.py:458:        f'<span class="success-pill">Final champion: {escape_text(champion_model_name)}</span>'
+app/pages/7_MLOps_Architecture.py:488:            f'<div class="system-value">{escape_text(champion_model_name)}</div>'
+tests/test_app_utils.py:26:def test_get_champion_model_name_returns_text():
+tests/test_app_utils.py:29:    model_name = app_utils.get_champion_model_name()
+tests/test_generated_outputs.py:48:        "champion_model",
+tests/test_generated_outputs.py:49:        "champion_model_name",
+tests/test_model_training_smoke.py:100:    assert Path("models/trained/final_champion_model.joblib").exists()
+
+=== 4. THRESHOLD REFERENCES ===
+src/anomaly/build_anomaly_signals.py:225:    if score >= 0.95:
+src/anomaly/build_anomaly_signals.py:290:        (output["purchase_intent_score"] >= 0.95)
+src/anomaly/build_anomaly_signals.py:422:        if score >= 0.95:
+src/anomaly/build_anomaly_signals.py:425:        if score >= 0.90:
+src/segmentation/create_visitor_segments.py:57:    if score >= 0.90:
+src/models/model_evaluation.py:14:#   7. Tests multiple business thresholds.
+src/models/model_evaluation.py:43:    THRESHOLDS_TO_TEST,
+src/models/model_evaluation.py:117:    # it cannot be used for our threshold/lift analysis.
+src/models/model_evaluation.py:127:def evaluate_thresholds(y_true, y_probability):
+src/models/model_evaluation.py:128:    """Test different decision thresholds and calculate business metrics."""
+src/models/model_evaluation.py:135:    #   threshold = 0.90
+src/models/model_evaluation.py:136:    #   score >= 0.90 -> target visitor
+src/models/model_evaluation.py:137:    #   score < 0.90  -> do not target visitor
+src/models/model_evaluation.py:139:    threshold_rows = []
+src/models/model_evaluation.py:148:    for threshold in THRESHOLDS_TO_TEST:
+src/models/model_evaluation.py:149:        # Convert probabilities into 0/1 predictions using current threshold.
+src/models/model_evaluation.py:150:        y_pred = (y_probability >= threshold).astype(int)
+src/models/model_evaluation.py:194:        threshold_rows.append(
+src/models/model_evaluation.py:196:                "threshold": threshold,
+src/models/model_evaluation.py:206:    threshold_data = pd.DataFrame(threshold_rows)
+src/models/model_evaluation.py:208:    # Pick best threshold.
+src/models/model_evaluation.py:215:    best_threshold_row = (
+src/models/model_evaluation.py:216:        threshold_data.sort_values(
+src/models/model_evaluation.py:224:    return threshold_data, best_threshold_row
+src/models/model_evaluation.py:231:def calculate_champion_score(pr_auc, roc_auc, best_threshold_row):
+src/models/model_evaluation.py:260:        + CHAMPION_SCORE_WEIGHTS["best_f1_score"] * best_threshold_row["f1_score"]
+src/models/model_evaluation.py:261:        + CHAMPION_SCORE_WEIGHTS["best_precision"] * best_threshold_row["precision"]
+src/models/model_evaluation.py:262:        + CHAMPION_SCORE_WEIGHTS["best_recall"] * best_threshold_row["recall"]
+src/models/model_evaluation.py:273:    """Train one model and return its metrics, threshold table, and fitted model."""
+src/models/model_evaluation.py:348:    # Default 0.50 threshold prediction.
+src/models/model_evaluation.py:351:    # but final business threshold may be different.
+src/models/model_evaluation.py:354:    # Evaluate all business thresholds.
+src/models/model_evaluation.py:355:    threshold_data, best_threshold_row = evaluate_thresholds(
+src/models/model_evaluation.py:371:    # Default threshold metrics.
+src/models/model_evaluation.py:399:        best_threshold_row=best_threshold_row,
+src/models/model_evaluation.py:418:        "best_threshold": best_threshold_row["threshold"],
+src/models/model_evaluation.py:419:        "best_precision": best_threshold_row["precision"],
+src/models/model_evaluation.py:420:        "best_recall": best_threshold_row["recall"],
+src/models/model_evaluation.py:421:        "best_f1_score": best_threshold_row["f1_score"],
+src/models/model_evaluation.py:422:        "best_targeted_share": best_threshold_row["targeted_share"],
+src/models/model_evaluation.py:423:        "best_lift_vs_random": best_threshold_row["lift_vs_random"],
+src/models/model_evaluation.py:433:        f"Best F1={best_threshold_row['f1_score']:.4f}"
+src/models/model_evaluation.py:436:    return pipeline, result_row, threshold_data
+src/models/model_evaluation.py:466:        "best_threshold": np.nan,
+src/models/model_evaluation.py:493:    # threshold_tables:
+src/models/model_evaluation.py:494:    #   Stores threshold analysis for each model.
+src/models/model_evaluation.py:498:    threshold_tables = {}
+src/models/model_evaluation.py:504:            trained_model, result_row, threshold_data = train_and_evaluate_model(
+src/models/model_evaluation.py:510:            threshold_tables[model_key] = threshold_data
+src/models/model_evaluation.py:526:    return results_data, trained_models, threshold_tables
+src/models/model_config.py:28:CHAMPION_THRESHOLD_PATH = REPORT_TABLES_DIR / "champion_threshold_analysis.csv"
+src/models/model_config.py:35:TRUE_FINAL_THRESHOLDS_PATH = REPORT_TABLES_DIR / "final_true_champion_thresholds.csv"
+src/models/model_config.py:56:# 7. Business thresholds
+src/models/model_config.py:57:# Include strict thresholds used by the final champion workflow.
+src/models/model_config.py:58:THRESHOLDS_TO_TEST = np.array([
+src/models/model_config.py:62:    0.80, 0.85, 0.90, 0.95, 0.97,
+src/models/model_selection.py:28:    CHAMPION_THRESHOLD_PATH,
+src/models/model_selection.py:85:    #   Best threshold balance between precision and recall.
+src/models/model_selection.py:147:# Get final model object and threshold table
+src/models/model_selection.py:169:def get_final_model_and_threshold_table(
+src/models/model_selection.py:172:    threshold_tables,
+src/models/model_selection.py:174:    """Return final fitted model and its threshold analysis table."""
+src/models/model_selection.py:181:    # threshold_tables contains threshold results for each fitted model.
+src/models/model_selection.py:182:    final_threshold_table = threshold_tables[final_model_key]
+src/models/model_selection.py:184:    return final_model, final_threshold_table
+src/models/model_selection.py:196:    final_threshold_table,
+src/models/model_selection.py:230:    # Save threshold table for final champion model.
+src/models/model_selection.py:231:    final_threshold_table.to_csv(
+src/models/model_selection.py:232:        CHAMPION_THRESHOLD_PATH,
+src/models/model_selection.py:249:    #   which threshold was best
+src/models/model_selection.py:259:        "best_threshold": float(final_champion_row["best_threshold"]),
+src/models/model_selection.py:301:    threshold_tables,
+src/models/model_selection.py:331:    # Get final fitted model and threshold table.
+src/models/model_selection.py:332:    final_model, final_threshold_table = get_final_model_and_threshold_table(
+src/models/model_selection.py:335:        threshold_tables=threshold_tables,
+src/models/model_selection.py:339:    # Save comparison tables, champion model, threshold table, and metadata.
+src/models/model_selection.py:345:        final_threshold_table=final_threshold_table,
+src/models/run_model_selection.py:31:    CHAMPION_THRESHOLD_PATH,
+src/models/run_model_selection.py:115:    print(f"  Best threshold: {manual_winner['best_threshold']:.2f}")
+src/models/run_model_selection.py:123:    print(f"  Best threshold: {automl_winner['best_threshold']:.2f}")
+src/models/run_model_selection.py:132:    print(f"  Best threshold: {final_winner['best_threshold']:.2f}")
+src/models/run_model_selection.py:143:    print(f"  Champion threshold table: {CHAMPION_THRESHOLD_PATH}")
+src/models/run_model_selection.py:177:    manual_results, manual_trained_models, manual_threshold_tables = (
+src/models/run_model_selection.py:193:    automl_results, automl_trained_models, automl_threshold_tables = (
+src/models/run_model_selection.py:201:    # Combine trained models and threshold tables
+src/models/run_model_selection.py:211:    all_threshold_tables = {
+src/models/run_model_selection.py:212:        **manual_threshold_tables,
+src/models/run_model_selection.py:213:        **automl_threshold_tables,
+src/models/run_model_selection.py:224:            threshold_tables=all_threshold_tables,
+src/models/build_mvd_method_coverage.py:699:            "proof_note": "Class weights, threshold optimisation, XGBoost scale_pos_weight, optional SMOTE model.",
+src/models/analyze_thresholds.py:1:# analyze_thresholds.py
+src/models/analyze_thresholds.py:2:# Baseline threshold analysis for marketing targeting.
+src/models/analyze_thresholds.py:12:from src.models.model_config import FEATURE_COLUMNS, RANDOM_STATE, TARGET_COLUMN, THRESHOLDS_TO_TEST
+src/models/analyze_thresholds.py:16:THRESHOLD_FILE = TABLES_DIR / "threshold_analysis.csv"
+src/models/analyze_thresholds.py:48:def analyze_thresholds(y_test: pd.Series, y_proba) -> pd.DataFrame:
+src/models/analyze_thresholds.py:49:    """Calculate targeting metrics for each probability threshold."""
+src/models/analyze_thresholds.py:53:    for threshold in THRESHOLDS_TO_TEST:
+src/models/analyze_thresholds.py:54:        y_pred = (y_proba >= threshold).astype(int)
+src/models/analyze_thresholds.py:57:            "threshold": float(threshold),
+src/models/analyze_thresholds.py:69:def save_threshold_table(threshold_table: pd.DataFrame) -> None:
+src/models/analyze_thresholds.py:70:    """Save threshold analysis table."""
+src/models/analyze_thresholds.py:72:    threshold_table.to_csv(THRESHOLD_FILE, index=False)
+src/models/analyze_thresholds.py:76:    """Run baseline threshold analysis."""
+src/models/analyze_thresholds.py:81:    threshold_table = analyze_thresholds(y_test, y_proba)
+src/models/analyze_thresholds.py:82:    save_threshold_table(threshold_table)
+src/models/analyze_thresholds.py:84:    print(f"Saved threshold analysis: {THRESHOLD_FILE}")
+src/models/analyze_thresholds.py:85:    print(threshold_table.sort_values("f1_score", ascending=False).head(10))
+src/models/finalize_true_champion.py:25:#       - threshold quality
+src/models/finalize_true_champion.py:98:# Threshold grid for finding the best classification threshold.
+src/models/finalize_true_champion.py:100:#   0.95 means "predict buyer only if score >= 0.95".
+src/models/finalize_true_champion.py:101:THRESHOLDS = np.array(
+src/models/finalize_true_champion.py:106:        0.80, 0.85, 0.90, 0.95, 0.97,
+src/models/finalize_true_champion.py:146:FINAL_THRESHOLDS_PATH = Path("reports/tables/final_true_champion_thresholds.csv")
+src/models/finalize_true_champion.py:372:def evaluate_thresholds(
+src/models/finalize_true_champion.py:377:    """Evaluate one model across many probability thresholds.
+src/models/finalize_true_champion.py:380:        For imbalanced conversion prediction, default threshold 0.50 is not always best.
+src/models/finalize_true_champion.py:383:        table with precision, recall, and F1 for each threshold.
+src/models/finalize_true_champion.py:388:    for threshold in THRESHOLDS:
+src/models/finalize_true_champion.py:389:        y_pred = (y_score >= threshold).astype(int)
+src/models/finalize_true_champion.py:414:                "threshold": threshold,
+src/models/finalize_true_champion.py:434:    """Create one model summary row and one threshold table.
+src/models/finalize_true_champion.py:444:            Taken from the best threshold row.
+src/models/finalize_true_champion.py:447:    threshold_table = evaluate_thresholds(
+src/models/finalize_true_champion.py:453:    best_threshold_row = threshold_table.sort_values(
+src/models/finalize_true_champion.py:468:        "best_threshold": float(best_threshold_row["threshold"]),
+src/models/finalize_true_champion.py:469:        "best_precision": float(best_threshold_row["precision"]),
+src/models/finalize_true_champion.py:470:        "best_recall": float(best_threshold_row["recall"]),
+src/models/finalize_true_champion.py:471:        "best_f1_score": float(best_threshold_row["f1_score"]),
+src/models/finalize_true_champion.py:472:        "predicted_positive_rate_at_best_threshold": float(best_threshold_row["predicted_positive_rate"]),
+src/models/finalize_true_champion.py:478:    return summary, threshold_table
+src/models/finalize_true_champion.py:513:    summary, threshold_table = summarize_model_performance(
+src/models/finalize_true_champion.py:523:    return model, summary, threshold_table
+src/models/finalize_true_champion.py:1009:    threshold_tables: List[pd.DataFrame],
+src/models/finalize_true_champion.py:1019:    if threshold_tables:
+src/models/finalize_true_champion.py:1020:        all_thresholds = pd.concat(threshold_tables, ignore_index=True)
+src/models/finalize_true_champion.py:1021:        all_thresholds.to_csv(FINAL_THRESHOLDS_PATH, index=False)
+src/models/finalize_true_champion.py:1034:        "best_threshold": float(final_summary["best_threshold"]),
+src/models/finalize_true_champion.py:1090:    threshold_tables: List[pd.DataFrame] = []
+src/models/finalize_true_champion.py:1094:    existing_model, existing_summary, existing_thresholds = evaluate_existing_champion(
+src/models/finalize_true_champion.py:1103:        threshold_tables.append(existing_thresholds)
+src/models/finalize_true_champion.py:1114:    logistic_summary, logistic_thresholds = summarize_model_performance(
+src/models/finalize_true_champion.py:1127:    threshold_tables.append(logistic_thresholds)
+src/models/finalize_true_champion.py:1138:    rf_class_weight_summary, rf_class_weight_thresholds = summarize_model_performance(
+src/models/finalize_true_champion.py:1151:    threshold_tables.append(rf_class_weight_thresholds)
+src/models/finalize_true_champion.py:1162:    tuned_rf_summary, tuned_rf_thresholds = summarize_model_performance(
+src/models/finalize_true_champion.py:1175:    threshold_tables.append(tuned_rf_thresholds)
+src/models/finalize_true_champion.py:1187:        xgb_baseline_summary, xgb_baseline_thresholds = summarize_model_performance(
+src/models/finalize_true_champion.py:1200:        threshold_tables.append(xgb_baseline_thresholds)
+src/models/finalize_true_champion.py:1212:        tuned_xgb_summary, tuned_xgb_thresholds = summarize_model_performance(
+src/models/finalize_true_champion.py:1225:        threshold_tables.append(tuned_xgb_thresholds)
+src/models/finalize_true_champion.py:1237:        smote_summary, smote_thresholds = summarize_model_performance(
+src/models/finalize_true_champion.py:1250:        threshold_tables.append(smote_thresholds)
+src/models/finalize_true_champion.py:1265:        ensemble_summary, ensemble_thresholds = summarize_model_performance(
+src/models/finalize_true_champion.py:1277:        threshold_tables.append(ensemble_thresholds)
+src/models/finalize_true_champion.py:1296:                "best_threshold",
+src/models/finalize_true_champion.py:1358:    print(f"Best threshold: {final_summary['best_threshold']:.2f}")
+src/models/finalize_true_champion.py:1369:        threshold_tables=threshold_tables,
+src/models/finalize_true_champion.py:1378:        threshold=float(final_summary["best_threshold"]),
+src/monitoring/build_monitoring_snapshot.py:158:    threshold = 0.5
+src/monitoring/build_monitoring_snapshot.py:171:        "ecommerce_model_threshold": ["best_threshold", "threshold", "final_threshold"],
+src/monitoring/build_monitoring_snapshot.py:177:        if metric_name == "ecommerce_model_threshold" and value > 0:
+src/monitoring/build_monitoring_snapshot.py:178:            threshold = value
+src/monitoring/build_monitoring_snapshot.py:180:    for key in ["best_threshold", "final_threshold", "threshold"]:
+src/monitoring/build_monitoring_snapshot.py:182:            threshold = sf(metadata.get(key), threshold)
+src/monitoring/build_monitoring_snapshot.py:183:    set_metric(snapshot, "ecommerce_model_threshold", threshold)
+src/monitoring/build_monitoring_snapshot.py:188:    return threshold
+src/monitoring/build_monitoring_snapshot.py:246:def add_score_metrics(snapshot: Dict[str, Any], threshold: float) -> None:
+src/monitoring/build_monitoring_snapshot.py:280:    high = sum(1 for s in scores if s >= threshold)
+src/monitoring/build_monitoring_snapshot.py:284:        "strong_intent": sum(1 for s in scores if 0.80 <= s < threshold),
+src/monitoring/build_monitoring_snapshot.py:298:    set_metric(snapshot, "ecommerce_prediction_score_p90", percentile(scores, 0.90))
+src/monitoring/build_monitoring_snapshot.py:299:    set_metric(snapshot, "ecommerce_prediction_score_p95", percentile(scores, 0.95))
+src/monitoring/build_monitoring_snapshot.py:412:    threshold = add_model_metrics(snapshot)
+src/monitoring/build_monitoring_snapshot.py:414:    add_score_metrics(snapshot, threshold)
+src/forecasting/build_business_forecasts.py:127:def get_champion_threshold() -> float:
+src/forecasting/build_business_forecasts.py:128:    """Read champion threshold from metadata."""
+src/forecasting/build_business_forecasts.py:132:    return float(metadata.get("best_threshold", 0.95))
+src/forecasting/build_business_forecasts.py:378:    threshold = get_champion_threshold()
+src/forecasting/build_business_forecasts.py:386:            visitor_scores["purchase_intent_score"] >= threshold,
+src/forecasting/build_business_forecasts.py:421:    # A high-intent visitor is a visitor whose model score is above the champion threshold.
+app/Executive_Overview.py:33:    get_best_threshold,
+app/Executive_Overview.py:337:def get_final_threshold_row(model_name: str) -> pd.Series:
+app/Executive_Overview.py:338:    """Read threshold row for the active final champion."""
+app/Executive_Overview.py:341:    thresholds = tables.get("final_true_champion_thresholds", pd.DataFrame())
+app/Executive_Overview.py:343:    if thresholds.empty:
+app/Executive_Overview.py:346:    if "model_name" in thresholds.columns:
+app/Executive_Overview.py:347:        thresholds = thresholds[thresholds["model_name"] == model_name].copy()
+app/Executive_Overview.py:349:    if thresholds.empty:
+app/Executive_Overview.py:352:    threshold = get_best_threshold()
+app/Executive_Overview.py:354:    threshold_rows = thresholds[
+app/Executive_Overview.py:355:        thresholds["threshold"].round(4) == round(threshold, 4)
+app/Executive_Overview.py:358:    if not threshold_rows.empty:
+app/Executive_Overview.py:359:        return threshold_rows.iloc[0]
+app/Executive_Overview.py:361:    return thresholds.sort_values("f1_score", ascending=False).iloc[0]
+app/Executive_Overview.py:467:def build_threshold_gauge(best_threshold: float):
+app/Executive_Overview.py:468:    """Create production threshold gauge."""
+app/Executive_Overview.py:473:            value=best_threshold * 100,
+app/Executive_Overview.py:479:                "threshold": {
+app/Executive_Overview.py:482:                    "value": best_threshold * 100,
+app/Executive_Overview.py:561:            "best_threshold": ":.2f",
+app/Executive_Overview.py:597:best_threshold = get_best_threshold()
+app/Executive_Overview.py:607:threshold_row = get_final_threshold_row(champion_model_name)
+app/Executive_Overview.py:610:    threshold_row,
+app/Executive_Overview.py:635:st.sidebar.markdown(f"**Threshold:** {best_threshold:.2f}")
+app/Executive_Overview.py:657:    f'<span class="glass-pill">Threshold: {best_threshold:.2f}</span>'
+app/Executive_Overview.py:701:        '<div class="visual-caption">visitors pass the final threshold</div>'
+app/Executive_Overview.py:735:            build_threshold_gauge(best_threshold=best_threshold),
+app/Executive_Overview.py:742:        st.metric("Production threshold", f"{best_threshold:.2f}")
+app/Executive_Overview.py:756:        f'At a <b>{best_threshold:.2f}</b> threshold, the platform selects about '
+app/Executive_Overview.py:791:        '<div class="flow-text">Checked class weights, threshold optimisation, tuned Random Forest, XGBoost, SMOTE option, and ensemble comparison.</div>'
+app/Executive_Overview.py:838:            "best_threshold",
+app/app_utils.py:51:OLD_CHAMPION_THRESHOLD_PATH = Path("reports/tables/champion_threshold_analysis.csv")
+app/app_utils.py:55:FINAL_TRUE_CHAMPION_THRESHOLDS_PATH = Path("reports/tables/final_true_champion_thresholds.csv")
+app/app_utils.py:186:def get_best_threshold() -> float:
+app/app_utils.py:187:    """Return the active production threshold."""
+app/app_utils.py:191:    return float(metadata.get("best_threshold", 0.50))
+app/app_utils.py:245:        "best_threshold",
+app/app_utils.py:259:    threshold = get_best_threshold()
+app/app_utils.py:261:    return f"{model_name} | threshold {threshold:.2f}"
+app/app_utils.py:409:    threshold = get_best_threshold()
+app/app_utils.py:411:    if score >= threshold:
+app/app_utils.py:426:    threshold = get_best_threshold()
+app/app_utils.py:428:    if score >= threshold:
+app/app_utils.py:443:    threshold = get_best_threshold()
+app/app_utils.py:445:    if score >= threshold:
+app/app_utils.py:447:            "This visitor is above the final champion threshold. "
+app/app_utils.py:454:            "the strict final champion targeting threshold."
+app/app_utils.py:491:        "old_champion_threshold": read_table_if_exists(OLD_CHAMPION_THRESHOLD_PATH),
+app/app_utils.py:494:        "final_true_champion_thresholds": read_table_if_exists(FINAL_TRUE_CHAMPION_THRESHOLDS_PATH),
+app/pages/4_Business_KPI_Forecasting.py:37:    get_best_threshold,
+app/pages/4_Business_KPI_Forecasting.py:96:                linear-gradient(180deg, rgba(15, 23, 42, 0.97), rgba(17, 24, 39, 0.90));
+app/pages/4_Business_KPI_Forecasting.py:148:                linear-gradient(135deg, rgba(15, 23, 42, 0.97), rgba(2, 6, 23, 0.94));
+app/pages/4_Business_KPI_Forecasting.py:631:best_threshold = get_best_threshold()
+app/pages/4_Business_KPI_Forecasting.py:643:st.sidebar.markdown(f"**Intent threshold:** {best_threshold:.2f}")
+app/pages/4_Business_KPI_Forecasting.py:658:        f'&nbsp;<span class="info-pill">Final champion threshold: {best_threshold:.2f}</span>'
+app/pages/8_MVD_Coverage_Proof.py:36:    get_best_threshold,
+app/pages/8_MVD_Coverage_Proof.py:97:                linear-gradient(180deg, rgba(15, 23, 42, 0.97), rgba(17, 24, 39, 0.90));
+app/pages/8_MVD_Coverage_Proof.py:149:                linear-gradient(135deg, rgba(15, 23, 42, 0.97), rgba(2, 6, 23, 0.94));
+app/pages/8_MVD_Coverage_Proof.py:180:final_thresholds = tables.get("final_true_champion_thresholds", pd.DataFrame())
+app/pages/8_MVD_Coverage_Proof.py:192:best_threshold = get_best_threshold()
+app/pages/8_MVD_Coverage_Proof.py:609:st.sidebar.markdown(f"**Threshold:** {best_threshold:.2f}")
+app/pages/8_MVD_Coverage_Proof.py:630:        f'&nbsp;<span class="info-pill">Threshold: {best_threshold:.2f}</span>'
+app/pages/8_MVD_Coverage_Proof.py:660:            f'<div class="proof-help">Rare-buyer ranking quality and balanced threshold performance.</div>'
+app/pages/8_MVD_Coverage_Proof.py:671:            f'<div class="proof-help">Target quality and buyer capture at the final threshold.</div>'
+app/pages/8_MVD_Coverage_Proof.py:692:render_html('<div class="section-kicker">Final champion proof</div><div class="section-title">The selected model is supported by comparison, threshold, stability, and sensitivity evidence</div>')
+app/pages/8_MVD_Coverage_Proof.py:732:            {"Evidence Table": "Threshold analysis", "Rows": count_rows(final_thresholds)},
+app/pages/8_MVD_Coverage_Proof.py:904:    show_table_with_download("Final champion thresholds", final_thresholds)
+app/pages/6_Monitoring_Drift_Health.py:38:    get_best_threshold,
+app/pages/6_Monitoring_Drift_Health.py:97:                linear-gradient(180deg, rgba(15, 23, 42, 0.97), rgba(17, 24, 39, 0.90));
+app/pages/6_Monitoring_Drift_Health.py:149:                linear-gradient(135deg, rgba(15, 23, 42, 0.97), rgba(2, 6, 23, 0.94));
+app/pages/6_Monitoring_Drift_Health.py:335:def create_score_bucket(score: float, threshold: float) -> str:
+app/pages/6_Monitoring_Drift_Health.py:338:    if score >= threshold:
+app/pages/6_Monitoring_Drift_Health.py:353:    threshold: float,
+app/pages/6_Monitoring_Drift_Health.py:362:    buckets = clean_scores.apply(lambda score: create_score_bucket(score, threshold))
+app/pages/6_Monitoring_Drift_Health.py:451:        "p95": float(values.quantile(0.95)),
+app/pages/6_Monitoring_Drift_Health.py:662:best_threshold = get_best_threshold()
+app/pages/6_Monitoring_Drift_Health.py:687:    float((live_scores["purchase_intent_score"] >= best_threshold).mean())
+app/pages/6_Monitoring_Drift_Health.py:693:    float((baseline_scores["purchase_intent_score"] >= best_threshold).mean())
+app/pages/6_Monitoring_Drift_Health.py:704:        best_threshold,
+app/pages/6_Monitoring_Drift_Health.py:714:        best_threshold,
+app/pages/6_Monitoring_Drift_Health.py:735:st.sidebar.markdown(f"**Threshold:** {best_threshold:.2f}")
+app/pages/6_Monitoring_Drift_Health.py:756:        f'&nbsp;<span class="info-pill">Threshold: {best_threshold:.2f}</span>'
+app/pages/3_Model_Benchmark_Selection.py:40:    get_best_threshold,
+app/pages/3_Model_Benchmark_Selection.py:102:                linear-gradient(180deg, rgba(15, 23, 42, 0.97), rgba(17, 24, 39, 0.90));
+app/pages/3_Model_Benchmark_Selection.py:137:                linear-gradient(135deg, rgba(15, 23, 42, 0.97), rgba(2, 6, 23, 0.94));
+app/pages/3_Model_Benchmark_Selection.py:230:best_threshold = get_best_threshold()
+app/pages/3_Model_Benchmark_Selection.py:372:        "best_threshold",
+app/pages/3_Model_Benchmark_Selection.py:392:            "best_threshold": "Threshold",
+app/pages/3_Model_Benchmark_Selection.py:404:def get_threshold_table() -> pd.DataFrame:
+app/pages/3_Model_Benchmark_Selection.py:405:    """Return the best available threshold table."""
+app/pages/3_Model_Benchmark_Selection.py:407:    final_thresholds = tables.get("final_true_champion_thresholds", pd.DataFrame())
+app/pages/3_Model_Benchmark_Selection.py:409:    if not final_thresholds.empty:
+app/pages/3_Model_Benchmark_Selection.py:410:        data = final_thresholds.copy()
+app/pages/3_Model_Benchmark_Selection.py:419:    old_thresholds = tables.get("old_champion_threshold", pd.DataFrame())
+app/pages/3_Model_Benchmark_Selection.py:421:    if not old_thresholds.empty:
+app/pages/3_Model_Benchmark_Selection.py:422:        return old_thresholds.copy()
+app/pages/3_Model_Benchmark_Selection.py:545:            "best_threshold": ":.2f" if "best_threshold" in data.columns else False,
+app/pages/3_Model_Benchmark_Selection.py:572:def build_threshold_chart(thresholds: pd.DataFrame):
+app/pages/3_Model_Benchmark_Selection.py:573:    """Create threshold trade-off chart."""
+app/pages/3_Model_Benchmark_Selection.py:575:    if not PLOTLY_AVAILABLE or thresholds.empty:
+app/pages/3_Model_Benchmark_Selection.py:578:    data = thresholds.copy()
+app/pages/3_Model_Benchmark_Selection.py:580:    if "threshold" not in data.columns:
+app/pages/3_Model_Benchmark_Selection.py:602:    chart_data = data[["threshold", *available_metric_columns]].copy()
+app/pages/3_Model_Benchmark_Selection.py:606:        id_vars="threshold",
+app/pages/3_Model_Benchmark_Selection.py:613:        x="threshold",
+app/pages/3_Model_Benchmark_Selection.py:621:        x=best_threshold,
+app/pages/3_Model_Benchmark_Selection.py:623:        annotation_text=f"Selected {best_threshold:.2f}",
+app/pages/3_Model_Benchmark_Selection.py:633:        xaxis_title="Decision threshold",
+app/pages/3_Model_Benchmark_Selection.py:708:thresholds = get_threshold_table()
+app/pages/3_Model_Benchmark_Selection.py:723:st.sidebar.markdown(f"**Threshold:** {best_threshold:.2f}")
+app/pages/3_Model_Benchmark_Selection.py:743:        f'threshold trade-offs, and stability evidence.'
+app/pages/3_Model_Benchmark_Selection.py:746:        f'&nbsp;<span class="info-pill">Threshold: {best_threshold:.2f}</span>'
+app/pages/3_Model_Benchmark_Selection.py:826:        '<div class="step-text">Checked class weights, threshold optimisation, and optional SMOTE-style logic.</div>'
+app/pages/3_Model_Benchmark_Selection.py:884:# 12. THRESHOLD AND STABILITY PROOF
+app/pages/3_Model_Benchmark_Selection.py:889:threshold_col, stability_col = st.columns(2)
+app/pages/3_Model_Benchmark_Selection.py:891:with threshold_col:
+app/pages/3_Model_Benchmark_Selection.py:892:    threshold_chart = build_threshold_chart(thresholds)
+app/pages/3_Model_Benchmark_Selection.py:894:    if threshold_chart is not None:
+app/pages/3_Model_Benchmark_Selection.py:896:            threshold_chart,
+app/pages/3_Model_Benchmark_Selection.py:900:            "Chart explanation: threshold performance",
+app/pages/3_Model_Benchmark_Selection.py:902:            "The threshold is a business decision, not only a technical setting. The selected threshold should target visitors with strong buying intent while avoiding too much wasted outreach.",
+app/pages/3_Model_Benchmark_Selection.py:905:        st.info("Threshold chart will appear when threshold table is available.")
+app/pages/3_Model_Benchmark_Selection.py:974:    if not thresholds.empty:
+app/pages/3_Model_Benchmark_Selection.py:976:            thresholds,
+app/pages/1_Visitor_Intent_Predictor.py:36:    get_best_threshold,
+app/pages/1_Visitor_Intent_Predictor.py:110:            font-size: 0.90rem;
+app/pages/1_Visitor_Intent_Predictor.py:167:            background: rgba(30, 41, 59, 0.95);
+app/pages/1_Visitor_Intent_Predictor.py:181:        .threshold-marker {
+app/pages/1_Visitor_Intent_Predictor.py:208:            font-size: 0.95rem;
+app/pages/1_Visitor_Intent_Predictor.py:248:best_threshold = get_best_threshold()
+app/pages/1_Visitor_Intent_Predictor.py:529:st.sidebar.markdown(f"**Production threshold:** {best_threshold:.2f}")
+app/pages/1_Visitor_Intent_Predictor.py:549:        f'&nbsp;<span class="info-pill">Threshold: {best_threshold:.2f}</span>'
+app/pages/1_Visitor_Intent_Predictor.py:577:            f'<div class="metric-label">Production threshold</div>'
+app/pages/1_Visitor_Intent_Predictor.py:578:            f'<div class="metric-value">{best_threshold:.2f}</div>'
+app/pages/1_Visitor_Intent_Predictor.py:588:            f'<div class="metric-label">Precision at threshold</div>'
+app/pages/1_Visitor_Intent_Predictor.py:800:    threshold_percent = best_threshold * 100
+app/pages/1_Visitor_Intent_Predictor.py:802:    is_above_threshold = score >= best_threshold
+app/pages/1_Visitor_Intent_Predictor.py:805:        "Above production threshold"
+app/pages/1_Visitor_Intent_Predictor.py:806:        if is_above_threshold
+app/pages/1_Visitor_Intent_Predictor.py:807:        else "Below production threshold"
+app/pages/1_Visitor_Intent_Predictor.py:812:        if is_above_threshold
+app/pages/1_Visitor_Intent_Predictor.py:828:        f'<div class="threshold-marker" style="left: {threshold_percent:.1f}%;"></div>'
+app/pages/1_Visitor_Intent_Predictor.py:831:        f'Yellow marker = final production threshold at {best_threshold:.2f}. '
+app/pages/1_Visitor_Intent_Predictor.py:903:                f'<div class="metric-help">Real buyers captured at threshold.</div>'
+app/pages/1_Visitor_Intent_Predictor.py:944:                "best_threshold": best_threshold,
+app/pages/5_Anomaly_Outlier.py:37:    get_best_threshold,
+app/pages/5_Anomaly_Outlier.py:96:                linear-gradient(180deg, rgba(15, 23, 42, 0.97), rgba(17, 24, 39, 0.90));
+app/pages/5_Anomaly_Outlier.py:148:                linear-gradient(135deg, rgba(15, 23, 42, 0.97), rgba(2, 6, 23, 0.94));
+app/pages/5_Anomaly_Outlier.py:597:best_threshold = get_best_threshold()
+app/pages/5_Anomaly_Outlier.py:656:st.sidebar.markdown(f"**Intent threshold:** {best_threshold:.2f}")
+app/pages/2_Batch_Scoring.py:39:    get_best_threshold,
+app/pages/2_Batch_Scoring.py:137:                linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(17, 24, 39, 0.90));
+app/pages/2_Batch_Scoring.py:172:                linear-gradient(135deg, rgba(15, 23, 42, 0.97), rgba(2, 6, 23, 0.94));
+app/pages/2_Batch_Scoring.py:188:            font-size: 0.95rem;
+app/pages/2_Batch_Scoring.py:230:best_threshold = get_best_threshold()
+app/pages/2_Batch_Scoring.py:443:    scored_data["target_now"] = scored_data["purchase_intent_score"] >= best_threshold
+app/pages/2_Batch_Scoring.py:487:        "threshold": best_threshold,
+app/pages/2_Batch_Scoring.py:509:                threshold=best_threshold,
+app/pages/2_Batch_Scoring.py:590:        x=best_threshold * 100,
+app/pages/2_Batch_Scoring.py:592:        annotation_text=f"Threshold {best_threshold:.2f}",
+app/pages/2_Batch_Scoring.py:666:st.sidebar.markdown(f"**Threshold:** {best_threshold:.2f}")
+app/pages/2_Batch_Scoring.py:687:        f'&nbsp;<span class="info-pill">Threshold: {best_threshold:.2f}</span>'
+app/pages/2_Batch_Scoring.py:856:            f'<b>{summary["target_now_count"]:,}</b> visitors passed the final production threshold. '
+app/pages/2_Batch_Scoring.py:882:                f'<div class="metric-help">Visitors above final threshold.</div>'
+app/pages/2_Batch_Scoring.py:971:                "threshold": best_threshold,
+app/pages/2_Batch_Scoring.py:972:                "precision_at_threshold": best_precision,
+app/pages/2_Batch_Scoring.py:973:                "recall_at_threshold": best_recall,
+app/pages/2_Batch_Scoring.py:974:                "f1_at_threshold": best_f1,
+app/pages/7_MLOps_Architecture.py:37:    get_best_threshold,
+app/pages/7_MLOps_Architecture.py:98:                linear-gradient(180deg, rgba(15, 23, 42, 0.97), rgba(17, 24, 39, 0.90));
+app/pages/7_MLOps_Architecture.py:150:                linear-gradient(135deg, rgba(15, 23, 42, 0.97), rgba(2, 6, 23, 0.94));
+app/pages/7_MLOps_Architecture.py:179:            background: rgba(15, 23, 42, 0.90);
+app/pages/7_MLOps_Architecture.py:410:best_threshold = get_best_threshold()
+app/pages/7_MLOps_Architecture.py:438:st.sidebar.markdown(f"**Threshold:** {best_threshold:.2f}")
+app/pages/7_MLOps_Architecture.py:459:        f'&nbsp;<span class="info-pill">Threshold: {best_threshold:.2f}</span>'
+tests/test_app_utils.py:17:def test_get_best_threshold_returns_valid_probability():
+tests/test_app_utils.py:18:    """The active model threshold should be between 0 and 1."""
+tests/test_app_utils.py:20:    threshold = app_utils.get_best_threshold()
+tests/test_app_utils.py:22:    assert isinstance(threshold, (int, float))
+tests/test_app_utils.py:23:    assert 0 <= threshold <= 1
+tests/test_generated_outputs.py:32:        "best_threshold",
+tests/test_business_rules.py:1:from app.app_utils import assign_intent_segment, get_best_threshold
+tests/test_business_rules.py:4:def test_final_threshold_is_valid():
+tests/test_business_rules.py:5:    """The final targeting threshold must be a valid probability."""
+tests/test_business_rules.py:7:    threshold = get_best_threshold()
+tests/test_business_rules.py:9:    assert 0 <= threshold <= 1
+
+=== 5. FINAL SCORE EXPORT REFERENCES ===
+src/anomaly/build_anomaly_signals.py:30:#   data/processed/champion_visitor_scores.csv
+src/anomaly/build_anomaly_signals.py:59:CHAMPION_VISITOR_SCORES_PATH = Path("data/processed/champion_visitor_scores.csv")
+src/anomaly/build_anomaly_signals.py:157:def create_champion_visitor_scores(visitor_features: pd.DataFrame) -> pd.DataFrame:
+src/anomaly/build_anomaly_signals.py:161:    #   Older visitor_scores.csv may come from the old baseline model.
+src/anomaly/build_anomaly_signals.py:625:    champion_scores = create_champion_visitor_scores(visitor_features)
+src/segmentation/create_visitor_segments.py:19:SCORES_FILE = PROCESSED_DATA_DIR / "visitor_scores.csv"
+src/segmentation/create_visitor_segments.py:20:SAMPLE_FILE = PROCESSED_DATA_DIR / "visitor_scores_sample.csv"
+src/models/finalize_true_champion.py:147:FINAL_CHAMPION_SCORES_PATH = Path("data/processed/final_champion_visitor_scores.csv")
+src/models/finalize_true_champion.py:1374:    save_final_champion_scores(
+src/monitoring/build_monitoring_snapshot.py:33:    ROOT / "data/processed/final_champion_visitor_scores.csv",
+src/monitoring/build_monitoring_snapshot.py:34:    ROOT / "data/processed/champion_visitor_scores.csv",
+src/monitoring/build_monitoring_snapshot.py:35:    ROOT / "data/processed/visitor_scores.csv",
+src/monitoring/build_monitoring_snapshot.py:36:    ROOT / "data/processed/visitor_scores_sample.csv",
+src/monitoring/build_monitoring_snapshot.py:142:        "visitor_scores": first_score_file() or SCORE_FILES[0],
+src/forecasting/build_business_forecasts.py:59:VISITOR_SCORES_PATH = Path("data/processed/visitor_scores.csv")
+src/forecasting/build_business_forecasts.py:242:def ensure_visitor_scores_exist() -> pd.DataFrame:
+src/forecasting/build_business_forecasts.py:246:    #   visitor_scores.csv already exists from the segmentation/scoring pipeline.
+src/forecasting/build_business_forecasts.py:255:        visitor_scores = pd.read_csv(VISITOR_SCORES_PATH)
+src/forecasting/build_business_forecasts.py:257:        if "visitorid" in visitor_scores.columns and "purchase_intent_score" in visitor_scores.columns:
+src/forecasting/build_business_forecasts.py:258:            return visitor_scores[["visitorid", "purchase_intent_score"]].copy()
+src/forecasting/build_business_forecasts.py:262:            "visitor_scores.csv and visitor_features.csv are missing. "
+src/forecasting/build_business_forecasts.py:272:    print("visitor_scores.csv not found. Creating scores from champion model...")
+src/forecasting/build_business_forecasts.py:318:    visitor_scores = visitor_features[["visitorid"]].copy()
+src/forecasting/build_business_forecasts.py:319:    visitor_scores["purchase_intent_score"] = scores
+src/forecasting/build_business_forecasts.py:322:    visitor_scores.to_csv(VISITOR_SCORES_PATH, index=False)
+src/forecasting/build_business_forecasts.py:324:    return visitor_scores
+src/forecasting/build_business_forecasts.py:380:    visitor_scores = ensure_visitor_scores_exist()
+src/forecasting/build_business_forecasts.py:382:    visitor_scores["visitorid"] = visitor_scores["visitorid"].astype(events["visitorid"].dtype, errors="ignore")
+src/forecasting/build_business_forecasts.py:385:        visitor_scores.loc[
+src/forecasting/build_business_forecasts.py:386:            visitor_scores["purchase_intent_score"] >= threshold,
+app/pages/6_Monitoring_Drift_Health.py:179:FINAL_CHAMPION_VISITOR_SCORES_PATH = Path("data/processed/final_champion_visitor_scores.csv")
+app/pages/6_Monitoring_Drift_Health.py:180:CHAMPION_VISITOR_SCORES_PATH = Path("data/processed/champion_visitor_scores.csv")
+app/pages/7_MLOps_Architecture.py:231:    "Champion visitor scores": Path("data/processed/champion_visitor_scores.csv"),
+tests/test_data_quality.py:11:    Path("data/processed/final_champion_visitor_scores.csv"),
+tests/test_data_quality.py:12:    Path("data/processed/champion_visitor_scores.csv"),
+tests/test_data_quality.py:13:    Path("data/processed/visitor_scores.csv"),
+tests/test_kpi_calculations.py:34:        "data/processed/final_champion_visitor_scores.csv",
+tests/test_kpi_calculations.py:35:        "data/processed/champion_visitor_scores.csv",
+tests/test_kpi_calculations.py:36:        "data/processed/visitor_scores.csv",
+
+=== 6. DATA PIPELINE REFERENCES ===
+src/anomaly/build_anomaly_signals.py:55:VISITOR_FEATURES_PATH = Path("data/processed/visitor_features.csv")
+src/anomaly/build_anomaly_signals.py:135:            f"visitor_features.csv missing model feature columns: {missing_columns}"
+src/anomaly/build_anomaly_signals.py:146:            "visitor_features.csv not found. Run feature engineering first."
+src/anomaly/build_anomaly_signals.py:152:        raise ValueError("visitor_features.csv must contain visitorid.")
+src/segmentation/create_visitor_segments.py:15:FEATURE_FILE = PROCESSED_DATA_DIR / "visitor_features.csv"
+src/models/model_config.py:8:DATA_PATH = Path("data/processed/visitor_features.csv")
+src/models/train_baseline_model.py:17:FEATURE_FILE = PROCESSED_DATA_DIR / "visitor_features.csv"
+src/models/run_model_selection.py:54:    # Read the feature table created earlier by build_visitor_features.py.
+src/models/build_mvd_method_coverage.py:22:#   data/processed/visitor_features.csv
+src/models/build_mvd_method_coverage.py:87:FEATURES_PATH = Path("data/processed/visitor_features.csv")
+src/models/build_mvd_method_coverage.py:691:            "project_artifact": "src/data/build_visitor_features.py, src/models/finalize_true_champion.py",
+src/models/analyze_thresholds.py:14:FEATURE_FILE = PROCESSED_DATA_DIR / "visitor_features.csv"
+src/models/finalize_true_champion.py:35:#   data/processed/visitor_features.csv
+src/models/finalize_true_champion.py:133:FEATURES_PATH = Path("data/processed/visitor_features.csv")
+src/models/finalize_true_champion.py:240:        data/processed/visitor_features.csv
+src/monitoring/build_monitoring_snapshot.py:31:VISITOR_FEATURES = ROOT / "data/processed/visitor_features.csv"
+src/forecasting/build_business_forecasts.py:57:EVENTS_PATH = Path("data/raw/retailrocket/events.csv")
+src/forecasting/build_business_forecasts.py:58:VISITOR_FEATURES_PATH = Path("data/processed/visitor_features.csv")
+src/forecasting/build_business_forecasts.py:249:    #   this function creates visitor scores from visitor_features.csv and champion_model.joblib.
+src/forecasting/build_business_forecasts.py:262:            "visitor_scores.csv and visitor_features.csv are missing. "
+src/forecasting/build_business_forecasts.py:300:            f"visitor_features.csv missing required columns: {missing_columns}"
+src/forecasting/build_business_forecasts.py:337:            "Expected raw RetailRocket events.csv in data/raw/retailrocket/."
+src/forecasting/build_business_forecasts.py:353:            f"events.csv missing required columns: {missing_columns}"
+src/data/build_visitor_features.py:1:# build_visitor_features.py
+src/data/build_visitor_features.py:20:EVENTS_FILE = RAW_DATA_DIR / "events.csv"
+src/data/build_visitor_features.py:24:OUTPUT_FILE = PROCESSED_DATA_DIR / "visitor_features.csv"
+src/data/build_visitor_features.py:29:    """Load only the columns we need from events.csv."""
+app/Executive_Overview.py:317:    visitor_features = load_optional_csv("data/processed/visitor_features.csv")
+app/pages/3_Model_Benchmark_Selection.py:257:    visitor_features = load_optional_csv("data/processed/visitor_features.csv")
+app/pages/1_Visitor_Intent_Predictor.py:275:    visitor_features = load_optional_csv("data/processed/visitor_features.csv")
+app/pages/2_Batch_Scoring.py:291:    visitor_features = load_optional_csv("data/processed/visitor_features.csv")
+app/pages/7_MLOps_Architecture.py:228:    "Feature table": Path("data/processed/visitor_features.csv"),
+tests/test_data_quality.py:9:VISITOR_FEATURES_PATH = Path("data/processed/visitor_features.csv")
+tests/test_kpi_calculations.py:21:    data = read_csv_or_skip("data/processed/visitor_features.csv")
+tests/test_model_training_smoke.py:18:    path = Path("data/processed/visitor_features.csv")
+tests/test_model_training_smoke.py:21:        pytest.skip("visitor_features.csv is not available.")
+
+=== 7. MONITORING AND ANOMALY REFERENCES ===
+src/anomaly/build_anomaly_signals.py:317:    output["rule_anomaly_count"] = output[rule_columns].sum(axis=1)
+src/anomaly/build_anomaly_signals.py:319:    output["has_rule_based_anomaly"] = output["rule_anomaly_count"] > 0
+src/anomaly/build_anomaly_signals.py:409:        + 0.30 * np.minimum(output["rule_anomaly_count"] / 3, 1)
+src/anomaly/build_anomaly_signals.py:412:    output["final_anomaly_flag"] = (
+src/anomaly/build_anomaly_signals.py:473:    final_anomalies = int(anomaly_data["final_anomaly_flag"].sum())
+src/anomaly/build_anomaly_signals.py:476:    high_intent_anomalies = int(
+src/anomaly/build_anomaly_signals.py:478:            anomaly_data["final_anomaly_flag"]
+src/anomaly/build_anomaly_signals.py:511:                "metric": "high_intent_anomalies",
+src/anomaly/build_anomaly_signals.py:512:                "value": high_intent_anomalies,
+src/anomaly/build_anomaly_signals.py:547:            final_anomalies=("final_anomaly_flag", "sum"),
+src/anomaly/build_anomaly_signals.py:573:        "final_anomaly_flag",
+src/anomaly/build_anomaly_signals.py:575:        "rule_anomaly_count",
+src/anomaly/build_anomaly_signals.py:648:    final_anomaly_count = int(anomaly_data["final_anomaly_flag"].sum())
+src/anomaly/build_anomaly_signals.py:649:    final_anomaly_rate = final_anomaly_count / len(anomaly_data)
+src/anomaly/build_anomaly_signals.py:653:    print(f"Final anomalies: {final_anomaly_count:,}")
+src/models/build_mvd_method_coverage.py:643:            usecols=lambda column: column in ["final_anomaly_flag"],
+src/models/build_mvd_method_coverage.py:646:        if "final_anomaly_flag" in anomaly_data.columns:
+src/models/build_mvd_method_coverage.py:652:                    "outlier_rate": float(anomaly_data["final_anomaly_flag"].mean()),
+src/models/finalize_true_champion.py:221:def calculate_business_score(row: Dict[str, float]) -> float:
+src/models/finalize_true_champion.py:476:    summary["business_score"] = calculate_business_score(summary)
+src/models/finalize_true_champion.py:825:        "final_anomaly_flag",
+src/models/finalize_true_champion.py:836:    if "final_anomaly_flag" not in anomaly_data.columns:
+src/models/finalize_true_champion.py:837:        print("final_anomaly_flag column not found. Skipping anomaly sensitivity check.")
+src/models/finalize_true_champion.py:840:    anomaly_map = anomaly_data.set_index(ID_COLUMN)["final_anomaly_flag"]
+src/models/finalize_true_champion.py:997:        "business_score",
+src/models/finalize_true_champion.py:1032:        "selection_metric": "business_score",
+src/models/finalize_true_champion.py:1033:        "business_score_weights": CHAMPION_SCORE_WEIGHTS,
+src/models/finalize_true_champion.py:1284:        "business_score",
+src/models/finalize_true_champion.py:1300:                "business_score",
+src/models/finalize_true_champion.py:1357:    print(f"Business score: {final_summary['business_score']:.4f}")
+src/monitoring/build_monitoring_snapshot.py:170:        "ecommerce_model_business_score": ["business_score", "best_business_score"],
+src/monitoring/build_monitoring_snapshot.py:317:                set_metric(snapshot, "ecommerce_anomaly_count", value)
+src/monitoring/build_monitoring_snapshot.py:319:    if "ecommerce_anomaly_rate" in snapshot["metrics"] and "ecommerce_anomaly_count" in snapshot["metrics"]:
+src/monitoring/build_monitoring_snapshot.py:335:    set_metric(snapshot, "ecommerce_anomaly_count", count)
+app/Executive_Overview.py:522:            "business_score": ":.3f" if "business_score" in chart_data.columns else False,
+app/Executive_Overview.py:549:    size_column = "business_score" if "business_score" in top_models.columns else "best_f1_score"
+app/Executive_Overview.py:842:            "business_score",
+app/app_utils.py:522:        if "business_score" in comparison.columns:
+app/app_utils.py:523:            comparison["champion_score"] = comparison["business_score"]
+app/pages/8_MVD_Coverage_Proof.py:410:    if "business_score" not in data.columns:
+app/pages/8_MVD_Coverage_Proof.py:412:            data["business_score"] = data["champion_score"]
+app/pages/8_MVD_Coverage_Proof.py:414:            data["business_score"] = 0
+app/pages/8_MVD_Coverage_Proof.py:440:            "business_score": ":.3f",
+app/pages/3_Model_Benchmark_Selection.py:351:    if "business_score" not in data.columns and "champion_score" in data.columns:
+app/pages/3_Model_Benchmark_Selection.py:352:        data["business_score"] = data["champion_score"]
+app/pages/3_Model_Benchmark_Selection.py:376:        "business_score",
+app/pages/3_Model_Benchmark_Selection.py:396:            "business_score": "Business Score",
+app/pages/3_Model_Benchmark_Selection.py:495:            "business_score": ":.3f" if "business_score" in data.columns else False,
+app/pages/3_Model_Benchmark_Selection.py:526:    size_column = "business_score" if "business_score" in data.columns else "best_f1_score"
+app/pages/3_Model_Benchmark_Selection.py:705:business_score = get_metric_from_row(champion_row, "business_score", get_metric_from_row(champion_row, "champion_score", 0))
+app/pages/3_Model_Benchmark_Selection.py:797:            f'<div class="winner-value">{best_f1:.3f} / {business_score:.3f}</div>'
+app/pages/5_Anomaly_Outlier.py:484:        "rule_anomaly_count"
+app/pages/5_Anomaly_Outlier.py:485:        if "rule_anomaly_count" in data.columns
+app/pages/5_Anomaly_Outlier.py:554:            "rule_anomaly_count",
+app/pages/5_Anomaly_Outlier.py:644:high_intent_anomalies = get_summary_value(summary, "high_intent_anomalies")
+app/pages/5_Anomaly_Outlier.py:679:        f'&nbsp;<span class="warning-pill">High-intent anomalies: {format_count(high_intent_anomalies)}</span>'
+app/pages/5_Anomaly_Outlier.py:729:            f'<div class="anomaly-value">{format_count(high_intent_anomalies)}</div>'
+app/pages/5_Anomaly_Outlier.py:897:        "rule_anomaly_count",
+app/pages/7_MLOps_Architecture.py:247:    "Prometheus config": Path("monitoring/prometheus/prometheus.yml"),
+app/pages/7_MLOps_Architecture.py:248:    "Alert rules": Path("monitoring/prometheus/alert_rules.yml"),
+tests/test_model_comparison_logic.py:65:    if "model_name" not in comparison.columns or "business_score" not in comparison.columns:
+tests/test_model_comparison_logic.py:76:    assert xgb["business_score"].max() > logistic["business_score"].max()
