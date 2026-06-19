@@ -1,24 +1,30 @@
-# E-Commerce Conversion Intelligence Platform
+<div align="center">
 
-### Machine Learning + MLOps platform for predicting purchase intent, ranking high-value visitors, and turning raw e-commerce behaviour into campaign-ready business decisions.
+<h1>E-Commerce Conversion Intelligence Platform</h1>
 
-<br>
+<p><strong>Machine Learning + MLOps platform for predicting purchase intent, ranking high-value visitors, and turning raw e-commerce behaviour into campaign-ready business decisions.</strong></p>
 
-<img src="https://img.shields.io/github/actions/workflow/status/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/ci.yml?branch=main&style=for-the-badge&logo=github-actions&logoColor=white&label=CI%2FCD" />
-<img src="https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white" />
-<img src="https://img.shields.io/badge/scikit--learn-ML-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white" />
-<img src="https://img.shields.io/badge/Streamlit-Business%20App-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" />
-<img src="https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
-<img src="https://img.shields.io/badge/Kubernetes-Orchestration-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white" />
-<img src="https://img.shields.io/badge/Helm-Deployment%20Packaging-0F1689?style=for-the-badge&logo=helm&logoColor=white" />
-<img src="https://img.shields.io/badge/Prometheus-Monitoring-E6522C?style=for-the-badge&logo=prometheus&logoColor=white" />
-<img src="https://img.shields.io/badge/Grafana-Mission%20Control-F46800?style=for-the-badge&logo=grafana&logoColor=white" />
-<img src="https://img.shields.io/badge/pytest-Tested-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white" />
-<img src="https://img.shields.io/badge/Status-Portfolio%20Ready-16A34A?style=for-the-badge" />
+<p>
+  <img src="https://img.shields.io/github/actions/workflow/status/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/ci.yml?branch=main&style=for-the-badge&logo=github-actions&logoColor=white&label=CI%2FCD" alt="CI/CD" />
+  <img src="https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11" />
+  <img src="https://img.shields.io/badge/scikit--learn-ML-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white" alt="scikit-learn" />
+  <img src="https://img.shields.io/badge/Streamlit-Business%20App-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit" />
+</p>
 
-<br><br>
+<p>
+  <img src="https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+  <img src="https://img.shields.io/badge/Kubernetes-Orchestration-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white" alt="Kubernetes" />
+  <img src="https://img.shields.io/badge/Helm-Deployment%20Packaging-0F1689?style=for-the-badge&logo=helm&logoColor=white" alt="Helm" />
+</p>
 
-<table>
+<p>
+  <img src="https://img.shields.io/badge/Prometheus-Monitoring-E6522C?style=for-the-badge&logo=prometheus&logoColor=white" alt="Prometheus" />
+  <img src="https://img.shields.io/badge/Grafana-Mission%20Control-F46800?style=for-the-badge&logo=grafana&logoColor=white" alt="Grafana" />
+  <img src="https://img.shields.io/badge/pytest-Tested-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white" alt="pytest" />
+  <img src="https://img.shields.io/badge/Status-Portfolio%20Ready-16A34A?style=for-the-badge" alt="Portfolio Ready" />
+</p>
+
+<table align="center">
 <tr>
 <td align="center"><b>1.4M+</b><br>Visitors analyzed</td>
 <td align="center"><b>19.6K</b><br>High-intent visitors</td>
@@ -29,9 +35,9 @@
 </tr>
 </table>
 
-<br>
+<p><strong>From raw RetailRocket visitor events → visitor-level features → purchase-intent scores → campaign audience → Streamlit business app → monitored MLOps deployment.</strong></p>
 
-**From raw RetailRocket visitor events → visitor-level features → purchase-intent scores → campaign audience → Streamlit business app → monitored MLOps deployment.**
+</div>
 
 ---
 
@@ -597,31 +603,48 @@ The project includes a GitHub Actions pipeline that validates the project automa
 
 ```mermaid
 %%{init: {"theme": "base", "themeVariables": {"background": "#0D1117", "primaryTextColor": "#FFFFFF", "lineColor": "#94A3B8", "fontFamily": "Arial"}}}%%
-flowchart LR
+flowchart TB
     A["GitHub Push"] --> B["GitHub Actions"]
-    B --> C["Install Dependencies"]
-    C --> D["Import Checks"]
-    D --> E["Project Structure Check"]
-    E --> F["Python Syntax Check"]
-    F --> G["pytest"]
-    G --> H["Docker Build"]
-    H --> I["Docker Compose Config"]
-    I --> J["Helm Lint"]
-    J --> K["Kubernetes YAML Validation"]
-    K --> L["Prometheus Config Check"]
-    L --> M["Alertmanager Config Check"]
-    M --> N["Grafana JSON Check"]
+    B --> C
+
+    subgraph S1["Stage 1: Environment and Code Validation"]
+        direction TB
+        C["Install Dependencies"] --> D["Import Checks"]
+        D --> E["Project Structure Check"]
+        E --> F["Python Syntax Check"]
+        F --> G["pytest"]
+    end
+
+    G --> H
+
+    subgraph S2["Stage 2: Build and Deployment Validation"]
+        direction TB
+        H["Docker Build"] --> I["Docker Compose Config"]
+        I --> J["Helm Lint"]
+        J --> K["Kubernetes YAML<br/>Validation"]
+    end
+
+    K --> L
+
+    subgraph S3["Stage 3: Monitoring and Observability Validation"]
+        direction TB
+        L["Prometheus Config Check"] --> M["Alertmanager Config Check"]
+        M --> N["Grafana JSON Check"]
+    end
+
     N --> O["Green Pipeline"]
 
     classDef trigger fill:#0F3D64,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
     classDef check fill:#1F2937,stroke:#94A3B8,color:#FFFFFF,stroke-width:1.5px;
     classDef test fill:#7C2D12,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
     classDef success fill:#14532D,stroke:#4ADE80,color:#FFFFFF,stroke-width:2.5px;
+    classDef stage fill:#111827,stroke:#64748B,color:#FFFFFF,stroke-width:1.5px;
 
     class A,B trigger;
     class C,D,E,F,H,I,J,K,L,M,N check;
     class G test;
     class O success;
+    class S1,S2,S3 stage;
 
     linkStyle default stroke:#94A3B8,stroke-width:2px;
 ```
