@@ -33,8 +33,6 @@
 
 **From raw RetailRocket visitor events → visitor-level features → purchase-intent scores → campaign audience → Streamlit business app → monitored MLOps deployment.**
 
-</div>
-
 ---
 
 ## Table of Contents
@@ -46,7 +44,9 @@
 * [Data Flow](#data-flow-from-raw-events-to-campaign-audience)
 * [Feature Engineering](#feature-engineering)
 * [Machine Learning Strategy](#machine-learning-strategy)
+* [Model Workflow](#model-workflow)
 * [Final Champion Model](#final-champion-model)
+* [Threshold Optimization](#threshold-optimization)
 * [Streamlit Business Application](#streamlit-business-application)
 * [Platform Architecture](#platform-architecture)
 * [Monitoring and MLOps Design](#monitoring-and-mlops-design)
@@ -54,9 +54,11 @@
 * [CI/CD Quality Gates](#cicd-quality-gates)
 * [Recommended Run Order](#recommended-run-order)
 * [Project Structure](#project-structure)
+* [Main Outputs](#main-outputs)
 * [Portfolio and Recruiter Value](#portfolio-and-recruiter-value)
 * [Limitations](#limitations)
 * [Future Improvements](#future-improvements)
+* [Final Message](#final-message)
 
 ---
 
@@ -181,19 +183,29 @@ This transformation is important because the final business decision is visitor-
 ## Data Flow: From Raw Events to Campaign Audience
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"background": "#0D1117", "primaryTextColor": "#FFFFFF", "lineColor": "#94A3B8", "fontFamily": "Arial"}}}%%
 flowchart LR
-    A[RetailRocket events.csv<br/>One row = one visitor action] --> B[Clean and prepare events]
-    B --> C[Aggregate behaviour by visitor]
-    C --> D[Visitor-level feature table]
-    D --> E[Purchase-intent model]
-    E --> F[Intent score per visitor]
-    F --> G[Threshold optimization]
-    G --> H[High-intent campaign audience]
+    A["RetailRocket events.csv<br/>One row = one visitor action"] --> B["Clean and prepare events"]
+    B --> C["Aggregate behaviour by visitor"]
+    C --> D["Visitor-level feature table"]
+    D --> E["Purchase-intent model"]
+    E --> F["Intent score per visitor"]
+    F --> G["Threshold optimization"]
+    G --> H["High-intent campaign audience"]
 
-    style A fill:#eef4ff,stroke:#2563eb,stroke-width:1px
-    style D fill:#f0fdf4,stroke:#16a34a,stroke-width:1px
-    style E fill:#fff7ed,stroke:#ea580c,stroke-width:1px
-    style H fill:#ecfdf5,stroke:#059669,stroke-width:2px
+    classDef source fill:#0F3D64,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
+    classDef process fill:#1F2937,stroke:#94A3B8,color:#FFFFFF,stroke-width:1.5px;
+    classDef feature fill:#14532D,stroke:#4ADE80,color:#FFFFFF,stroke-width:2px;
+    classDef model fill:#7C2D12,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
+    classDef outcome fill:#064E3B,stroke:#34D399,color:#FFFFFF,stroke-width:2.5px;
+
+    class A source;
+    class B,C,F,G process;
+    class D feature;
+    class E model;
+    class H outcome;
+
+    linkStyle default stroke:#94A3B8,stroke-width:2px;
 ```
 
 ### Why this flow matters
@@ -246,20 +258,30 @@ Therefore, the project focuses on metrics that are more useful for rare purchase
 ## Model Workflow
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"background": "#0D1117", "primaryTextColor": "#FFFFFF", "lineColor": "#94A3B8", "fontFamily": "Arial"}}}%%
 flowchart TD
-    A[Visitor-level features] --> B[Baseline Logistic Regression]
-    A --> C[Champion / Challenger Benchmark]
-    C --> D[AutoML-style Model Comparison]
-    D --> E[Tuned Random Forest]
-    E --> F[Threshold Optimization]
-    F --> G[Final Champion Metadata]
-    G --> H[Batch Visitor Scoring]
-    H --> I[High-Intent Campaign List]
+    A["Visitor-level features"] --> B["Baseline Logistic Regression"]
+    A --> C["Champion / Challenger Benchmark"]
+    C --> D["AutoML-style Model Comparison"]
+    D --> E["Tuned Random Forest"]
+    E --> F["Threshold Optimization"]
+    F --> G["Final Champion Metadata"]
+    G --> H["Batch Visitor Scoring"]
+    H --> I["High-Intent Campaign List"]
 
-    style A fill:#eef4ff,stroke:#2563eb
-    style E fill:#ecfdf5,stroke:#059669,stroke-width:2px
-    style F fill:#fff7ed,stroke:#ea580c
-    style I fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
+    classDef input fill:#0F3D64,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
+    classDef process fill:#1F2937,stroke:#94A3B8,color:#FFFFFF,stroke-width:1.5px;
+    classDef model fill:#14532D,stroke:#4ADE80,color:#FFFFFF,stroke-width:2.5px;
+    classDef decision fill:#7C2D12,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
+    classDef output fill:#064E3B,stroke:#34D399,color:#FFFFFF,stroke-width:2.5px;
+
+    class A input;
+    class B,C,D,G,H process;
+    class E model;
+    class F decision;
+    class I output;
+
+    linkStyle default stroke:#94A3B8,stroke-width:2px;
 ```
 
 ---
@@ -326,39 +348,40 @@ Main app pages:
 ## Platform Architecture
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"background": "#0D1117", "primaryTextColor": "#FFFFFF", "lineColor": "#94A3B8", "fontFamily": "Arial", "clusterBkg": "#111827", "clusterBorder": "#64748B"}}}%%
 flowchart TB
-    subgraph Data_Layer[Data Layer]
-        A1[RetailRocket Events]
-        A2[Processed Visitor Features]
+    subgraph Data_Layer["Data Layer"]
+        A1["RetailRocket Events"]
+        A2["Processed Visitor Features"]
     end
 
-    subgraph ML_Layer[Machine Learning Layer]
-        B1[Baseline Model]
-        B2[Model Benchmarking]
-        B3[Tuned Random Forest Champion]
-        B4[Threshold Optimization]
+    subgraph ML_Layer["Machine Learning Layer"]
+        B1["Baseline Model"]
+        B2["Model Benchmarking"]
+        B3["Tuned Random Forest Champion"]
+        B4["Threshold Optimization"]
     end
 
-    subgraph Business_Layer[Business Application Layer]
-        C1[Streamlit Executive Dashboard]
-        C2[Visitor Intent Predictor]
-        C3[Batch Scoring Workflow]
-        C4[Forecasting and Anomaly Review]
+    subgraph Business_Layer["Business Application Layer"]
+        C1["Streamlit Executive Dashboard"]
+        C2["Visitor Intent Predictor"]
+        C3["Batch Scoring Workflow"]
+        C4["Forecasting and Anomaly Review"]
     end
 
-    subgraph Monitoring_Layer[Monitoring Layer]
-        D1[Metrics Exporter]
-        D2[Prometheus]
-        D3[Grafana Dashboard]
-        D4[Alertmanager]
-        D5[Blackbox Exporter]
+    subgraph Monitoring_Layer["Monitoring Layer"]
+        D1["Metrics Exporter"]
+        D2["Prometheus"]
+        D3["Grafana Dashboard"]
+        D4["Alertmanager"]
+        D5["Blackbox Exporter"]
     end
 
-    subgraph Deployment_Layer[Deployment and Quality Layer]
-        E1[Docker Compose]
-        E2[Kubernetes Manifests]
-        E3[Helm Chart]
-        E4[GitHub Actions CI/CD]
+    subgraph Deployment_Layer["Deployment and Quality Layer"]
+        E1["Docker Compose"]
+        E2["Kubernetes Manifests"]
+        E3["Helm Chart"]
+        E4["GitHub Actions CI/CD"]
     end
 
     A1 --> A2
@@ -380,11 +403,25 @@ flowchart TB
     E2 --> E3
     E4 --> E1
 
-    style Data_Layer fill:#eef4ff,stroke:#2563eb
-    style ML_Layer fill:#fff7ed,stroke:#ea580c
-    style Business_Layer fill:#f0fdf4,stroke:#16a34a
-    style Monitoring_Layer fill:#fefce8,stroke:#ca8a04
-    style Deployment_Layer fill:#f8fafc,stroke:#475569
+    classDef data fill:#0F3D64,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
+    classDef ml fill:#7C2D12,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
+    classDef business fill:#14532D,stroke:#4ADE80,color:#FFFFFF,stroke-width:2px;
+    classDef monitoring fill:#713F12,stroke:#FACC15,color:#FFFFFF,stroke-width:2px;
+    classDef deployment fill:#334155,stroke:#CBD5E1,color:#FFFFFF,stroke-width:2px;
+
+    class A1,A2 data;
+    class B1,B2,B3,B4 ml;
+    class C1,C2,C3,C4 business;
+    class D1,D2,D3,D4,D5 monitoring;
+    class E1,E2,E3,E4 deployment;
+
+    style Data_Layer fill:#0B1220,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
+    style ML_Layer fill:#1C1110,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
+    style Business_Layer fill:#0D1F17,stroke:#4ADE80,color:#FFFFFF,stroke-width:2px;
+    style Monitoring_Layer fill:#211A0A,stroke:#FACC15,color:#FFFFFF,stroke-width:2px;
+    style Deployment_Layer fill:#111827,stroke:#CBD5E1,color:#FFFFFF,stroke-width:2px;
+
+    linkStyle default stroke:#94A3B8,stroke-width:2px;
 ```
 
 ### Architecture meaning
@@ -414,17 +451,30 @@ The project includes:
 The project uses a cached monitoring snapshot so Prometheus does not repeatedly scan large CSV files.
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"background": "#0D1117", "primaryTextColor": "#FFFFFF", "lineColor": "#94A3B8", "fontFamily": "Arial"}}}%%
 flowchart LR
-    A[Heavy project output files<br/>CSV tables and logs] --> B[Build monitoring snapshot]
-    B --> C[ecommerce_metrics_snapshot.json]
-    C --> D[Metrics Exporter]
-    D --> E[Prometheus]
-    E --> F[Grafana Dashboard]
-    E --> G[Alertmanager]
+    A["Heavy project output files<br/>CSV tables and logs"] --> B["Build monitoring snapshot"]
+    B --> C["ecommerce_metrics_snapshot.json"]
+    C --> D["Metrics Exporter"]
+    D --> E["Prometheus"]
+    E --> F["Grafana Dashboard"]
+    E --> G["Alertmanager"]
 
-    style C fill:#eef4ff,stroke:#2563eb
-    style D fill:#fff7ed,stroke:#ea580c
-    style F fill:#f0fdf4,stroke:#16a34a
+    classDef source fill:#334155,stroke:#CBD5E1,color:#FFFFFF,stroke-width:2px;
+    classDef process fill:#1F2937,stroke:#94A3B8,color:#FFFFFF,stroke-width:1.5px;
+    classDef cache fill:#0F3D64,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
+    classDef exporter fill:#7C2D12,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
+    classDef monitor fill:#713F12,stroke:#FACC15,color:#FFFFFF,stroke-width:2px;
+    classDef output fill:#14532D,stroke:#4ADE80,color:#FFFFFF,stroke-width:2px;
+
+    class A source;
+    class B process;
+    class C cache;
+    class D exporter;
+    class E monitor;
+    class F,G output;
+
+    linkStyle default stroke:#94A3B8,stroke-width:2px;
 ```
 
 This design is useful because monitoring tools should be fast and stable. Prometheus should read lightweight metrics, not repeatedly process heavy analytical files.
@@ -436,27 +486,37 @@ This design is useful because monitoring tools should be fast and stable. Promet
 The project supports both local and Kubernetes-style deployment.
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"background": "#0D1117", "primaryTextColor": "#FFFFFF", "lineColor": "#94A3B8", "fontFamily": "Arial"}}}%%
 flowchart TD
-    A[Project Source Code] --> B[Docker Image Build]
-    B --> C[Docker Compose Stack]
-    C --> D[Streamlit App]
-    C --> E[Prometheus]
-    C --> F[Grafana]
-    C --> G[Metrics Exporter]
-    C --> H[Blackbox Exporter]
+    A["Project Source Code"] --> B["Docker Image Build"]
+    B --> C["Docker Compose Stack"]
+    C --> D["Streamlit App"]
+    C --> E["Prometheus"]
+    C --> F["Grafana"]
+    C --> G["Metrics Exporter"]
+    C --> H["Blackbox Exporter"]
 
-    B --> I[Kubernetes Manifests]
-    I --> J[Helm Chart]
-    J --> K[Kubernetes Release]
+    B --> I["Kubernetes Manifests"]
+    I --> J["Helm Chart"]
+    J --> K["Kubernetes Release"]
 
-    K --> L[Streamlit Service]
-    K --> M[Grafana Service]
-    K --> N[Prometheus Service]
+    K --> L["Streamlit Service"]
+    K --> M["Grafana Service"]
+    K --> N["Prometheus Service"]
 
-    style B fill:#eef4ff,stroke:#2563eb
-    style C fill:#f0fdf4,stroke:#16a34a
-    style J fill:#fff7ed,stroke:#ea580c
-    style K fill:#f8fafc,stroke:#475569
+    classDef source fill:#0F3D64,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
+    classDef container fill:#14532D,stroke:#4ADE80,color:#FFFFFF,stroke-width:2px;
+    classDef service fill:#1F2937,stroke:#94A3B8,color:#FFFFFF,stroke-width:1.5px;
+    classDef orchestration fill:#7C2D12,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
+    classDef release fill:#334155,stroke:#CBD5E1,color:#FFFFFF,stroke-width:2.5px;
+
+    class A source;
+    class B,C container;
+    class D,E,F,G,H,L,M,N service;
+    class I,J orchestration;
+    class K release;
+
+    linkStyle default stroke:#94A3B8,stroke-width:2px;
 ```
 
 Docker Compose proves that the project can run as a local multi-service stack.
@@ -536,25 +596,34 @@ Stop port-forwards:
 The project includes a GitHub Actions pipeline that validates the project automatically.
 
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"background": "#0D1117", "primaryTextColor": "#FFFFFF", "lineColor": "#94A3B8", "fontFamily": "Arial"}}}%%
 flowchart LR
-    A[GitHub Push] --> B[GitHub Actions]
-    B --> C[Install Dependencies]
-    C --> D[Import Checks]
-    D --> E[Project Structure Check]
-    E --> F[Python Syntax Check]
-    F --> G[pytest]
-    G --> H[Docker Build]
-    H --> I[Docker Compose Config]
-    I --> J[Helm Lint]
-    J --> K[Kubernetes YAML Validation]
-    K --> L[Prometheus Config Check]
-    L --> M[Alertmanager Config Check]
-    M --> N[Grafana JSON Check]
-    N --> O[Green Pipeline]
+    A["GitHub Push"] --> B["GitHub Actions"]
+    B --> C["Install Dependencies"]
+    C --> D["Import Checks"]
+    D --> E["Project Structure Check"]
+    E --> F["Python Syntax Check"]
+    F --> G["pytest"]
+    G --> H["Docker Build"]
+    H --> I["Docker Compose Config"]
+    I --> J["Helm Lint"]
+    J --> K["Kubernetes YAML Validation"]
+    K --> L["Prometheus Config Check"]
+    L --> M["Alertmanager Config Check"]
+    M --> N["Grafana JSON Check"]
+    N --> O["Green Pipeline"]
 
-    style A fill:#eef4ff,stroke:#2563eb
-    style G fill:#ecfdf5,stroke:#059669
-    style O fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
+    classDef trigger fill:#0F3D64,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
+    classDef check fill:#1F2937,stroke:#94A3B8,color:#FFFFFF,stroke-width:1.5px;
+    classDef test fill:#7C2D12,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
+    classDef success fill:#14532D,stroke:#4ADE80,color:#FFFFFF,stroke-width:2.5px;
+
+    class A,B trigger;
+    class C,D,E,F,H,I,J,K,L,M,N check;
+    class G test;
+    class O success;
+
+    linkStyle default stroke:#94A3B8,stroke-width:2px;
 ```
 
 ### CI/CD checks included
