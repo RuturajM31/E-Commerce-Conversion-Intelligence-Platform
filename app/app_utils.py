@@ -15,13 +15,11 @@
 from __future__ import annotations
 
 import html
-import json
 import math
 import textwrap
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-import joblib
 import pandas as pd
 import streamlit as st
 
@@ -29,19 +27,21 @@ from src.data.feature_engineering import (
     build_single_visitor_features,
     prepare_model_features,
 )
+from src.models.production_model import (
+    get_production_model_name,
+    get_production_threshold,
+    load_production_bundle,
+)
 
 
 # --------------------------------------------------
-# 1. CORE PROJECT PATHS
+# 1. PRODUCTION MODEL SOURCE
 # --------------------------------------------------
-# The app should now use the final true champion model.
-# If final files are missing, we safely fall back to the earlier champion.
-
-FINAL_CHAMPION_MODEL_PATH = Path("models/trained/final_champion_model.joblib")
-FINAL_CHAMPION_METADATA_PATH = Path("models/metadata/final_champion_metadata.json")
-
-OLD_CHAMPION_MODEL_PATH = Path("models/trained/champion_model.joblib")
-OLD_CHAMPION_METADATA_PATH = Path("models/metadata/champion_model_metadata.json")
+# Model and metadata selection is centralised in
+# src.models.production_model.
+#
+# This prevents the app from selecting a model from one generation
+# and metadata from another generation.
 
 
 # --------------------------------------------------
@@ -107,71 +107,56 @@ def escape_text(value) -> str:
 # 4. MODEL AND METADATA PATH SELECTION
 # --------------------------------------------------
 
-def get_active_model_path() -> Path:
-    """Return the model path the app should use.
+@st.cache_resource
+def load_active_production_bundle() -> Dict:
+    """Load one validated production model and metadata pair.
 
-    Priority:
-        1. final_champion_model.joblib
-        2. champion_model.joblib as fallback
+    The shared resolver prefers the final tuned champion.
+    It uses the earlier champion only when the complete final pair
+    is unavailable.
     """
 
-    if FINAL_CHAMPION_MODEL_PATH.exists():
-        return FINAL_CHAMPION_MODEL_PATH
+    return load_production_bundle()
 
-    return OLD_CHAMPION_MODEL_PATH
+
+def get_active_model_path() -> Path:
+    """Return the model path selected by the shared resolver."""
+
+    bundle = load_active_production_bundle()
+
+    return Path(bundle["model_path"])
 
 
 def get_active_metadata_path() -> Path:
-    """Return the metadata path the app should use.
+    """Return the matching metadata path selected by the resolver."""
 
-    Priority:
-        1. final_champion_metadata.json
-        2. champion_model_metadata.json as fallback
-    """
+    bundle = load_active_production_bundle()
 
-    if FINAL_CHAMPION_METADATA_PATH.exists():
-        return FINAL_CHAMPION_METADATA_PATH
-
-    return OLD_CHAMPION_METADATA_PATH
+    return Path(bundle["metadata_path"])
 
 
 @st.cache_resource
 def load_champion_model():
-    """Load the active champion model used by prediction pages."""
+    """Return the validated model used by prediction pages."""
 
-    model_path = get_active_model_path()
+    bundle = load_active_production_bundle()
 
-    if not model_path.exists():
-        raise FileNotFoundError(
-            "No champion model found. Expected one of:\n"
-            f"- {FINAL_CHAMPION_MODEL_PATH}\n"
-            f"- {OLD_CHAMPION_MODEL_PATH}\n\n"
-            "Run: python3 -m src.models.finalize_true_champion"
-        )
-
-    return joblib.load(model_path)
+    return bundle["model"]
 
 
 @st.cache_data
 def load_champion_metadata() -> Dict:
-    """Load metadata for the active champion model."""
+    """Return metadata belonging to the same active model generation."""
 
-    metadata_path = get_active_metadata_path()
+    bundle = load_active_production_bundle()
 
-    if not metadata_path.exists():
-        raise FileNotFoundError(
-            "No champion metadata found. Expected one of:\n"
-            f"- {FINAL_CHAMPION_METADATA_PATH}\n"
-            f"- {OLD_CHAMPION_METADATA_PATH}\n\n"
-            "Run: python3 -m src.models.finalize_true_champion"
-        )
+    # Copy the metadata so app-only display fields do not change the
+    # original dictionary stored inside the cached production bundle.
+    metadata = dict(bundle["metadata"])
 
-    with open(metadata_path, "r", encoding="utf-8") as file:
-        metadata = json.load(file)
-
-    # Keep the metadata shape consistent for older Streamlit pages.
-    metadata["active_model_path"] = str(get_active_model_path())
-    metadata["active_metadata_path"] = str(metadata_path)
+    metadata["active_generation"] = bundle["generation"]
+    metadata["active_model_path"] = str(bundle["model_path"])
+    metadata["active_metadata_path"] = str(bundle["metadata_path"])
 
     return metadata
 
@@ -189,30 +174,22 @@ def get_feature_columns() -> List[str]:
 
 
 def get_best_threshold() -> float:
-    """Return the active production threshold."""
+    """Return the validated active production threshold."""
 
     metadata = load_champion_metadata()
 
-    return float(metadata.get("best_threshold", 0.50))
+    return get_production_threshold(metadata)
 
 
 def get_champion_model_name() -> str:
-    """Return readable champion model name.
+    """Return a readable name for the active production model.
 
-    Final metadata uses:
-        final_model_name
-
-    Earlier metadata used:
-        champion_model_name
+    The shared helper supports both final and earlier metadata formats.
     """
 
     metadata = load_champion_metadata()
 
-    return (
-        metadata.get("final_model_name")
-        or metadata.get("champion_model_name")
-        or "Champion model"
-    )
+    return get_production_model_name(metadata)
 
 
 def get_champion_track() -> str:

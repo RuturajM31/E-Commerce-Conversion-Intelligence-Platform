@@ -39,3 +39,30 @@ def test_assign_intent_segment_returns_business_label():
 
     assert isinstance(segment, str)
     assert len(segment.strip()) > 0
+
+
+def test_app_uses_final_production_artifact_pair():
+    """Streamlit must use the final model and its matching metadata."""
+
+    assert (
+        app_utils.get_active_model_path().name
+        == "final_champion_model.joblib"
+    )
+    assert (
+        app_utils.get_active_metadata_path().name
+        == "final_champion_metadata.json"
+    )
+
+
+def test_app_metadata_reports_active_final_generation():
+    """Dashboard metadata must describe the model it actually loads."""
+
+    metadata = app_utils.load_champion_metadata()
+
+    assert metadata["active_generation"] == "final_champion"
+    assert metadata["active_model_path"].endswith(
+        "final_champion_model.joblib"
+    )
+    assert metadata["active_metadata_path"].endswith(
+        "final_champion_metadata.json"
+    )
