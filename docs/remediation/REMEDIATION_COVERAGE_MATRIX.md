@@ -56,8 +56,8 @@ Code written without verification is not complete.
 
 ## 4. Data and feature-building pipeline
 
-- [ ] `DATA-01` Restore the `src/data` package.
-- [ ] `DATA-02` Add `src/data/__init__.py`.
+- [x] `DATA-01` Restore the `src/data` package.
+- [x] `DATA-02` Add `src/data/__init__.py`.
 - [ ] `DATA-03` Restore or rebuild `src/data/build_visitor_features.py`.
 - [ ] `DATA-04` Rebuild visitor features from RetailRocket raw files.
 - [ ] `DATA-05` Define the modelling grain explicitly.
@@ -73,23 +73,23 @@ Code written without verification is not complete.
 
 ## 5. Centralised feature engineering
 
-- [ ] `FEAT-01` Create one shared feature-engineering module.
-- [ ] `FEAT-02` Use it in dataset generation.
+- [x] `FEAT-01` Create one shared feature-engineering module.
+- [x] `FEAT-02` Use it in dataset generation.
 - [ ] `FEAT-03` Use canonical features in training.
-- [ ] `FEAT-04` Use it in Streamlit single prediction.
-- [ ] `FEAT-05` Use it in batch scoring.
+- [x] `FEAT-04` Use it in Streamlit single prediction.
+- [x] `FEAT-05` Use it in batch scoring.
 - [ ] `FEAT-06` Use canonical features or scores in segmentation.
 - [ ] `FEAT-07` Use canonical features or scores in anomaly workflows.
 - [ ] `FEAT-08` Use canonical production outputs in forecasting.
-- [ ] `FEAT-09` Standardise `cart_to_view_ratio`.
-- [ ] `FEAT-10` Standardise `events_per_unique_item`.
+- [x] `FEAT-09` Standardise `cart_to_view_ratio`.
+- [x] `FEAT-10` Standardise `events_per_unique_item`.
 - [ ] `FEAT-11` Standardise recency, frequency, diversity, and activity-duration features.
-- [ ] `FEAT-12` Define explicit zero-denominator handling.
-- [ ] `FEAT-13` Store approved feature names and order.
-- [ ] `FEAT-14` Reject missing required features safely.
+- [x] `FEAT-12` Define explicit zero-denominator handling.
+- [x] `FEAT-13` Store approved feature names and order.
+- [x] `FEAT-14` Reject missing required features safely.
 - [ ] `FEAT-15` Handle unexpected extra features clearly.
-- [ ] `FEAT-16` Add training-versus-serving feature parity tests.
-- [ ] `FEAT-17` Add feature data-type and range validation.
+- [x] `FEAT-16` Add training-versus-serving feature parity tests.
+- [x] `FEAT-17` Add feature data-type and range validation.
 - [ ] `FEAT-18` Keep boolean and categorical encoding consistent.
 
 ## 6. Leakage-safe target and modelling timeline
@@ -230,12 +230,12 @@ Code written without verification is not complete.
 
 ## 15. Automated tests
 
-- [ ] `TEST-01` Keep all current baseline tests passing.
+- [x] `TEST-01` Keep all current baseline tests passing.
 - [ ] `TEST-02` Add project-structure tests for restored modules.
 - [ ] `TEST-03` Add raw and processed data-schema tests.
-- [ ] `TEST-04` Add feature-formula tests.
-- [ ] `TEST-05` Add training-serving parity tests.
-- [ ] `TEST-06` Add feature-order and data-type tests.
+- [x] `TEST-04` Add feature-formula tests.
+- [x] `TEST-05` Add training-serving parity tests.
+- [x] `TEST-06` Add feature-order and data-type tests.
 - [ ] `TEST-07` Add production-manifest validation tests.
 - [ ] `TEST-08` Add one-model and one-threshold consistency tests.
 - [ ] `TEST-09` Add score-export tests.
