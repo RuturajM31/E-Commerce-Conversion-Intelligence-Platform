@@ -48,3 +48,14 @@ def test_alert_receiver_source_exists():
     assert Path(
         "src/monitoring/alert_webhook_receiver.py"
     ).exists()
+
+def test_kubernetes_start_script_uses_secret_credentials():
+    script = Path(
+        "scripts/k8s_demo_start.sh"
+    ).read_text(encoding="utf-8")
+
+    assert "grafana-admin-credentials" in script
+    assert "GRAFANA_ADMIN_PASSWORD" in script
+    assert "Techno#123" not in script
+    assert "Pass:" not in script
+
