@@ -58,4 +58,3 @@ def test_kubernetes_start_script_uses_secret_credentials():
     assert "GRAFANA_ADMIN_PASSWORD" in script
     assert "Techno#123" not in script
     assert "Pass:" not in script
-
