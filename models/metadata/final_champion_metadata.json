@@ -1,7 +1,10 @@
 {
-    "final_model_name": "Tuned Random Forest",
-    "model_family": "Random Forest",
-    "selection_metric": "business_score",
+    "final_model_name": "Tuned XGBoost",
+    "model_family": "Boosting",
+    "selection_metric": "validation_business_score",
+    "selection_split": "validation",
+    "final_evaluation_split": "final_holdout",
+    "split_strategy": "Predefined chronological rolling snapshots with purge gaps.",
     "business_score_weights": {
         "pr_auc": 0.45,
         "best_f1_score": 0.3,
@@ -9,12 +12,36 @@
         "best_recall": 0.05,
         "roc_auc": 0.05
     },
-    "best_threshold": 0.97,
-    "pr_auc": 0.41509626901986413,
-    "roc_auc": 0.9696278175119526,
-    "best_precision": 0.36609283068206583,
-    "best_recall": 0.7216494845360825,
-    "best_f1_score": 0.48575972242301574,
+    "best_threshold": 0.98,
+    "pr_auc": 0.15186619185675237,
+    "roc_auc": 0.848444891741996,
+    "best_precision": 0.2857142857142857,
+    "best_recall": 0.20754716981132076,
+    "best_f1_score": 0.24043715846994534,
+    "validation_metrics": {
+        "business_score": 0.14480309643618064,
+        "pr_auc": 0.06251185478766783,
+        "roc_auc": 0.8030339994544723,
+        "precision": 0.17543859649122806,
+        "recall": 0.12562814070351758,
+        "f1_score": 0.14641288433382138,
+        "threshold": 0.98
+    },
+    "final_holdout_metrics": {
+        "evaluation_split": "final_holdout",
+        "model_name": "Tuned XGBoost",
+        "threshold": 0.98,
+        "rows": 248639,
+        "positive_rows": 318,
+        "positive_rate": 0.0012789626727906724,
+        "predicted_positive_rows": 231,
+        "predicted_positive_rate": 0.0009290577906120922,
+        "pr_auc": 0.15186619185675237,
+        "roc_auc": 0.848444891741996,
+        "precision": 0.2857142857142857,
+        "recall": 0.20754716981132076,
+        "f1_score": 0.24043715846994534
+    },
     "feature_columns": [
         "total_events",
         "view_count",
@@ -24,5 +51,7 @@
         "cart_to_view_ratio",
         "events_per_unique_item"
     ],
-    "notes": "RandomizedSearchCV tuned Random Forest, retrained on full training data."
+    "training_data_path": "data/processed/visitor_training_snapshots.csv",
+    "scoring_data_path": "data/processed/visitor_features.csv",
+    "notes": "RandomizedSearchCV tuned XGBoost, retrained on full training data."
 }
