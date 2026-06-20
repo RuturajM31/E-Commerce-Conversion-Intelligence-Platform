@@ -232,8 +232,29 @@ def add_visitor_metrics(snapshot: Dict[str, Any]) -> None:
                     totals[name] = totals.get(name, 0.0) + sf(row.get(col), 0.0)
 
     set_metric(snapshot, "ecommerce_total_visitors", row_count)
-    set_metric(snapshot, "ecommerce_converted_visitors", converted)
-    set_metric(snapshot, "ecommerce_conversion_rate", converted / max(row_count, 1))
+
+    # Production scoring data intentionally has no outcome label.
+    # Publish conversion metrics only when real labels are available.
+    outcome_labels_available = target_col is not None
+
+    set_metric(
+        snapshot,
+        "ecommerce_outcome_labels_available",
+        float(outcome_labels_available),
+    )
+
+    if outcome_labels_available:
+        set_metric(
+            snapshot,
+            "ecommerce_converted_visitors",
+            converted,
+        )
+        set_metric(
+            snapshot,
+            "ecommerce_conversion_rate",
+            converted / max(row_count, 1),
+        )
+
     set_metric(snapshot, "ecommerce_duplicate_visitor_count", duplicates)
     set_metric(snapshot, "ecommerce_duplicate_visitor_rate", duplicates / max(row_count, 1))
     set_metric(snapshot, "ecommerce_missing_value_count", missing)
