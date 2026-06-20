@@ -1,6 +1,7 @@
 import pandas as pd
 
 from src.data.build_visitor_features import (
+    build_latest_scoring_features,
     build_one_snapshot,
     create_snapshot_schedule,
 )
@@ -110,3 +111,23 @@ def test_schedule_contains_purge_gaps():
     assert split_order.index("validation") < split_order.index(
         "final_holdout"
     )
+
+
+def test_latest_scoring_features_have_one_row_per_visitor():
+    events = pd.DataFrame(
+        [
+            make_event("2015-06-01", 1, "view", 101),
+            make_event("2015-06-02", 1, "addtocart", 101),
+            make_event("2015-06-03", 2, "view", 201),
+            make_event("2015-06-04", 2, "view", 202),
+            make_event("2015-06-15", 1, "transaction", 101),
+        ]
+    )
+
+    result = build_latest_scoring_features(events)
+
+    assert result["visitorid"].is_unique
+    assert set(result["visitorid"]) == {1, 2}
+    assert "converted" not in result.columns
+    assert "data_split" not in result.columns
+    assert "scoring_time" in result.columns
