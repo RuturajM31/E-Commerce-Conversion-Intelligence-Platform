@@ -21,6 +21,9 @@ import joblib
 import numpy as np
 import pandas as pd
 
+from src.models.environment_provenance import (
+    get_environment_provenance,
+)
 from src.models.model_config import (
     AUTOML_RESULTS_PATH,
     AUTOML_TRACK_NAME,
@@ -252,6 +255,7 @@ def save_model_selection_outputs(
     metadata = {
         "selected_at_utc": get_current_utc_timestamp(),
         "selection_stage": "initial_champion_from_manual_vs_automl_benchmark",
+        "environment": get_environment_provenance(),
         "selection_split": "validation",
         "final_holdout_used": False,
         "champion_model_name": final_champion_row["model_name"],

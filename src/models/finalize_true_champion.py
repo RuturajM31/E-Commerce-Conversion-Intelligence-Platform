@@ -68,6 +68,9 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 
+from src.models.environment_provenance import (
+    get_environment_provenance,
+)
 from src.models.score_export import save_final_champion_scores
 
 # --------------------------------------------------
@@ -1193,6 +1196,7 @@ def save_final_outputs(
 
     metadata = {
         "final_model_name": final_summary["model_name"],
+        "environment": get_environment_provenance(),
         "model_family": final_summary["model_family"],
         "selection_metric": "validation_business_score",
         "selection_split": "validation",
