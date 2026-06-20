@@ -2,7 +2,10 @@
 # Shared settings for the model-selection workflow.
 
 from pathlib import Path
+
 import numpy as np
+
+from src.data.feature_engineering import MODEL_FEATURE_COLUMNS
 
 # 1. Input data
 DATA_PATH = Path("data/processed/visitor_features.csv")
@@ -37,15 +40,12 @@ TRUE_FINAL_STABILITY_PATH = REPORT_TABLES_DIR / "final_true_champion_stability.c
 TRUE_FINAL_SENSITIVITY_PATH = REPORT_TABLES_DIR / "final_true_champion_sensitivity.csv"
 
 # 5. Features and target
-FEATURE_COLUMNS = [
-    "total_events",
-    "view_count",
-    "addtocart_count",
-    "unique_items",
-    "activity_span_ms",
-    "cart_to_view_ratio",
-    "events_per_unique_item",
-]
+# Use the canonical feature schema shared by dataset generation,
+# model training, Streamlit prediction, and batch scoring.
+#
+# A separate list copy preserves the existing model-config interface while
+# preventing accidental changes to the canonical source definition.
+FEATURE_COLUMNS = list(MODEL_FEATURE_COLUMNS)
 TARGET_COLUMN = "converted"
 
 # 6. Reproducibility and benchmark size limits
