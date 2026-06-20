@@ -100,25 +100,61 @@ def score_visitors(data, production_bundle):
     return data
 
 
-def create_segment_summary(scored_data):
-    """Create segment-level business summary."""
+def create_segment_summary(
+    scored_data: pd.DataFrame,
+) -> pd.DataFrame:
+    """Create a production-safe segment summary.
+
+    The current scoring table contains only information available now.
+    Future conversion labels are therefore optional and normally absent.
+    """
 
     summary = (
         scored_data.groupby("intent_segment")
         .agg(
             visitors=("visitorid", "count"),
-            actual_converters=("converted", "sum"),
-            conversion_rate=("converted", "mean"),
-            avg_score=("purchase_intent_score", "mean"),
+            avg_score=(
+                "purchase_intent_score",
+                "mean",
+            ),
         )
         .reset_index()
     )
 
-    # Add visitor share.
-    summary["visitor_share"] = summary["visitors"] / summary["visitors"].sum()
+    summary["visitor_share"] = (
+        summary["visitors"]
+        / summary["visitors"].sum()
+    )
 
-    # Sort segments by average score.
-    summary = summary.sort_values("avg_score", ascending=False)
+    if "converted" in scored_data.columns:
+        actuals = (
+            scored_data.groupby("intent_segment")
+            .agg(
+                actual_converters=(
+                    "converted",
+                    "sum",
+                ),
+                conversion_rate=(
+                    "converted",
+                    "mean",
+                ),
+            )
+            .reset_index()
+        )
+
+        summary = summary.merge(
+            actuals,
+            on="intent_segment",
+            how="left",
+        )
+    else:
+        summary["actual_converters"] = pd.NA
+        summary["conversion_rate"] = pd.NA
+
+    summary = summary.sort_values(
+        "avg_score",
+        ascending=False,
+    )
 
     return summary
 

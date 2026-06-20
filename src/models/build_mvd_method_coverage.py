@@ -71,6 +71,10 @@ ID_COLUMN = "visitorid"
 TIME_COLUMNS = [
     "first_event_time",
     "last_event_time",
+    "snapshot_time",
+    "observation_start",
+    "target_end",
+    "data_split",
 ]
 
 # We sample because some methods like DBSCAN and LOF can be slow on 1.4M rows.
@@ -84,7 +88,7 @@ LOF_SAMPLE_SIZE = 40_000
 # 2. PROJECT PATHS
 # --------------------------------------------------
 
-FEATURES_PATH = Path("data/processed/visitor_features.csv")
+FEATURES_PATH = Path("data/processed/visitor_training_snapshots.csv")
 ANOMALY_SCORES_PATH = Path("data/processed/visitor_anomaly_scores.csv")
 FINAL_CHAMPION_COMPARISON_PATH = Path("reports/tables/final_true_champion_comparison.csv")
 

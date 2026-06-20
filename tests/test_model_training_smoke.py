@@ -7,22 +7,32 @@ import pandas as pd
 import pytest
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import average_precision_score
-from sklearn.model_selection import train_test_split
 
-from src.models.model_config import FEATURE_COLUMNS, RANDOM_STATE, TARGET_COLUMN
+from src.models.model_config import (
+    FEATURE_COLUMNS,
+    RANDOM_STATE,
+    SPLIT_COLUMN,
+    TARGET_COLUMN,
+    TRAIN_SPLIT,
+    VALIDATION_SPLIT,
+)
 
 
 def read_training_sample_or_skip(max_rows: int = 30_000) -> pd.DataFrame:
     """Load a safe sample of visitor features for fast model smoke tests."""
 
-    path = Path("data/processed/visitor_features.csv")
+    path = Path("data/processed/visitor_training_snapshots.csv")
 
     if not path.exists():
-        pytest.skip("visitor_features.csv is not available.")
+        pytest.skip("visitor_training_snapshots.csv is not available.")
 
     data = pd.read_csv(path)
 
-    required = FEATURE_COLUMNS + [TARGET_COLUMN]
+    required = [
+        *FEATURE_COLUMNS,
+        TARGET_COLUMN,
+        SPLIT_COLUMN,
+    ]
     missing = [column for column in required if column not in data.columns]
 
     if missing:
@@ -47,16 +57,24 @@ def test_random_forest_retrains_on_safe_sample():
 
     data = read_training_sample_or_skip()
 
-    X = data[FEATURE_COLUMNS]
-    y = data[TARGET_COLUMN].astype(int)
+    train_data = data.loc[
+        data[SPLIT_COLUMN] == TRAIN_SPLIT
+    ].copy()
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=0.25,
-        random_state=RANDOM_STATE,
-        stratify=y,
-    )
+    validation_data = data.loc[
+        data[SPLIT_COLUMN] == VALIDATION_SPLIT
+    ].copy()
+
+    if train_data.empty or validation_data.empty:
+        pytest.skip(
+            "Chronological train/validation splits are unavailable."
+        )
+
+    X_train = train_data[FEATURE_COLUMNS]
+    y_train = train_data[TARGET_COLUMN].astype(int)
+
+    X_test = validation_data[FEATURE_COLUMNS]
+    y_test = validation_data[TARGET_COLUMN].astype(int)
 
     model = RandomForestClassifier(
         n_estimators=30,

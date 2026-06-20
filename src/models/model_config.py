@@ -8,7 +8,7 @@ import numpy as np
 from src.data.feature_engineering import MODEL_FEATURE_COLUMNS
 
 # 1. Input data
-DATA_PATH = Path("data/processed/visitor_features.csv")
+DATA_PATH = Path("data/processed/visitor_training_snapshots.csv")
 
 # 2. Output folders
 MODEL_DIR = Path("models/trained")
@@ -47,6 +47,11 @@ TRUE_FINAL_SENSITIVITY_PATH = REPORT_TABLES_DIR / "final_true_champion_sensitivi
 # preventing accidental changes to the canonical source definition.
 FEATURE_COLUMNS = list(MODEL_FEATURE_COLUMNS)
 TARGET_COLUMN = "converted"
+SPLIT_COLUMN = "data_split"
+
+TRAIN_SPLIT = "train"
+VALIDATION_SPLIT = "validation"
+FINAL_HOLDOUT_SPLIT = "final_holdout"
 
 # 6. Reproducibility and benchmark size limits
 RANDOM_STATE = 42
