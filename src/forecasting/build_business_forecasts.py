@@ -48,6 +48,11 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
+from src.models.production_model import (
+    get_production_threshold,
+    load_production_bundle,
+)
+
 
 # --------------------------------------------------
 # Project paths
@@ -56,10 +61,11 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 EVENTS_PATH = Path("data/raw/retailrocket/events.csv")
 VISITOR_FEATURES_PATH = Path("data/processed/visitor_features.csv")
-VISITOR_SCORES_PATH = Path("data/processed/visitor_scores.csv")
 
-CHAMPION_MODEL_PATH = Path("models/trained/champion_model.joblib")
-CHAMPION_METADATA_PATH = Path("models/metadata/champion_model_metadata.json")
+# Explicit score output from the active production champion.
+PRODUCTION_VISITOR_SCORES_PATH = Path(
+    "data/processed/final_champion_visitor_scores.csv"
+)
 
 REPORT_TABLES_DIR = Path("reports/tables")
 
@@ -125,11 +131,13 @@ def load_json(path: Path) -> Dict:
 
 
 def get_champion_threshold() -> float:
-    """Read champion threshold from metadata."""
+    """Read the validated threshold from active production metadata."""
 
-    metadata = load_json(CHAMPION_METADATA_PATH)
+    production_bundle = load_production_bundle()
 
-    return float(metadata.get("best_threshold", 0.95))
+    return get_production_threshold(
+        production_bundle["metadata"]
+    )
 
 
 def calculate_smape(actual: np.ndarray, predicted: np.ndarray) -> float:
@@ -240,77 +248,68 @@ def create_failed_result(
 # --------------------------------------------------
 
 def ensure_visitor_scores_exist() -> pd.DataFrame:
-    """Load or create visitor scores needed for high-intent daily KPI."""
+    """Load or create scores from the active production model."""
 
-    # Best case:
-    #   visitor_scores.csv already exists from the segmentation/scoring pipeline.
-    #
-    # If it does not exist:
-    #   this function creates visitor scores from visitor_features.csv and champion_model.joblib.
-    #
-    # WHY:
-    #   High-intent visitor forecast needs visitor-level model scores.
+    # Reuse only the explicitly named final-champion score file.
+    # Older visitor_scores.csv files may belong to another model generation.
+    if PRODUCTION_VISITOR_SCORES_PATH.exists():
+        visitor_scores = pd.read_csv(
+            PRODUCTION_VISITOR_SCORES_PATH
+        )
 
-    if VISITOR_SCORES_PATH.exists():
-        visitor_scores = pd.read_csv(VISITOR_SCORES_PATH)
+        required_columns = [
+            "visitorid",
+            "purchase_intent_score",
+        ]
 
-        if "visitorid" in visitor_scores.columns and "purchase_intent_score" in visitor_scores.columns:
-            return visitor_scores[["visitorid", "purchase_intent_score"]].copy()
+        if all(
+            column in visitor_scores.columns
+            for column in required_columns
+        ):
+            return visitor_scores[required_columns].copy()
 
     if not VISITOR_FEATURES_PATH.exists():
         raise FileNotFoundError(
-            "visitor_scores.csv and visitor_features.csv are missing. "
-            "Run feature engineering and model scoring first."
+            "visitor_features.csv is missing. "
+            "Run feature engineering first."
         )
 
-    if not CHAMPION_MODEL_PATH.exists():
-        raise FileNotFoundError(
-            "champion_model.joblib is missing. "
-            "Run: python3 -m src.models.run_model_selection"
-        )
+    production_bundle = load_production_bundle()
 
-    print("visitor_scores.csv not found. Creating scores from champion model...")
+    print(
+        "Creating forecast visitor scores from production model: "
+        f"{production_bundle['generation']}"
+    )
 
     visitor_features = pd.read_csv(VISITOR_FEATURES_PATH)
-
-    metadata = load_json(CHAMPION_METADATA_PATH)
-
-    feature_columns = metadata.get(
-        "feature_columns",
-        [
-            "total_events",
-            "view_count",
-            "addtocart_count",
-            "unique_items",
-            "activity_span_ms",
-            "cart_to_view_ratio",
-            "events_per_unique_item",
-        ],
-    )
+    feature_columns = production_bundle["feature_columns"]
 
     required_columns = ["visitorid"] + feature_columns
 
     missing_columns = [
-        column for column in required_columns
+        column
+        for column in required_columns
         if column not in visitor_features.columns
     ]
 
     if missing_columns:
         raise ValueError(
-            f"visitor_features.csv missing required columns: {missing_columns}"
+            "visitor_features.csv missing required columns: "
+            f"{missing_columns}"
         )
 
-    model = joblib.load(CHAMPION_MODEL_PATH)
+    model = production_bundle["model"]
+    X = visitor_features[feature_columns].copy()
 
-    X = visitor_features[feature_columns]
-
-    # Predict in chunks to avoid memory spikes.
+    # Score in chunks to avoid memory spikes.
     chunk_size = 100_000
     score_chunks = []
 
-    for start in range(0, len(X), chunk_size):
-        end = start + chunk_size
-        chunk_scores = model.predict_proba(X.iloc[start:end])[:, 1]
+    for start_row in range(0, len(X), chunk_size):
+        end_row = start_row + chunk_size
+        chunk_scores = model.predict_proba(
+            X.iloc[start_row:end_row]
+        )[:, 1]
         score_chunks.append(chunk_scores)
 
     scores = np.concatenate(score_chunks)
@@ -318,8 +317,15 @@ def ensure_visitor_scores_exist() -> pd.DataFrame:
     visitor_scores = visitor_features[["visitorid"]].copy()
     visitor_scores["purchase_intent_score"] = scores
 
-    VISITOR_SCORES_PATH.parent.mkdir(parents=True, exist_ok=True)
-    visitor_scores.to_csv(VISITOR_SCORES_PATH, index=False)
+    PRODUCTION_VISITOR_SCORES_PATH.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    visitor_scores.to_csv(
+        PRODUCTION_VISITOR_SCORES_PATH,
+        index=False,
+    )
 
     return visitor_scores
 
