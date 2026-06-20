@@ -68,6 +68,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 
+from src.models.score_export import save_final_champion_scores
+
 # --------------------------------------------------
 # 1. BASIC SETTINGS
 # --------------------------------------------------
