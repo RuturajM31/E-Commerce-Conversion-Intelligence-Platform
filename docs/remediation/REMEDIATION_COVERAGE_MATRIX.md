@@ -75,7 +75,7 @@ Code written without verification is not complete.
 
 - [x] `FEAT-01` Create one shared feature-engineering module.
 - [x] `FEAT-02` Use it in dataset generation.
-- [ ] `FEAT-03` Use canonical features in training.
+- [x] `FEAT-03` Use canonical features in training.
 - [x] `FEAT-04` Use it in Streamlit single prediction.
 - [x] `FEAT-05` Use it in batch scoring.
 - [ ] `FEAT-06` Use canonical features or scores in segmentation.
