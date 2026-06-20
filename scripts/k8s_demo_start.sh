@@ -75,14 +75,23 @@ helm upgrade --install "$RELEASE" "$CHART" \
   --create-namespace
 
 echo ""
-echo "5) Waiting for pods to become ready..."
+echo "5) Waiting for deployments to finish rolling out..."
 
-kubectl wait \
-  --for=condition=Ready \
-  pod \
-  --all \
-  --namespace "$NAMESPACE" \
-  --timeout=240s
+DEPLOYMENTS=(
+  "alert-webhook"
+  "alertmanager"
+  "blackbox-exporter"
+  "grafana"
+  "metrics-exporter"
+  "prometheus"
+  "streamlit-app"
+)
+
+for deployment_name in "${DEPLOYMENTS[@]}"; do
+  echo "Waiting for deployment/$deployment_name..."
+
+  kubectl rollout status     "deployment/$deployment_name"     --namespace "$NAMESPACE"     --timeout=240s
+done
 
 echo ""
 echo "6) Current Kubernetes status..."
@@ -160,6 +169,40 @@ start_port_forward \
   "alert-webhook"
 
 sleep 5
+
+echo ""
+echo "8) Verifying port-forward processes..."
+
+FORWARD_NAMES=(
+  "streamlit"
+  "grafana"
+  "prometheus"
+  "metrics-exporter"
+  "blackbox"
+  "alertmanager"
+  "alert-webhook"
+)
+
+for forward_name in "${FORWARD_NAMES[@]}"; do
+  pid_file="$LOG_DIR/$forward_name.pid"
+
+  if [[ ! -f "$pid_file" ]]; then
+    echo "ERROR: Missing PID file: $pid_file"
+    exit 1
+  fi
+
+  pid="$(cat "$pid_file")"
+
+  if ! kill -0 "$pid" >/dev/null 2>&1; then
+    echo "ERROR: Port-forward failed: $forward_name"
+    echo "Log output:"
+
+    tail -n 20 "$LOG_DIR/$forward_name.log" || true
+    exit 1
+  fi
+done
+
+echo "Verified ${#FORWARD_NAMES[@]} port-forward processes."
 
 echo ""
 echo "Kubernetes demo is ready:"
