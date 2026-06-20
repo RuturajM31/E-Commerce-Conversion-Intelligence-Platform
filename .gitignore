@@ -177,3 +177,7 @@ reports/final/key_business_findings.md
 # ============================================================
 !models/metadata/champion_model_metadata.json
 !models/metadata/final_champion_metadata.json
+
+# Local Alertmanager webhook output
+monitoring/alert_notifications/*
+!monitoring/alert_notifications/.gitkeep

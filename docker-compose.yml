@@ -67,8 +67,39 @@ services:
       - "--config.file=/etc/blackbox_exporter/config.yml"
     restart: unless-stopped
 
+  alert-webhook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecommerce_alert_webhook
+    command:
+      - "python"
+      - "-m"
+      - "src.monitoring.alert_webhook_receiver"
+    environment:
+      - PROJECT_ROOT=/app
+      - ALERT_WEBHOOK_PORT=5001
+      - ALERT_NOTIFICATION_DIR=/app/monitoring/alert_notifications
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./monitoring/alert_notifications:/app/monitoring/alert_notifications:rw
+    healthcheck:
+      test:
+        - "CMD"
+        - "python"
+        - "-c"
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5001/health', timeout=3)"
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
   alertmanager:
     image: prom/alertmanager:v0.27.0
+    depends_on:
+      - alert-webhook
     container_name: ecommerce_alertmanager
     ports:
       - "9093:9093"
@@ -84,8 +115,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=Techno#123
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro

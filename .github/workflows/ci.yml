@@ -16,6 +16,10 @@ jobs:
     name: Validate Code, Tests, Docker, and MLOps Infrastructure
     runs-on: ubuntu-latest
 
+    env:
+      GRAFANA_ADMIN_USER: ci-admin
+      GRAFANA_ADMIN_PASSWORD: ci-configuration-only-password
+
     steps:
       # Step 1: Download the repository code into the GitHub Actions runner.
       - name: Checkout repository
