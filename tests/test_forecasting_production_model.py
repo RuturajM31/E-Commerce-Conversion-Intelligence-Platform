@@ -1,3 +1,9 @@
+# test_forecasting_production_model.py
+# Confirm that forecasting uses the same production model, metadata,
+# threshold, score file, and manifest as the other workflows.
+
+import json
+
 import numpy as np
 import pandas as pd
 
@@ -6,14 +12,55 @@ from src.forecasting import build_business_forecasts
 
 
 class FakeModel:
+    """Small model replacement used for fast scoring tests."""
+
     def predict_proba(self, features):
         scores = np.linspace(0.30, 0.70, len(features))
+
         return np.column_stack([1 - scores, scores])
 
 
-def test_forecasting_uses_production_bundle(tmp_path, monkeypatch):
-    feature_path = tmp_path / "visitor_features.csv"
+def create_test_bundle(tmp_path):
+    """Create a complete temporary production artifact pair."""
+
+    model_path = tmp_path / "final_champion_model.joblib"
+    metadata_path = tmp_path / "final_champion_metadata.json"
     score_path = tmp_path / "final_champion_visitor_scores.csv"
+    manifest_path = tmp_path / "final_champion_score_manifest.json"
+
+    model_path.write_bytes(b"temporary-forecast-model")
+
+    metadata = {
+        "final_model_name": "Test Final Champion",
+        "best_threshold": 0.97,
+        "feature_columns": MODEL_FEATURE_COLUMNS.copy(),
+    }
+
+    metadata_path.write_text(
+        json.dumps(metadata),
+        encoding="utf-8",
+    )
+
+    bundle = {
+        "model": FakeModel(),
+        "metadata": metadata,
+        "generation": "final_champion",
+        "model_path": model_path,
+        "metadata_path": metadata_path,
+        "feature_columns": MODEL_FEATURE_COLUMNS.copy(),
+    }
+
+    return bundle, score_path, manifest_path
+
+
+def test_forecasting_uses_production_bundle(
+    tmp_path,
+    monkeypatch,
+):
+    """Forecasting must regenerate scores from the production bundle."""
+
+    feature_path = tmp_path / "visitor_features.csv"
+    bundle, score_path, manifest_path = create_test_bundle(tmp_path)
 
     data = pd.DataFrame(
         {
@@ -29,13 +76,6 @@ def test_forecasting_uses_production_bundle(tmp_path, monkeypatch):
     )
     data.to_csv(feature_path, index=False)
 
-    bundle = {
-        "model": FakeModel(),
-        "metadata": {"best_threshold": 0.97},
-        "generation": "final_champion",
-        "feature_columns": MODEL_FEATURE_COLUMNS.copy(),
-    }
-
     monkeypatch.setattr(
         build_business_forecasts,
         "VISITOR_FEATURES_PATH",
@@ -48,6 +88,11 @@ def test_forecasting_uses_production_bundle(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(
         build_business_forecasts,
+        "PRODUCTION_SCORE_MANIFEST_PATH",
+        manifest_path,
+    )
+    monkeypatch.setattr(
+        build_business_forecasts,
         "load_production_bundle",
         lambda: bundle,
     )
@@ -55,6 +100,7 @@ def test_forecasting_uses_production_bundle(tmp_path, monkeypatch):
     scores = build_business_forecasts.ensure_visitor_scores_exist()
 
     assert score_path.exists()
+    assert manifest_path.exists()
     assert scores["visitorid"].tolist() == [1, 2]
     assert np.allclose(
         scores["purchase_intent_score"],
@@ -63,8 +109,12 @@ def test_forecasting_uses_production_bundle(tmp_path, monkeypatch):
 
 
 def test_forecasting_uses_production_threshold(monkeypatch):
+    """Forecasting must read the threshold from production metadata."""
+
     bundle = {
-        "metadata": {"best_threshold": 0.97},
+        "metadata": {
+            "best_threshold": 0.97,
+        },
     }
 
     monkeypatch.setattr(

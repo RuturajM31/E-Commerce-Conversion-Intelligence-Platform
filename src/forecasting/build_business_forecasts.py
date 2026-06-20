@@ -52,6 +52,12 @@ from src.models.production_model import (
     get_production_threshold,
     load_production_bundle,
 )
+from src.models.score_export import (
+    FINAL_SCORE_MANIFEST_PATH,
+    FINAL_SCORE_PATH,
+    load_valid_cached_scores,
+    save_final_champion_scores,
+)
 
 
 # --------------------------------------------------
@@ -63,9 +69,8 @@ EVENTS_PATH = Path("data/raw/retailrocket/events.csv")
 VISITOR_FEATURES_PATH = Path("data/processed/visitor_features.csv")
 
 # Explicit score output from the active production champion.
-PRODUCTION_VISITOR_SCORES_PATH = Path(
-    "data/processed/final_champion_visitor_scores.csv"
-)
+PRODUCTION_VISITOR_SCORES_PATH = FINAL_SCORE_PATH
+PRODUCTION_SCORE_MANIFEST_PATH = FINAL_SCORE_MANIFEST_PATH
 
 REPORT_TABLES_DIR = Path("reports/tables")
 
@@ -248,25 +253,7 @@ def create_failed_result(
 # --------------------------------------------------
 
 def ensure_visitor_scores_exist() -> pd.DataFrame:
-    """Load or create scores from the active production model."""
-
-    # Reuse only the explicitly named final-champion score file.
-    # Older visitor_scores.csv files may belong to another model generation.
-    if PRODUCTION_VISITOR_SCORES_PATH.exists():
-        visitor_scores = pd.read_csv(
-            PRODUCTION_VISITOR_SCORES_PATH
-        )
-
-        required_columns = [
-            "visitorid",
-            "purchase_intent_score",
-        ]
-
-        if all(
-            column in visitor_scores.columns
-            for column in required_columns
-        ):
-            return visitor_scores[required_columns].copy()
+    """Load validated cached scores or regenerate production scores."""
 
     if not VISITOR_FEATURES_PATH.exists():
         raise FileNotFoundError(
@@ -274,21 +261,33 @@ def ensure_visitor_scores_exist() -> pd.DataFrame:
             "Run feature engineering first."
         )
 
+    visitor_features = pd.read_csv(VISITOR_FEATURES_PATH)
     production_bundle = load_production_bundle()
 
-    print(
-        "Creating forecast visitor scores from production model: "
-        f"{production_bundle['generation']}"
+    cached_scores, validation_message = load_valid_cached_scores(
+        production_bundle,
+        visitor_features["visitorid"],
+        score_path=PRODUCTION_VISITOR_SCORES_PATH,
+        manifest_path=PRODUCTION_SCORE_MANIFEST_PATH,
     )
 
-    visitor_features = pd.read_csv(VISITOR_FEATURES_PATH)
-    feature_columns = production_bundle["feature_columns"]
+    required_columns = ["visitorid", "purchase_intent_score"]
 
-    required_columns = ["visitorid"] + feature_columns
+    if cached_scores is not None:
+        print(validation_message)
+        return cached_scores[required_columns].copy()
+
+    print(
+        "Cached final champion scores are not reusable: "
+        f"{validation_message}. Regenerating."
+    )
+
+    feature_columns = production_bundle["feature_columns"]
+    required_feature_columns = ["visitorid"] + feature_columns
 
     missing_columns = [
         column
-        for column in required_columns
+        for column in required_feature_columns
         if column not in visitor_features.columns
     ]
 
@@ -298,36 +297,24 @@ def ensure_visitor_scores_exist() -> pd.DataFrame:
             f"{missing_columns}"
         )
 
-    model = production_bundle["model"]
     X = visitor_features[feature_columns].copy()
 
-    # Score in chunks to avoid memory spikes.
-    chunk_size = 100_000
-    score_chunks = []
-
-    for start_row in range(0, len(X), chunk_size):
-        end_row = start_row + chunk_size
-        chunk_scores = model.predict_proba(
-            X.iloc[start_row:end_row]
-        )[:, 1]
-        score_chunks.append(chunk_scores)
-
-    scores = np.concatenate(score_chunks)
-
-    visitor_scores = visitor_features[["visitorid"]].copy()
-    visitor_scores["purchase_intent_score"] = scores
-
-    PRODUCTION_VISITOR_SCORES_PATH.parent.mkdir(
-        parents=True,
-        exist_ok=True,
+    score_table, _ = save_final_champion_scores(
+        final_model=production_bundle["model"],
+        X=X,
+        visitor_ids=visitor_features["visitorid"],
+        threshold=get_production_threshold(
+            production_bundle["metadata"]
+        ),
+        model_path=production_bundle["model_path"],
+        metadata_path=production_bundle["metadata_path"],
+        score_path=PRODUCTION_VISITOR_SCORES_PATH,
+        manifest_path=PRODUCTION_SCORE_MANIFEST_PATH,
+        model_generation=production_bundle["generation"],
+        chunk_size=100_000,
     )
 
-    visitor_scores.to_csv(
-        PRODUCTION_VISITOR_SCORES_PATH,
-        index=False,
-    )
-
-    return visitor_scores
+    return score_table[required_columns].copy()
 
 
 # --------------------------------------------------

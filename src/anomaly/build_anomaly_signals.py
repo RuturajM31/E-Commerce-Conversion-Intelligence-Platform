@@ -45,7 +45,16 @@ import pandas as pd
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 
-from src.models.production_model import load_production_bundle
+from src.models.production_model import (
+    get_production_threshold,
+    load_production_bundle,
+)
+from src.models.score_export import (
+    FINAL_SCORE_MANIFEST_PATH,
+    FINAL_SCORE_PATH,
+    load_valid_cached_scores,
+    save_final_champion_scores,
+)
 
 
 # --------------------------------------------------
@@ -55,9 +64,8 @@ from src.models.production_model import load_production_bundle
 VISITOR_FEATURES_PATH = Path("data/processed/visitor_features.csv")
 
 # Scores created from the shared active production model.
-PRODUCTION_VISITOR_SCORES_PATH = Path(
-    "data/processed/final_champion_visitor_scores.csv"
-)
+PRODUCTION_VISITOR_SCORES_PATH = FINAL_SCORE_PATH
+PRODUCTION_SCORE_MANIFEST_PATH = FINAL_SCORE_MANIFEST_PATH
 VISITOR_ANOMALY_SCORES_PATH = Path("data/processed/visitor_anomaly_scores.csv")
 
 REPORT_TABLES_DIR = Path("reports/tables")
@@ -136,32 +144,26 @@ def load_visitor_features() -> pd.DataFrame:
 
 
 def create_champion_visitor_scores(visitor_features: pd.DataFrame) -> pd.DataFrame:
-    """Create purchase-intent scores from the active production model."""
-
-    # WHY CREATE THIS FILE:
-    #   Older visitor_scores.csv and champion_visitor_scores.csv may belong
-    #   to earlier model generations.
-    #
-    #   This output explicitly belongs to the shared production resolver,
-    #   which currently selects the final tuned champion.
-
-    if PRODUCTION_VISITOR_SCORES_PATH.exists():
-        scores = pd.read_csv(PRODUCTION_VISITOR_SCORES_PATH)
-
-        required_columns = ["visitorid", "purchase_intent_score"]
-
-        if all(column in scores.columns for column in required_columns):
-            print(
-                "Using existing final champion scores: "
-                f"{PRODUCTION_VISITOR_SCORES_PATH}"
-            )
-            return scores[required_columns].copy()
+    """Load validated cached scores or regenerate production scores."""
 
     production_bundle = load_production_bundle()
 
+    cached_scores, validation_message = load_valid_cached_scores(
+        production_bundle,
+        visitor_features["visitorid"],
+        score_path=PRODUCTION_VISITOR_SCORES_PATH,
+        manifest_path=PRODUCTION_SCORE_MANIFEST_PATH,
+    )
+
+    required_columns = ["visitorid", "purchase_intent_score"]
+
+    if cached_scores is not None:
+        print(validation_message)
+        return cached_scores[required_columns].copy()
+
     print(
-        "Creating visitor scores from production model: "
-        f"{production_bundle['generation']}"
+        "Cached final champion scores are not reusable: "
+        f"{validation_message}. Regenerating."
     )
 
     feature_columns = get_feature_columns(
@@ -169,32 +171,24 @@ def create_champion_visitor_scores(visitor_features: pd.DataFrame) -> pd.DataFra
         production_bundle,
     )
 
-    model = production_bundle["model"]
     X = visitor_features[feature_columns].copy()
 
-    # Predict in chunks so scoring the full visitor table does not
-    # create a large memory spike.
-    chunk_size = 100_000
-    score_chunks = []
-
-    for start in range(0, len(X), chunk_size):
-        end = start + chunk_size
-        chunk_scores = model.predict_proba(X.iloc[start:end])[:, 1]
-        score_chunks.append(chunk_scores)
-
-    purchase_intent_scores = np.concatenate(score_chunks)
-
-    scores = visitor_features[["visitorid"]].copy()
-    scores["purchase_intent_score"] = purchase_intent_scores
-
-    scores.to_csv(PRODUCTION_VISITOR_SCORES_PATH, index=False)
-
-    print(
-        "Saved final champion scores to: "
-        f"{PRODUCTION_VISITOR_SCORES_PATH}"
+    score_table, _ = save_final_champion_scores(
+        final_model=production_bundle["model"],
+        X=X,
+        visitor_ids=visitor_features["visitorid"],
+        threshold=get_production_threshold(
+            production_bundle["metadata"]
+        ),
+        model_path=production_bundle["model_path"],
+        metadata_path=production_bundle["metadata_path"],
+        score_path=PRODUCTION_VISITOR_SCORES_PATH,
+        manifest_path=PRODUCTION_SCORE_MANIFEST_PATH,
+        model_generation=production_bundle["generation"],
+        chunk_size=100_000,
     )
 
-    return scores
+    return score_table[required_columns].copy()
 
 
 def add_percentile_columns(data: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
