@@ -6,14 +6,13 @@
 #   We convert that score into readable business segments.
 
 import pandas as pd
-import joblib
 
-from src.config.paths import PROCESSED_DATA_DIR, TRAINED_MODELS_DIR, TABLES_DIR
+from src.config.paths import PROCESSED_DATA_DIR, TABLES_DIR
+from src.models.production_model import load_production_bundle
 
 
-# Input files
+# Input file
 FEATURE_FILE = PROCESSED_DATA_DIR / "visitor_features.csv"
-MODEL_FILE = TRAINED_MODELS_DIR / "baseline_logistic_regression.joblib"
 
 # Output files
 SCORES_FILE = PROCESSED_DATA_DIR / "visitor_scores.csv"
@@ -22,33 +21,35 @@ SEGMENT_SUMMARY_FILE = TABLES_DIR / "segment_summary.csv"
 
 
 def load_data_and_model():
-    """Load visitor features and trained model."""
+    """Load visitor features and the active production model bundle."""
 
     # Load visitor-level feature data.
     data = pd.read_csv(FEATURE_FILE)
 
-    # Load trained model pipeline.
-    model = joblib.load(MODEL_FILE)
+    # Use the same validated model and metadata pair as the app,
+    # anomaly workflow, and forecasting workflow.
+    production_bundle = load_production_bundle()
 
-    return data, model
+    return data, production_bundle
 
 
-def create_features(data):
-    """Select the same feature columns used during training."""
+def create_features(data, production_bundle):
+    """Select and validate features required by the production model."""
 
-    feature_columns = [
-        "total_events",
-        "view_count",
-        "addtocart_count",
-        "unique_items",
-        "activity_span_ms",
-        "cart_to_view_ratio",
-        "events_per_unique_item",
+    feature_columns = production_bundle["feature_columns"]
+
+    missing_columns = [
+        column
+        for column in feature_columns
+        if column not in data.columns
     ]
 
-    X = data[feature_columns]
+    if missing_columns:
+        raise ValueError(
+            f"Visitor feature data is missing columns: {missing_columns}"
+        )
 
-    return X
+    return data[feature_columns].copy()
 
 
 def assign_segment(score):
@@ -80,13 +81,14 @@ def assign_action(segment):
     return actions[segment]
 
 
-def score_visitors(data, model):
+def score_visitors(data, production_bundle):
     """Create purchase intent score and segment for each visitor."""
 
-    # Select model input features.
-    X = create_features(data)
+    # Select the exact features expected by the production model.
+    X = create_features(data, production_bundle)
 
     # Predict probability of conversion.
+    model = production_bundle["model"]
     data["purchase_intent_score"] = model.predict_proba(X)[:, 1]
 
     # Convert probability into readable segment.
@@ -137,11 +139,11 @@ def save_outputs(scored_data, segment_summary):
 def main():
     """Run full visitor scoring and segmentation workflow."""
 
-    # Load data and trained model.
-    data, model = load_data_and_model()
+    # Load data and the shared production model bundle.
+    data, production_bundle = load_data_and_model()
 
     # Score visitors and assign segments.
-    scored_data = score_visitors(data, model)
+    scored_data = score_visitors(data, production_bundle)
 
     # Create business summary by segment.
     segment_summary = create_segment_summary(scored_data)
