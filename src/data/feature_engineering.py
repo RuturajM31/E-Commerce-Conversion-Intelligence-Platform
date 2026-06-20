@@ -119,11 +119,16 @@ def add_derived_features(data: pd.DataFrame) -> pd.DataFrame:
     # Keep the current training formulas for model compatibility.
     # Adding 1 prevents division by zero and ensures that training,
     # single prediction, and batch prediction use identical logic.
+
+    # Cart-to-view ratio shows how strongly viewing behaviour turns into
+    # cart activity. A higher value can indicate stronger buying interest.
     feature_data["cart_to_view_ratio"] = (
         feature_data["addtocart_count"]
         / (feature_data["view_count"] + 1)
     )
 
+    # Events per unique item shows repeat interaction with the same products.
+    # A higher value can indicate focused or repeated product interest.
     feature_data["events_per_unique_item"] = (
         feature_data["total_events"]
         / (feature_data["unique_items"] + 1)

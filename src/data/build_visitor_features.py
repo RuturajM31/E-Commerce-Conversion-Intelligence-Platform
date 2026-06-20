@@ -13,6 +13,7 @@
 import pandas as pd
 
 from src.config.paths import RAW_DATA_DIR, PROCESSED_DATA_DIR
+from src.data.feature_engineering import add_derived_features
 
 
 # Input file: raw RetailRocket events data
@@ -85,13 +86,10 @@ def create_behavior_features(events):
     
     features["activity_span_ms"] = features["last_event_time"] - features["first_event_time"]
 
-    # Cart-to-view ratio shows buying interest.
-    # We add 1 to avoid division by zero.
-    
-    features["cart_to_view_ratio"] = features["addtocart_count"] / (features["view_count"] + 1)
-
-    # Events per item shows repeat interest in the same products.
-    features["events_per_unique_item"] = features["total_events"] / (features["unique_items"] + 1)
+    # Add the shared derived features used by training and prediction.
+    # Keeping these formulas in one module prevents score differences between
+    # the dataset builder, single prediction, and batch scoring.
+    features = add_derived_features(features)
 
     return features
 

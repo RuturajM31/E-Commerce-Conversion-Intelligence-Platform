@@ -25,6 +25,11 @@ import joblib
 import pandas as pd
 import streamlit as st
 
+from src.data.feature_engineering import (
+    build_single_visitor_features,
+    prepare_model_features,
+)
+
 
 # --------------------------------------------------
 # 1. CORE PROJECT PATHS
@@ -274,28 +279,17 @@ def build_model_input(
 ) -> pd.DataFrame:
     """Create one visitor input row for model scoring."""
 
-    # Avoid division by zero when we create derived ratio features.
-    safe_view_count = max(float(view_count), 1.0)
-    safe_unique_items = max(float(unique_items), 1.0)
-
-    cart_to_view_ratio = float(addtocart_count) / safe_view_count
-    events_per_unique_item = float(total_events) / safe_unique_items
-
-    input_data = pd.DataFrame(
-        [
-            {
-                "total_events": float(total_events),
-                "view_count": float(view_count),
-                "addtocart_count": float(addtocart_count),
-                "unique_items": float(unique_items),
-                "activity_span_ms": float(activity_span_ms),
-                "cart_to_view_ratio": cart_to_view_ratio,
-                "events_per_unique_item": events_per_unique_item,
-            }
-        ]
+    # Use the same feature formulas as the training pipeline.
+    # This prevents the same visitor receiving different offline and app scores.
+    input_data = build_single_visitor_features(
+        total_events=total_events,
+        view_count=view_count,
+        addtocart_count=addtocart_count,
+        unique_items=unique_items,
+        activity_span_ms=activity_span_ms,
     )
 
-    # The model expects the same column order used during training.
+    # Keep the exact feature order expected by the active model metadata.
     feature_columns = get_feature_columns()
 
     return input_data[feature_columns]
@@ -344,34 +338,11 @@ def validate_batch_input(data: pd.DataFrame) -> Tuple[bool, List[str]]:
 def prepare_batch_model_input(data: pd.DataFrame) -> pd.DataFrame:
     """Prepare many visitor rows for model scoring."""
 
-    batch_data = data.copy()
+    # The shared function validates numeric values and creates the same
+    # derived features used by both training and single prediction.
+    batch_data = prepare_model_features(data)
 
-    base_columns = [
-        "total_events",
-        "view_count",
-        "addtocart_count",
-        "unique_items",
-        "activity_span_ms",
-    ]
-
-    for column in base_columns:
-        batch_data[column] = pd.to_numeric(
-            batch_data[column],
-            errors="coerce",
-        )
-
-    # Create the same derived features used during training.
-    safe_view_count = batch_data["view_count"].clip(lower=1)
-    safe_unique_items = batch_data["unique_items"].clip(lower=1)
-
-    batch_data["cart_to_view_ratio"] = (
-        batch_data["addtocart_count"] / safe_view_count
-    )
-
-    batch_data["events_per_unique_item"] = (
-        batch_data["total_events"] / safe_unique_items
-    )
-
+    # Keep the exact feature order expected by the active model metadata.
     feature_columns = get_feature_columns()
 
     return batch_data[feature_columns]
