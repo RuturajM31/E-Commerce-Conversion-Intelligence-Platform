@@ -605,8 +605,8 @@ def predict_scores(model, X_test: pd.DataFrame) -> np.ndarray:
 # --------------------------------------------------
 
 def evaluate_existing_champion(
-    X_test: pd.DataFrame,
-    y_test: pd.Series,
+    X_validation: pd.DataFrame,
+    y_validation: pd.Series,
 ) -> Tuple[Optional[object], Optional[Dict[str, float]], Optional[pd.DataFrame]]:
     """Load and evaluate the already-existing champion model.
 
@@ -622,16 +622,19 @@ def evaluate_existing_champion(
 
     model = joblib.load(CURRENT_CHAMPION_MODEL_PATH)
 
-    y_score = predict_scores(model, X_test)
+    y_score = predict_scores(model, X_validation)
 
     summary, threshold_table = summarize_model_performance(
         model_name="Existing Champion Model",
-        y_true=y_test,
+        y_true=y_validation,
         y_score=y_score,
         training_rows=0,
-        model_family="Existing artifact",
-        notes="Previously selected champion model loaded from models/trained/champion_model.joblib.",
-        deployable=True,
+        model_family="Legacy artifact",
+        notes=(
+            "Legacy champion trained before leakage remediation. "
+            "Evaluated for reference only and excluded from final selection."
+        ),
+        deployable=False,
     )
 
     return model, summary, threshold_table
@@ -960,8 +963,8 @@ def load_test_anomaly_flags(test_visitor_ids: pd.Series) -> pd.Series:
 
 def run_anomaly_sensitivity_check(
     model_scores: Dict[str, np.ndarray],
-    y_test: pd.Series,
-    test_visitor_ids: pd.Series,
+    y_validation: pd.Series,
+    validation_visitor_ids: pd.Series,
 ) -> pd.DataFrame:
     """Compare model performance on all visitors vs non-anomalous visitors.
 
@@ -969,7 +972,7 @@ def run_anomaly_sensitivity_check(
         We want to know if a model only performs well because of extreme visitors.
     """
 
-    anomaly_flags = load_test_anomaly_flags(test_visitor_ids)
+    anomaly_flags = load_test_anomaly_flags(validation_visitor_ids)
 
     normal_mask = ~anomaly_flags
 
@@ -981,7 +984,7 @@ def run_anomaly_sensitivity_check(
                 {
                     "model_name": "not_available",
                     "evaluation_group": "anomaly_file_missing_or_no_flags",
-                    "test_rows": len(y_test),
+                    "validation_rows": len(y_validation),
                     "pr_auc": np.nan,
                     "roc_auc": np.nan,
                     "note": "Anomaly file was missing or no anomaly flags were available.",
@@ -990,28 +993,28 @@ def run_anomaly_sensitivity_check(
         )
 
     for model_name, y_score in model_scores.items():
-        all_pr_auc = average_precision_score(y_test, y_score)
-        normal_pr_auc = average_precision_score(y_test[normal_mask], y_score[normal_mask])
+        all_pr_auc = average_precision_score(y_validation, y_score)
+        normal_pr_auc = average_precision_score(y_validation[normal_mask], y_score[normal_mask])
 
-        all_roc_auc = roc_auc_score(y_test, y_score)
-        normal_roc_auc = roc_auc_score(y_test[normal_mask], y_score[normal_mask])
+        all_roc_auc = roc_auc_score(y_validation, y_score)
+        normal_roc_auc = roc_auc_score(y_validation[normal_mask], y_score[normal_mask])
 
         rows.append(
             {
                 "model_name": model_name,
-                "evaluation_group": "all_test_visitors",
-                "test_rows": len(y_test),
+                "evaluation_group": "all_validation_visitors",
+                "validation_rows": len(y_validation),
                 "pr_auc": all_pr_auc,
                 "roc_auc": all_roc_auc,
-                "note": "Performance on full test set.",
+                "note": "Performance on full validation set.",
             }
         )
 
         rows.append(
             {
                 "model_name": model_name,
-                "evaluation_group": "non_anomalous_test_visitors",
-                "test_rows": int(normal_mask.sum()),
+                "evaluation_group": "non_anomalous_validation_visitors",
+                "validation_rows": int(normal_mask.sum()),
                 "pr_auc": normal_pr_auc,
                 "roc_auc": normal_roc_auc,
                 "note": "Performance after removing anomaly-flagged visitors.",
@@ -1277,8 +1280,8 @@ def main() -> None:
     )
 
     split_data = create_split(
-        X=X_train,
-        y=y_train,
+        X=X,
+        y=y,
         visitor_ids=visitor_ids,
         split_labels=data[SPLIT_COLUMN],
     )
