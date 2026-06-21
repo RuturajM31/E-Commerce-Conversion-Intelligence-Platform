@@ -58,14 +58,8 @@ def main() -> None:
         lineage["registered_model_alias"],
     )
 
-    # Thetracking_uri"])
-
-    client = MlflowClient(
-        tracking_uri=lineage["tracking_uri"],
-        registry_uri=lineage["tracking_uri"],
-    )
-
-    # Resolve the model currently alias must point to the same run and version saved in lineage.
+    # The champion alias must point to the same run and version
+    # recorded in the saved MLflow lineage file.
     assert model_version.run_id == lineage["run_id"]
     assert str(model_version.version) == str(
         lineage["registered_model_version"]
