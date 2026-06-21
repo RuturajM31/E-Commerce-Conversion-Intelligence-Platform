@@ -1,0 +1,66 @@
+{
+  "category": "ML Visual Intelligence",
+  "package": "Threshold decisions",
+  "sources": [
+    "reports/tables/final_true_champion_thresholds.csv",
+    "models/metadata/final_champion_metadata.json"
+  ],
+  "artifacts": {
+    "MLV-B01": "reports/visuals/ml_visual_intelligence/threshold_decisions/mlv-b01_threshold_decision_studio.png",
+    "MLV-B04": "reports/visuals/ml_visual_intelligence/threshold_decisions/mlv-b04_confusion_matrix_decision_map.png"
+  },
+  "supporting_files": {
+    "selected_threshold_evidence": "reports/visuals/ml_visual_intelligence/threshold_decisions/selected_threshold_evidence.csv",
+    "confusion_counts": "reports/visuals/ml_visual_intelligence/threshold_decisions/confusion_matrix_counts.csv",
+    "insights": "reports/visuals/ml_visual_intelligence/threshold_decisions/threshold_decision_insights.md"
+  },
+  "selected_threshold": 0.98,
+  "confusion_counts": {
+    "true_positive": 66,
+    "false_positive": 165,
+    "false_negative": 252,
+    "true_negative": 248156,
+    "total_rows": 248639,
+    "positive_rows": 318,
+    "negative_rows": 248321,
+    "predicted_positive_rows": 231,
+    "predicted_positive_rate": 0.0009290577906120922,
+    "precision": 0.2857142857142857,
+    "recall": 0.20754716981132076,
+    "f1_score": 0.24043715846994534
+  },
+  "qa": {
+    "MLV-B01": {
+      "passed": true,
+      "width_px": 2357,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-B04": {
+      "passed": true,
+      "width_px": 2336,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    }
+  }
+}
