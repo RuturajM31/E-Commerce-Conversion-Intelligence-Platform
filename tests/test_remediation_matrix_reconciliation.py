@@ -42,28 +42,63 @@ def test_core_remediation_items_are_resolved() -> None:
 
     states = master_states()
     required = {
-        "GIT-06", "STR-01", "COM-01", "DATA-03", "FEAT-06",
-        "LEAK-10", "MOD-04", "SCORE-01", "PROD-08", "DOWN-03",
-        "MON-16", "APP-02", "DEP-07", "TEST-10", "CI-06",
-        "DOCK-10", "K8S-12", "OUT-05", "DOC-19",
+        "GIT-06",
+        "STR-01",
+        "COM-01",
+        "DATA-03",
+        "FEAT-06",
+        "LEAK-10",
+        "MOD-04",
+        "SCORE-01",
+        "PROD-08",
+        "DOWN-03",
+        "MON-16",
+        "APP-02",
+        "DEP-07",
+        "TEST-10",
+        "CI-06",
+        "DOCK-10",
+        "K8S-12",
+        "OUT-05",
+        "DOC-19",
     }
 
     missing = sorted(item_id for item_id in required if not states.get(item_id))
     assert not missing, f"Expected resolved master items are still open: {missing}"
 
 
-def test_final_qa_and_real_gaps_remain_open() -> None:
-    """The first pass must not pretend final QA or merge is finished."""
+def test_local_closure_keeps_only_real_future_gates_open() -> None:
+    """Only Git review, approval, and merge should remain open."""
 
     states = master_states()
+
     expected_open = {
-        "GIT-09", "DATA-12", "MOD-09", "DEP-10", "SEC-10",
-        "TEST-16", "CI-10", "CI-11", "CI-13", "DOC-14", "DOC-20",
-        "QA-01", "QA-13", "QA-14",
+        "GIT-09",
+        "QA-13",
+        "QA-14",
     }
 
     wrongly_closed = sorted(item_id for item_id in expected_open if states.get(item_id))
-    assert not wrongly_closed, f"Final or unverified items were closed: {wrongly_closed}"
+
+    assert not wrongly_closed, "Future gates were closed too early: " f"{wrongly_closed}"
+
+    expected_closed = {
+        "DATA-12",
+        "MOD-09",
+        "DEP-10",
+        "SEC-10",
+        "TEST-16",
+        "CI-10",
+        "CI-11",
+        "CI-13",
+        "DOC-14",
+        "DOC-20",
+        "QA-01",
+    }
+
+    still_open = sorted(item_id for item_id in expected_closed if not states.get(item_id))
+
+    assert not still_open, "Completed local remediation rows remain open: " f"{still_open}"
 
 
 def test_evidently_and_delayed_label_rows_are_current() -> None:
@@ -89,25 +124,42 @@ def test_later_cloud_work_is_deferred() -> None:
         assert statuses[f"STDEP-{number:02d}"] == "DEFERRED"
 
     for item_id in [
-        "GRA-03", "GRA-04", "GRA-05", "GRA-06", "GRA-07",
-        "GRA-08", "GRA-10", "GRA-11", "GRA-12",
+        "GRA-03",
+        "GRA-04",
+        "GRA-05",
+        "GRA-06",
+        "GRA-07",
+        "GRA-08",
+        "GRA-10",
+        "GRA-11",
+        "GRA-12",
     ]:
         assert statuses[item_id] == "DEFERRED"
 
 
 def test_new_ci_evidence_is_recorded() -> None:
-    """The new lightweight CI controls should be marked complete."""
+    """All implemented CI controls should be marked complete."""
 
     statuses = zero_statuses()
 
-    for item_id in [
-        "CI-03", "CI-05", "CI-06", "CI-07", "CI-09", "CI-10",
-        "CI-11", "CI-12", "CI-13", "CI-14", "CI-15",
-    ]:
-        assert statuses[item_id] == "COMPLETED"
+    completed_items = {
+        "CI-03",
+        "CI-04",
+        "CI-05",
+        "CI-06",
+        "CI-07",
+        "CI-08",
+        "CI-09",
+        "CI-10",
+        "CI-11",
+        "CI-12",
+        "CI-13",
+        "CI-14",
+        "CI-15",
+    }
 
-    assert statuses["CI-04"] == "NOT STARTED"
-    assert statuses["CI-08"] == "NOT STARTED"
+    for item_id in completed_items:
+        assert statuses[item_id] == "COMPLETED"
 
 
 def test_reconciliation_report_exists() -> None:

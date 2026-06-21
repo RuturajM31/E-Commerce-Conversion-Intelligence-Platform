@@ -203,3 +203,7 @@ monitoring/snapshots/evidently_monitoring_summary.json
 
 # Local QA and dependency-validation environments
 .venv-security-upgrade/
+
+# Keep the compact representative dataset used by GitHub CI
+!data/sample/
+!data/sample/visitor_features_sample.csv

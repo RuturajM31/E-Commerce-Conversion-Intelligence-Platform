@@ -138,8 +138,8 @@ jobs:
       # Check the critical CI and smoke-training files.
       - name: Run critical formatting and lint checks
         run: |
-          python -m ruff check scripts/audit_security_repro.py scripts/run_smoke_training.py tests/test_audit_security_repro.py tests/test_smoke_training.py tests/test_security_ci_closure.py --select E9,F63,F7,F82
-          python -m ruff format --check scripts/audit_security_repro.py scripts/run_smoke_training.py tests/test_audit_security_repro.py tests/test_smoke_training.py tests/test_security_ci_closure.py
+          python -m ruff check scripts/audit_security_repro.py scripts/run_smoke_training.py scripts/prepare_ci_test_artifacts.py tests/test_audit_security_repro.py tests/test_smoke_training.py tests/test_security_ci_closure.py tests/test_prepare_ci_test_artifacts.py --select E9,F63,F7,F82
+          python -m ruff format --check scripts/audit_security_repro.py scripts/run_smoke_training.py scripts/prepare_ci_test_artifacts.py tests/test_audit_security_repro.py tests/test_smoke_training.py tests/test_security_ci_closure.py tests/test_prepare_ci_test_artifacts.py
 
       # Scan pinned runtime dependencies for published vulnerabilities.
       - name: Run dependency vulnerability scan
@@ -156,6 +156,13 @@ jobs:
         run: |
           python scripts/run_smoke_training.py \
             --output reports/qa/smoke_training_result.json
+
+      # Create small disposable artifacts because large local models and generated CSVs are intentionally not stored in Git.
+      - name: Prepare CI-only model and report fixtures
+        env:
+          CI: "true"
+        run: |
+          python scripts/prepare_ci_test_artifacts.py
 
       - name: Validate MLflow integration
         if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
