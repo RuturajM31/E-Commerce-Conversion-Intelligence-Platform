@@ -1,0 +1,101 @@
+{
+  "category": "ML Visual Intelligence",
+  "package": "Robustness and stability",
+  "champion_name": "Tuned XGBoost",
+  "challenger_name": "Tuned Random Forest",
+  "seed_count": 3,
+  "artifacts": {
+    "MLV-F01": "reports/visuals/ml_visual_intelligence/robustness/mlv-f01_model_robustness_heatmap.png",
+    "MLV-F02": "reports/visuals/ml_visual_intelligence/robustness/mlv-f02_metric_variability_distribution.png",
+    "MLV-F03": "reports/visuals/ml_visual_intelligence/robustness/mlv-f03_champion_stability_profile.png",
+    "MLV-F04": "reports/visuals/ml_visual_intelligence/robustness/mlv-f04_sensitivity_tornado.png",
+    "MLV-F05": "reports/visuals/ml_visual_intelligence/robustness/mlv-f05_performance_degradation_waterfall.png"
+  },
+  "supporting_files": {
+    "stability_summary": "reports/visuals/ml_visual_intelligence/robustness/stability_summary.csv",
+    "sensitivity_pairs": "reports/visuals/ml_visual_intelligence/robustness/sensitivity_pairs.csv",
+    "insights": "reports/visuals/ml_visual_intelligence/robustness/robustness_insights.md"
+  },
+  "qa": {
+    "MLV-F01": {
+      "passed": true,
+      "width_px": 2251,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-F02": {
+      "passed": true,
+      "width_px": 2276,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-F03": {
+      "passed": true,
+      "width_px": 2203,
+      "height_px": 1358,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-F04": {
+      "passed": true,
+      "width_px": 2294,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-F05": {
+      "passed": true,
+      "width_px": 2280,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    }
+  }
+}
