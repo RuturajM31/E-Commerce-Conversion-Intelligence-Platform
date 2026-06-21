@@ -3,10 +3,20 @@ name: CI - E-Commerce Conversion Intelligence Platform
 # Run validation on every pushed branch and on pull requests to main.
 # This workflow validates deployment assets but does not deploy production.
 "on":
+  # Run normal checks whenever code is pushed.
   push:
+
+  # Check changes before they are merged into main.
   pull_request:
     branches:
       - main
+
+  # Add a Run workflow button in GitHub.
+  workflow_dispatch:
+
+  # Run the light MLOps checks once each week.
+  schedule:
+    - cron: "17 5 * * 1"
 
 permissions:
   contents: read
@@ -115,6 +125,29 @@ jobs:
             tests/test_production_performance.py \
             tests/test_delayed_label_evaluation_runner.py \
             -q -ra -p no:cacheprovider
+
+      # Run this heavier check only from the manual button or weekly schedule.
+      - name: Validate MLflow integration
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          MLFLOW_TRACKING_URI: "sqlite:///ci_mlflow.db"
+        run: |
+          python -m venv .ci-mlflow
+          .ci-mlflow/bin/python -m pip install --upgrade pip
+          .ci-mlflow/bin/python -m pip install -r requirements-mlflow.txt pytest
+          .ci-mlflow/bin/python -m pytest             tests/test_mlflow_bridge.py             -q -ra -p no:cacheprovider
+
+      # Run this heavier check only from the manual button or weekly schedule.
+      - name: Validate Evidently integration
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python -m venv .ci-evidently
+          .ci-evidently/bin/python -m pip install --upgrade pip
+          .ci-evidently/bin/python -m pip install -r requirements-evidently.txt pytest
+          .ci-evidently/bin/python -m pytest             tests/test_evidently_bridge.py             tests/test_drift_summary.py             -q -ra -p no:cacheprovider
 
       # Step 11: Run the automated test suite.
       # This protects the project from broken logic entering GitHub.
@@ -252,3 +285,16 @@ jobs:
 
           print("All Grafana dashboard JSON files are valid.")
           PY
+
+      # Keep small failure files briefly so problems are easier to inspect.
+      - name: Upload compact failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-failure-evidence-${{ github.run_id }}
+          path: |
+            reports/qa/
+            reports/monitoring/
+            reports/visuals/ml_visual_intelligence/**/**manifest*.json
+          if-no-files-found: ignore
+          retention-days: 7
