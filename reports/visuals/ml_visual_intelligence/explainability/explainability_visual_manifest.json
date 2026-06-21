@@ -1,0 +1,132 @@
+{
+  "category": "ML Visual Intelligence",
+  "package": "Explainability",
+  "source_rows": 78998,
+  "sample_rows": 2504,
+  "interaction_rows": 600,
+  "model_name": "Tuned XGBoost",
+  "features": [
+    "total_events",
+    "view_count",
+    "addtocart_count",
+    "unique_items",
+    "activity_span_ms",
+    "cart_to_view_ratio",
+    "events_per_unique_item"
+  ],
+  "missing_counts": {},
+  "dependence_feature": "total_events",
+  "dependence_partner": "activity_span_ms",
+  "artifacts": {
+    "MLV-E01": "reports/visuals/ml_visual_intelligence/explainability/mlv-e01_global_shap_beeswarm.png",
+    "MLV-E02": "reports/visuals/ml_visual_intelligence/explainability/mlv-e02_global_feature_impact_ranking.png",
+    "MLV-E03": "reports/visuals/ml_visual_intelligence/explainability/mlv-e03_shap_dependence_plot.png",
+    "MLV-E04": "reports/visuals/ml_visual_intelligence/explainability/mlv-e04_visitor_level_waterfall.png",
+    "MLV-E05": "reports/visuals/ml_visual_intelligence/explainability/mlv-e05_representative_visitor_decision_paths.png",
+    "MLV-E06": "reports/visuals/ml_visual_intelligence/explainability/mlv-e06_feature_interaction_heatmap.png"
+  },
+  "supporting_files": {
+    "feature_impact": "reports/visuals/ml_visual_intelligence/explainability/global_feature_impact.csv",
+    "representatives": "reports/visuals/ml_visual_intelligence/explainability/representative_visitors.csv",
+    "interaction_matrix": "reports/visuals/ml_visual_intelligence/explainability/interaction_strength_matrix.csv",
+    "insights": "reports/visuals/ml_visual_intelligence/explainability/explainability_insights.md"
+  },
+  "qa": {
+    "MLV-E01": {
+      "passed": true,
+      "width_px": 2305,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-E02": {
+      "passed": true,
+      "width_px": 2203,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-E03": {
+      "passed": true,
+      "width_px": 2291,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-E04": {
+      "passed": true,
+      "width_px": 2235,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-E05": {
+      "passed": true,
+      "width_px": 2483,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-E06": {
+      "passed": true,
+      "width_px": 2289,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    }
+  }
+}
