@@ -1,10 +1,10 @@
 # Streamlit Visual Intelligence Enhancement Coverage Matrix
 
-**Project:** E-Commerce Conversion Intelligence Platform  
-**Planned repository path:** `docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_COVERAGE_MATRIX.md`  
-**Companion handoff:** `docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_HANDOFF.md`  
-**Matrix version:** 1.0  
-**Created:** 21 June 2026  
+**Project:** E-Commerce Conversion Intelligence Platform
+**Planned repository path:** `docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_COVERAGE_MATRIX.md`
+**Companion handoff:** `docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_HANDOFF.md`
+**Matrix version:** 1.0
+**Created:** 21 June 2026
 
 ## Controlling decision
 
