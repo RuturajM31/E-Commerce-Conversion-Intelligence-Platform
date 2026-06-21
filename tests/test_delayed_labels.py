@@ -355,4 +355,3 @@ def test_invalid_label_row_is_reported_not_joined():
     assert matured_rows == []
     assert report["rejected_invalid_rows"] == 1
     assert report["rejections"][0]["reason"] == "invalid_label"
-
