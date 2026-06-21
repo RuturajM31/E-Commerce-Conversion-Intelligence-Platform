@@ -34,3 +34,31 @@ TABLES_DIR = REPORTS_DIR / "tables"
 # Log and monitoring folders
 LOGS_DIR = PROJECT_ROOT / "logs"
 MONITORING_DIR = PROJECT_ROOT / "monitoring"
+
+# Prediction monitoring folders
+# prediction_logs stores every production scoring record.
+PREDICTION_LOGS_DIR = MONITORING_DIR / "prediction_logs"
+
+# delayed_labels stores future conversion outcomes and evaluation outputs.
+DELAYED_LABELS_DIR = MONITORING_DIR / "delayed_labels"
+
+
+# Delayed-label monitoring files
+# The ledger links each prediction to its model, threshold, and scoring window.
+PREDICTION_LEDGER_PATH = PREDICTION_LOGS_DIR / "prediction_ledger.csv"
+
+# This is the controlled input file for future conversion outcomes.
+DELAYED_LABEL_INPUT_PATH = DELAYED_LABELS_DIR / "delayed_labels.csv"
+
+# This file stores predictions joined safely to matured outcomes.
+MATURED_OUTCOMES_PATH = DELAYED_LABELS_DIR / "matured_prediction_outcomes.csv"
+
+# This JSON file stores performance metrics for matured predictions only.
+PRODUCTION_PERFORMANCE_PATH = (
+    DELAYED_LABELS_DIR / "production_performance_snapshot.json"
+)
+
+# This JSON file records rejected, duplicate, premature, or invalid labels.
+DELAYED_LABEL_VALIDATION_PATH = (
+    DELAYED_LABELS_DIR / "delayed_label_validation_report.json"
+)
