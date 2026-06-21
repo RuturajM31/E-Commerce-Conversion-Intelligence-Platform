@@ -103,6 +103,19 @@ jobs:
           bash -n scripts/k8s_demo_start.sh
           bash -n scripts/k8s_demo_stop.sh
 
+      # Run delayed-label monitoring tests separately.
+      # A separate step makes production-outcome failures easy to identify.
+      - name: Validate delayed-label monitoring
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python -m pytest \
+            tests/test_prediction_ledger.py \
+            tests/test_delayed_labels.py \
+            tests/test_production_performance.py \
+            tests/test_delayed_label_evaluation_runner.py \
+            -q -ra -p no:cacheprovider
+
       # Step 11: Run the automated test suite.
       # This protects the project from broken logic entering GitHub.
       - name: Run automated tests
