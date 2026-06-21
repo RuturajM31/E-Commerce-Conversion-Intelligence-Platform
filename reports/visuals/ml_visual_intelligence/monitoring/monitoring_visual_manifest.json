@@ -1,7 +1,7 @@
 {
   "category": "ML Visual Intelligence",
   "package": "Production monitoring",
-  "generated_at_utc": "2026-06-21T16:46:03.684752+00:00",
+  "generated_at_utc": "2026-06-21T17:39:11.201557+00:00",
   "kpis": {
     "score_rows": 78998,
     "prediction_rows": 9,
@@ -52,7 +52,7 @@
   "qa": {
     "MLV-J04": {
       "passed": true,
-      "width_px": 2600,
+      "width_px": 2302,
       "height_px": 1350,
       "checks": {
         "positive_canvas_size": true,

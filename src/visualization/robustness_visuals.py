@@ -8,6 +8,7 @@ from typing import Any
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.gridspec import GridSpec
 from matplotlib.patches import Rectangle
 import numpy as np
 import pandas as pd
@@ -262,18 +263,18 @@ def create_robustness_heatmap(
     )
 
 
+
 def create_variability_distribution(
     bundle: RobustnessBundle,
     output_path: Path,
 ) -> VisualQAResult:
-    """Create F02 seed variability ranges and observations."""
+    """Create F02 seed variability ranges without annotation collisions."""
 
     title = "MLV-F02 | Metric Variability Distribution"
     subtitle = (
-        "Seed-level observations, min–max range, and mean for PR-AUC and "
+        "Seed-level observations, min-max range, and mean for PR-AUC and "
         f"ROC-AUC; evidence is limited to {bundle.seed_count} seeds per model."
     )
-
     model_order = (
         bundle.stability_summary["model_name"]
         .astype(str)
@@ -297,34 +298,30 @@ def create_variability_distribution(
     fig.subplots_adjust(
         left=0.17,
         right=0.97,
-        bottom=0.13,
+        bottom=0.18,
         top=0.78,
-        wspace=0.24,
+        wspace=0.28,
     )
 
     for axis, metric, label in [
         (axes[0], "pr_auc", "PR-AUC"),
         (axes[1], "roc_auc", "ROC-AUC"),
     ]:
-        for y_position, model_name in enumerate(
-            model_order
-        ):
+        all_values = bundle.stability[metric].to_numpy(dtype=float)
+        x_span = max(float(all_values.max() - all_values.min()), 1e-4)
+
+        for y_position, model_name in enumerate(model_order):
             model_rows = bundle.stability.loc[
-                bundle.stability["model_name"]
-                == model_name
+                bundle.stability["model_name"] == model_name
             ]
-            values = model_rows[metric].to_numpy(
-                dtype=float
-            )
+            values = model_rows[metric].to_numpy(dtype=float)
             minimum = float(values.min())
             maximum = float(values.max())
             mean = float(values.mean())
             colour = (
                 COLORS["blue"]
                 if model_name == bundle.champion_name
-                else MODEL_PALETTE[
-                    y_position % len(MODEL_PALETTE)
-                ]
+                else MODEL_PALETTE[y_position % len(MODEL_PALETTE)]
             )
 
             axis.plot(
@@ -354,12 +351,14 @@ def create_variability_distribution(
                 linewidth=1.3,
                 zorder=5,
             )
+
+            # Place every range label above its model line, never near the x-axis.
             axis.text(
-                maximum,
-                y_position + 0.23,
+                maximum + x_span * 0.015,
+                y_position - 0.24,
                 f"Range {maximum - minimum:.3f}",
-                ha="right",
-                va="bottom",
+                ha="left",
+                va="center",
                 fontsize=8,
                 color=COLORS["grey_700"],
             )
@@ -368,7 +367,8 @@ def create_variability_distribution(
             np.arange(len(model_order)),
             labels=model_order,
         )
-        axis.invert_yaxis()
+        axis.set_ylim(len(model_order) - 0.45, -0.55)
+        axis.margins(x=0.10)
         axis.set_title(
             label,
             loc="left",
@@ -377,7 +377,7 @@ def create_variability_distribution(
             color=COLORS["navy"],
             pad=10,
         )
-        axis.set_xlabel(label)
+        axis.set_xlabel(label, labelpad=10)
         axis.set_ylabel("")
         style_axes(axis)
 
@@ -437,45 +437,29 @@ def build_stability_profile(
     return summary
 
 
+
 def create_champion_stability_profile(
     bundle: RobustnessBundle,
     output_path: Path,
 ) -> VisualQAResult:
-    """Create F03 champion-versus-challenger stability profile."""
+    """Create F03 with direct model labels and no footer collisions."""
 
     title = "MLV-F03 | Champion Stability Profile"
     subtitle = (
         "Champion versus strongest challenger on relative mean performance "
         f"and seed consistency; scores are relative within the {bundle.seed_count}-seed candidate set."
     )
-
     profile = build_stability_profile(bundle)
     selected = profile.loc[
         profile["model_name"].isin(
-            [
-                bundle.champion_name,
-                bundle.challenger_name,
-            ]
+            [bundle.champion_name, bundle.challenger_name]
         )
     ].set_index("model_name")
-
     dimensions = [
-        (
-            "pr_auc_performance_score",
-            "Mean PR-AUC",
-        ),
-        (
-            "pr_auc_consistency_score",
-            "PR-AUC consistency",
-        ),
-        (
-            "roc_auc_performance_score",
-            "Mean ROC-AUC",
-        ),
-        (
-            "roc_auc_consistency_score",
-            "ROC-AUC consistency",
-        ),
+        ("pr_auc_performance_score", "Mean PR-AUC"),
+        ("pr_auc_consistency_score", "PR-AUC consistency"),
+        ("roc_auc_performance_score", "Mean ROC-AUC"),
+        ("roc_auc_consistency_score", "ROC-AUC consistency"),
     ]
 
     fig, ax = create_figure()
@@ -491,34 +475,19 @@ def create_champion_stability_profile(
         fig,
         left=0.24,
         right=0.94,
-        bottom=0.16,
-        top=0.78,
+        bottom=0.15,
+        top=0.72,
     )
 
     y_positions = np.arange(len(dimensions))
-
-    champion_values = np.array(
-        [
-            float(
-                selected.loc[
-                    bundle.champion_name,
-                    column,
-                ]
-            )
-            for column, _ in dimensions
-        ]
-    )
-    challenger_values = np.array(
-        [
-            float(
-                selected.loc[
-                    bundle.challenger_name,
-                    column,
-                ]
-            )
-            for column, _ in dimensions
-        ]
-    )
+    champion_values = np.array([
+        float(selected.loc[bundle.champion_name, column])
+        for column, _ in dimensions
+    ])
+    challenger_values = np.array([
+        float(selected.loc[bundle.challenger_name, column])
+        for column, _ in dimensions
+    ])
 
     for y_position, champion_value, challenger_value in zip(
         y_positions,
@@ -536,67 +505,87 @@ def create_champion_stability_profile(
     ax.scatter(
         champion_values,
         y_positions,
-        s=140,
+        s=145,
         color=COLORS["blue"],
         edgecolor=COLORS["navy"],
         linewidth=1.5,
-        label=bundle.champion_name,
         zorder=3,
     )
     ax.scatter(
         challenger_values,
         y_positions,
-        s=115,
+        s=120,
         color=COLORS["teal"],
         edgecolor=COLORS["white"],
         linewidth=1.3,
-        label=bundle.challenger_name,
         zorder=3,
     )
 
-    for y_position, value in enumerate(
-        champion_values
+    for y_position, champion_value, challenger_value in zip(
+        y_positions,
+        champion_values,
+        challenger_values,
     ):
-        ax.text(
-            value,
-            y_position - 0.18,
-            f"{value:.0f}",
-            ha="center",
-            va="bottom",
-            fontsize=8,
-            fontweight="bold",
-            color=COLORS["navy"],
-        )
-
-    for y_position, value in enumerate(
-        challenger_values
-    ):
-        ax.text(
-            value,
-            y_position + 0.18,
-            f"{value:.0f}",
-            ha="center",
-            va="top",
-            fontsize=8,
-            color=COLORS["grey_700"],
-        )
+        if np.isclose(champion_value, challenger_value, atol=0.6):
+            ax.text(
+                min(champion_value + 1.8, 108.0),
+                y_position,
+                f"Both {champion_value:.0f}",
+                ha="left",
+                va="center",
+                fontsize=8,
+                fontweight="bold",
+                color=COLORS["navy"],
+            )
+        else:
+            ax.text(
+                min(champion_value + 1.5, 108.0),
+                y_position - 0.14,
+                f"{champion_value:.0f}",
+                ha="left",
+                va="bottom",
+                fontsize=8,
+                fontweight="bold",
+                color=COLORS["navy"],
+            )
+            ax.text(
+                min(challenger_value + 1.5, 108.0),
+                y_position + 0.14,
+                f"{challenger_value:.0f}",
+                ha="left",
+                va="top",
+                fontsize=8,
+                color=COLORS["grey_700"],
+            )
 
     ax.set_yticks(
         y_positions,
-        labels=[
-            label
-            for _, label in dimensions
-        ],
+        labels=[label for _, label in dimensions],
     )
     ax.invert_yaxis()
-    ax.set_xlim(0, 105)
-    ax.set_xlabel("Relative score (0–100)")
+    ax.set_xlim(-2, 112)
+    ax.set_xlabel("Relative score (0-100)", labelpad=10)
     ax.set_ylabel("")
     style_axes(ax)
-    ax.legend(
-        loc="lower center",
-        bbox_to_anchor=(0.5, -0.24),
-        ncol=2,
+
+    # Dedicated key above the chart prevents legend/footer overlap.
+    fig.text(
+        0.39, 0.755, "●", color=COLORS["blue"],
+        fontsize=14, ha="right", va="center"
+    )
+    fig.text(
+        0.395, 0.755, bundle.champion_name,
+        color=COLORS["grey_900"], fontsize=9,
+        ha="left", va="center"
+    )
+    fig.text(
+        0.58, 0.755, "●", color=COLORS["teal"],
+        fontsize=14, ha="right", va="center"
+    )
+    fig.text(
+        0.585, 0.755, bundle.challenger_name,
+        color=COLORS["grey_900"], fontsize=9,
+        ha="left", va="center"
     )
 
     return save_figure_with_qa(
@@ -610,24 +599,18 @@ def create_sensitivity_tornado(
     bundle: RobustnessBundle,
     output_path: Path,
 ) -> VisualQAResult:
-    """Create F04 anomaly-removal sensitivity tornado."""
+    """Create F04 as one grouped tornado with one readable model label column."""
 
     title = "MLV-F04 | Sensitivity Tornado"
     subtitle = (
         "Metric change after removing anomaly-flagged validation visitors; "
         "negative bars indicate performance degradation."
     )
-
     pairs = bundle.sensitivity_pairs.sort_values(
         "pr_auc_delta"
     ).reset_index(drop=True)
 
-    fig, axes = plt.subplots(
-        1,
-        2,
-        figsize=(13.5, 7.6),
-        facecolor="white",
-    )
+    fig, ax = create_figure()
     add_title_block(fig, title=title, subtitle=subtitle)
     add_footer(
         fig,
@@ -636,55 +619,60 @@ def create_sensitivity_tornado(
             "Bars show percentage-point change from all validation visitors."
         ),
     )
-    fig.subplots_adjust(
-        left=0.24,
-        right=0.97,
-        bottom=0.13,
-        top=0.78,
-        wspace=0.25,
+    reserve_chart_space(
+        fig,
+        left=0.28,
+        right=0.95,
+        bottom=0.17,
+        top=0.75,
     )
 
-    for axis, metric, label in [
-        (axes[0], "pr_auc_delta", "PR-AUC change"),
-        (axes[1], "roc_auc_delta", "ROC-AUC change"),
-    ]:
-        y_positions = np.arange(len(pairs))
-        delta_points = (
-            pairs[metric].to_numpy(dtype=float)
-            * 100.0
-        )
+    y_positions = np.arange(len(pairs))
+    bar_height = 0.34
+    pr_values = pairs["pr_auc_delta"].to_numpy(dtype=float) * 100.0
+    roc_values = pairs["roc_auc_delta"].to_numpy(dtype=float) * 100.0
 
-        colours = [
-            (
-                COLORS["green"]
-                if value >= 0
-                else COLORS["red"]
-            )
-            for value in delta_points
-        ]
+    pr_bars = ax.barh(
+        y_positions - bar_height / 2,
+        pr_values,
+        height=bar_height,
+        color=COLORS["red"],
+        alpha=0.92,
+        label="PR-AUC change",
+    )
+    roc_bars = ax.barh(
+        y_positions + bar_height / 2,
+        roc_values,
+        height=bar_height,
+        color=COLORS["blue"],
+        alpha=0.88,
+        label="ROC-AUC change",
+    )
 
-        bars = axis.barh(
-            y_positions,
-            delta_points,
-            color=colours,
-            height=0.62,
-            alpha=0.90,
-        )
+    all_values = np.concatenate([pr_values, roc_values])
+    minimum = min(float(all_values.min()), 0.0)
+    maximum = max(float(all_values.max()), 0.0)
+    span = max(maximum - minimum, 0.5)
+    left_limit = minimum - span * 0.24
+    right_limit = maximum + span * 0.18
+    ax.set_xlim(left_limit, right_limit)
 
+    for bars, values in [(pr_bars, pr_values), (roc_bars, roc_values)]:
         for bar, value, model_name in zip(
             bars,
-            delta_points,
+            values,
             pairs["model_name"].astype(str),
         ):
             if model_name == bundle.champion_name:
                 bar.set_edgecolor(COLORS["navy"])
                 bar.set_linewidth(2.0)
 
-            axis.text(
-                value,
+            padding = span * 0.025
+            ax.text(
+                value - padding if value < 0 else value + padding,
                 bar.get_y() + bar.get_height() / 2,
-                f" {value:+.2f} pp",
-                ha="left" if value >= 0 else "right",
+                f"{value:+.2f} pp",
+                ha="right" if value < 0 else "left",
                 va="center",
                 fontsize=8,
                 fontweight=(
@@ -695,26 +683,21 @@ def create_sensitivity_tornado(
                 color=COLORS["grey_900"],
             )
 
-        axis.axvline(
-            0.0,
-            color=COLORS["grey_700"],
-            linewidth=1.1,
-        )
-        axis.set_yticks(
-            y_positions,
-            labels=pairs["model_name"],
-        )
-        axis.set_title(
-            label,
-            loc="left",
-            fontsize=12,
-            fontweight="bold",
-            color=COLORS["navy"],
-            pad=10,
-        )
-        axis.set_xlabel("Percentage-point change")
-        axis.set_ylabel("")
-        style_axes(axis)
+    ax.axvline(0.0, color=COLORS["grey_700"], linewidth=1.1)
+    ax.set_yticks(
+        y_positions,
+        labels=pairs["model_name"].astype(str),
+    )
+    ax.set_ylim(len(pairs) - 0.55, -0.55)
+    ax.set_xlabel("Percentage-point change", labelpad=10)
+    ax.set_ylabel("")
+    style_axes(ax, show_x_grid=True, show_y_grid=False)
+    ax.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.06),
+        ncol=2,
+        frameon=False,
+    )
 
     return save_figure_with_qa(
         fig,

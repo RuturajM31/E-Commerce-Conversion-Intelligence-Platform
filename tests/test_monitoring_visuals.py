@@ -13,6 +13,7 @@ from src.visualization.monitoring_visual_data import (
     freshness_status,
 )
 from src.visualization.monitoring_visuals import (
+    delayed_label_retention_text,
     generate_monitoring_visual_package,
 )
 
@@ -183,3 +184,17 @@ def test_generate_monitoring_visual_package(
         "MLV-J06",
         "MLV-J07",
     ]
+
+
+
+def test_zero_after_zero_uses_na_retention_copy() -> None:
+    """Later zero stages must not be labelled as a starting population."""
+
+    funnel = build_bundle().funnel.reset_index(drop=True)
+    assert delayed_label_retention_text(funnel, 0) == "Starting population"
+    assert delayed_label_retention_text(funnel, 3) == (
+        "N/A - prior stage has zero records"
+    )
+    assert delayed_label_retention_text(funnel, 4) == (
+        "N/A - prior stage has zero records"
+    )

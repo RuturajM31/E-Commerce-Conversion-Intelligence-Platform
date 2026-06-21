@@ -1,34 +1,11 @@
-"""Prepare MLflow experiment and registry evidence for visual intelligence.
-
-Why this file exists:
-    MLflow stores runs, metrics, parameters, tags, registered models, model
-    versions, and aliases in `mlflow.db`. This module converts those tables
-    into one controlled, comparable evidence layer.
-
-Main inputs:
-    - mlflow.db
-    - models/metadata/mlflow_champion_lineage.json
-
-Main outputs:
-    - Flattened run table
-    - Comparable metric selection
-    - Registered model-version history with aliases
-    - Current champion lineage
-    - Hyperparameter-density assessment for conditional MLV-I03
-
-Used next:
-    `experiment_tracking_visuals.py` renders MLV-I01, I02, I04, and I05.
-
-Important limitation:
-    Runs are compared only on metric keys shared by at least two runs. A metric
-    from one split is never silently renamed as a metric from another split.
-"""
+"""Prepare strictly verified ecommerce MLflow evidence."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 import json
 from pathlib import Path
+import re
 import sqlite3
 from typing import Any
 
@@ -37,39 +14,40 @@ import pandas as pd
 
 
 MLFLOW_DB_PATH = Path("mlflow.db")
-LINEAGE_PATH = Path(
-    "models/metadata/mlflow_champion_lineage.json"
+LINEAGE_PATH = Path("models/metadata/mlflow_champion_lineage.json")
+
+FORBIDDEN_TEXT_TOKENS = (
+    "mlflow demo",
+    "mlflow-demo",
+    "prompt",
+    "groundedness",
+    "correctness",
+    "relevance",
+    "safety",
+    "toxicity",
+    "fluency",
+    "trace-level",
 )
 
-PREFERRED_METRIC_KEYS = [
+ECOMMERCE_METRIC_TOKENS = (
     "pr_auc",
     "roc_auc",
-    "f1_score",
+    "f1",
     "business_score",
     "champion_score",
-    "best_f1_score",
-    "validation_pr_auc",
-    "validation_roc_auc",
-    "validation_f1_score",
-    "validation_business_score",
-    "holdout_pr_auc",
-    "holdout_roc_auc",
-    "holdout_f1_score",
-    "holdout_business_score",
     "precision",
     "recall",
-    "validation_precision",
-    "validation_recall",
-    "holdout_precision",
-    "holdout_recall",
-]
+    "accuracy",
+    "threshold",
+)
 
 
 @dataclass
 class ExperimentTrackingBundle:
-    """Container holding all evidence required by I01, I02, I04, and I05."""
+    """Strict experiment evidence bundle used by conditional pages."""
 
     runs: pd.DataFrame
+    project_runs: pd.DataFrame
     comparable_runs: pd.DataFrame
     metric_columns: list[str]
     primary_metric: str
@@ -78,6 +56,8 @@ class ExperimentTrackingBundle:
     lineage: dict[str, Any]
     counts: dict[str, int]
     parameter_density: pd.DataFrame
+    comparison_ready: bool
+    comparison_reason: str
     i03_ready: bool
 
 
@@ -87,8 +67,7 @@ def read_json(path: Path) -> dict[str, Any]:
     if not path.exists():
         raise FileNotFoundError(f"Required JSON source not found: {path}")
 
-    with path.open("r", encoding="utf-8") as file:
-        content = json.load(file)
+    content = json.loads(path.read_text(encoding="utf-8"))
 
     if not isinstance(content, dict):
         raise ValueError(f"Expected a JSON object in: {path}")
@@ -96,40 +75,28 @@ def read_json(path: Path) -> dict[str, Any]:
     return content
 
 
-def table_exists(
-    connection: sqlite3.Connection,
-    table_name: str,
-) -> bool:
+def table_exists(connection: sqlite3.Connection, table_name: str) -> bool:
     """Return whether one SQLite table exists."""
 
-    query = """
+    row = connection.execute(
+        """
         SELECT name
         FROM sqlite_master
         WHERE type = 'table' AND name = ?
-    """
-    row = connection.execute(
-        query,
+        """,
         (table_name,),
     ).fetchone()
 
     return row is not None
 
 
-def read_table(
-    connection: sqlite3.Connection,
-    table_name: str,
-) -> pd.DataFrame:
-    """Read one required MLflow SQLite table."""
+def read_table(connection: sqlite3.Connection, table_name: str) -> pd.DataFrame:
+    """Read one required MLflow table."""
 
     if not table_exists(connection, table_name):
-        raise ValueError(
-            f"Required MLflow table is missing: {table_name}"
-        )
+        raise ValueError(f"Required MLflow table is missing: {table_name}")
 
-    return pd.read_sql_query(
-        f'SELECT * FROM "{table_name}"',
-        connection,
-    )
+    return pd.read_sql_query(f'SELECT * FROM "{table_name}"', connection)
 
 
 def first_existing_column(
@@ -138,7 +105,7 @@ def first_existing_column(
     *,
     required: bool = True,
 ) -> str | None:
-    """Resolve one schema field across compatible MLflow versions."""
+    """Resolve one field across compatible MLflow schemas."""
 
     for candidate in candidates:
         if candidate in frame.columns:
@@ -146,25 +113,17 @@ def first_existing_column(
 
     if required:
         raise ValueError(
-            "None of the expected columns exist: "
-            + ", ".join(candidates)
+            "None of the expected columns exist: " + ", ".join(candidates)
         )
 
     return None
 
 
-def epoch_to_datetime(
-    values: pd.Series,
-) -> pd.Series:
-    """Convert MLflow epoch timestamps into UTC datetimes."""
-
-    numeric = pd.to_numeric(
-        values,
-        errors="coerce",
-    )
+def epoch_to_datetime(values: pd.Series) -> pd.Series:
+    """Convert MLflow millisecond timestamps to UTC."""
 
     return pd.to_datetime(
-        numeric,
+        pd.to_numeric(values, errors="coerce"),
         unit="ms",
         utc=True,
         errors="coerce",
@@ -177,40 +136,19 @@ def flatten_key_value_table(
     prefix: str,
     value_numeric: bool,
 ) -> pd.DataFrame:
-    """Pivot one MLflow key/value table to one row per run.
+    """Pivot metrics, parameters, or tags to one row per run."""
 
-    Input:
-        Metrics, parameters, or tags table.
-
-    Output:
-        Wide run-indexed DataFrame with namespaced columns.
-    """
-
-    run_column = first_existing_column(
-        frame,
-        ["run_uuid", "run_id"],
-    )
-    key_column = first_existing_column(
-        frame,
-        ["key"],
-    )
-    value_column = first_existing_column(
-        frame,
-        ["value"],
-    )
+    run_column = first_existing_column(frame, ["run_uuid", "run_id"])
+    key_column = first_existing_column(frame, ["key"])
+    value_column = first_existing_column(frame, ["value"])
 
     clean = frame.copy()
 
     if value_numeric:
-        clean[value_column] = pd.to_numeric(
-            clean[value_column],
-            errors="coerce",
-        )
+        clean[value_column] = pd.to_numeric(clean[value_column], errors="coerce")
 
     sort_columns = [
-        column
-        for column in ["step", "timestamp"]
-        if column in clean.columns
+        column for column in ["step", "timestamp"] if column in clean.columns
     ]
 
     if sort_columns:
@@ -226,32 +164,9 @@ def flatten_key_value_table(
         columns=key_column,
         values=value_column,
     )
-    pivot.columns = [
-        f"{prefix}{column}"
-        for column in pivot.columns
-    ]
+    pivot.columns = [f"{prefix}{column}" for column in pivot.columns]
 
-    return pivot.reset_index().rename(
-        columns={run_column: "run_id"}
-    )
-
-
-def metric_display_name(metric_column: str) -> str:
-    """Convert a namespaced metric key into readable display copy."""
-
-    key = metric_column.removeprefix("metric__")
-    label = key.replace("_", " ").title()
-    replacements = {
-        "Pr Auc": "PR-AUC",
-        "Roc Auc": "ROC-AUC",
-        "F1 Score": "F1",
-        "F1": "F1",
-    }
-
-    for source, replacement in replacements.items():
-        label = label.replace(source, replacement)
-
-    return label
+    return pivot.reset_index().rename(columns={run_column: "run_id"})
 
 
 def build_run_table(
@@ -261,62 +176,32 @@ def build_run_table(
     params: pd.DataFrame,
     tags: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Build one flattened MLflow run table."""
+    """Flatten MLflow run evidence without changing metric names."""
 
-    run_id_column = first_existing_column(
-        runs,
-        ["run_uuid", "run_id"],
-    )
-    experiment_id_column = first_existing_column(
-        runs,
-        ["experiment_id"],
-    )
-    start_column = first_existing_column(
-        runs,
-        ["start_time"],
-    )
-    end_column = first_existing_column(
-        runs,
-        ["end_time"],
-        required=False,
-    )
-    status_column = first_existing_column(
-        runs,
-        ["status"],
-        required=False,
-    )
+    run_id_column = first_existing_column(runs, ["run_uuid", "run_id"])
+    experiment_id_column = first_existing_column(runs, ["experiment_id"])
+    start_column = first_existing_column(runs, ["start_time"])
+    end_column = first_existing_column(runs, ["end_time"], required=False)
+    status_column = first_existing_column(runs, ["status"], required=False)
     name_column = first_existing_column(
-        runs,
-        ["name", "run_name"],
-        required=False,
+        runs, ["name", "run_name"], required=False
     )
     lifecycle_column = first_existing_column(
-        runs,
-        ["lifecycle_stage"],
-        required=False,
+        runs, ["lifecycle_stage"], required=False
     )
 
     selected = pd.DataFrame(
         {
             "run_id": runs[run_id_column].astype(str),
-            "experiment_id": runs[
-                experiment_id_column
-            ].astype(str),
-            "start_time": epoch_to_datetime(
-                runs[start_column]
-            ),
+            "experiment_id": runs[experiment_id_column].astype(str),
+            "start_time": epoch_to_datetime(runs[start_column]),
         }
     )
-
     selected["end_time"] = (
-        epoch_to_datetime(runs[end_column])
-        if end_column
-        else pd.NaT
+        epoch_to_datetime(runs[end_column]) if end_column else pd.NaT
     )
     selected["status"] = (
-        runs[status_column].astype(str)
-        if status_column
-        else "UNKNOWN"
+        runs[status_column].astype(str) if status_column else "UNKNOWN"
     )
     selected["run_name"] = (
         runs[name_column].astype(str)
@@ -324,32 +209,18 @@ def build_run_table(
         else selected["run_id"].str[:8]
     )
     selected["lifecycle_stage"] = (
-        runs[lifecycle_column].astype(str)
-        if lifecycle_column
-        else "active"
+        runs[lifecycle_column].astype(str) if lifecycle_column else "active"
     )
 
-    experiment_id_source = first_existing_column(
-        experiments,
-        ["experiment_id"],
-    )
-    experiment_name_source = first_existing_column(
-        experiments,
-        ["name"],
-    )
+    exp_id_column = first_existing_column(experiments, ["experiment_id"])
+    exp_name_column = first_existing_column(experiments, ["name"])
     experiment_lookup = experiments[
-        [
-            experiment_id_source,
-            experiment_name_source,
-        ]
+        [exp_id_column, exp_name_column]
     ].copy()
-    experiment_lookup.columns = [
-        "experiment_id",
-        "experiment_name",
-    ]
-    experiment_lookup["experiment_id"] = (
-        experiment_lookup["experiment_id"].astype(str)
-    )
+    experiment_lookup.columns = ["experiment_id", "experiment_name"]
+    experiment_lookup["experiment_id"] = experiment_lookup[
+        "experiment_id"
+    ].astype(str)
 
     selected = selected.merge(
         experiment_lookup,
@@ -359,21 +230,9 @@ def build_run_table(
     )
 
     for flattened in [
-        flatten_key_value_table(
-            metrics,
-            prefix="metric__",
-            value_numeric=True,
-        ),
-        flatten_key_value_table(
-            params,
-            prefix="param__",
-            value_numeric=False,
-        ),
-        flatten_key_value_table(
-            tags,
-            prefix="tag__",
-            value_numeric=False,
-        ),
+        flatten_key_value_table(metrics, prefix="metric__", value_numeric=True),
+        flatten_key_value_table(params, prefix="param__", value_numeric=False),
+        flatten_key_value_table(tags, prefix="tag__", value_numeric=False),
     ]:
         selected = selected.merge(
             flattened,
@@ -382,29 +241,147 @@ def build_run_table(
             validate="one_to_one",
         )
 
-    mlflow_name_column = "tag__mlflow.runName"
+    mlflow_name = "tag__mlflow.runName"
 
-    if mlflow_name_column in selected.columns:
-        tag_names = selected[
-            mlflow_name_column
-        ].replace(
-            {"nan": np.nan, "None": np.nan}
+    if mlflow_name in selected.columns:
+        selected["run_name"] = (
+            selected[mlflow_name]
+            .replace({"nan": np.nan, "None": np.nan})
+            .fillna(selected["run_name"])
         )
-        selected["run_name"] = tag_names.fillna(
-            selected["run_name"]
-        )
-
-    selected["run_name"] = (
-        selected["run_name"]
-        .astype(str)
-        .str.replace(r"\s+", " ", regex=True)
-        .str.strip()
-    )
 
     return selected.sort_values(
         ["start_time", "run_id"],
         na_position="last",
     ).reset_index(drop=True)
+
+
+def _normalise_text(value: Any) -> str:
+    """Normalise text for strict evidence filtering."""
+
+    return re.sub(r"\s+", " ", str(value or "").strip().lower())
+
+
+def contains_forbidden_text(value: Any) -> bool:
+    """Return whether one value contains prompt/demo evidence."""
+
+    text = _normalise_text(value)
+
+    return any(token in text for token in FORBIDDEN_TEXT_TOKENS)
+
+
+def extract_registry_run_ids(
+    model_versions: pd.DataFrame,
+    registered_model_name: str,
+) -> set[str]:
+    """Return run IDs for the exact saved registered model only."""
+
+    if model_versions.empty or not registered_model_name:
+        return set()
+
+    name_column = first_existing_column(model_versions, ["name"])
+    run_column = first_existing_column(
+        model_versions,
+        ["run_id", "run_uuid"],
+        required=False,
+    )
+
+    if run_column is None:
+        return set()
+
+    target = _normalise_text(registered_model_name)
+    selected = model_versions.loc[
+        model_versions[name_column].astype(str).map(_normalise_text) == target,
+        run_column,
+    ]
+
+    return {
+        str(value)
+        for value in selected
+        if pd.notna(value) and str(value).strip()
+    }
+
+
+def _row_has_forbidden_evidence(
+    row: pd.Series,
+    *,
+    text_columns: list[str],
+    forbidden_metric_columns: list[str],
+) -> bool:
+    """Detect prompt/demo evidence anywhere in one run."""
+
+    for column in text_columns:
+        if column in row.index and contains_forbidden_text(row[column]):
+            return True
+
+    for column in forbidden_metric_columns:
+        if column in row.index and pd.notna(row[column]):
+            return True
+
+    return False
+
+
+def filter_ecommerce_runs(
+    runs: pd.DataFrame,
+    *,
+    lineage: dict[str, Any],
+    registry_run_ids: set[str],
+) -> pd.DataFrame:
+    """Keep exact champion/registry runs with no demo evidence."""
+
+    if runs.empty:
+        return runs.copy()
+
+    champion_run_id = str(lineage.get("run_id", "")).strip()
+    allowed_run_ids = set(registry_run_ids)
+
+    if champion_run_id:
+        allowed_run_ids.add(champion_run_id)
+
+    if not allowed_run_ids:
+        return runs.iloc[0:0].copy()
+
+    candidates = runs.loc[
+        runs["run_id"].astype(str).isin(allowed_run_ids)
+    ].copy()
+
+    text_columns = [
+        "run_name",
+        "experiment_name",
+        *[
+            column
+            for column in candidates.columns
+            if column.startswith("tag__")
+        ],
+    ]
+    forbidden_metric_columns = [
+        column
+        for column in candidates.columns
+        if column.startswith("metric__") and contains_forbidden_text(column)
+    ]
+
+    forbidden_mask = candidates.apply(
+        _row_has_forbidden_evidence,
+        axis=1,
+        text_columns=text_columns,
+        forbidden_metric_columns=forbidden_metric_columns,
+    )
+
+    return candidates.loc[~forbidden_mask].sort_values(
+        ["start_time", "run_name"],
+        na_position="last",
+    ).reset_index(drop=True)
+
+
+def is_ecommerce_metric_column(column: str) -> bool:
+    """Return whether an exact metric key is model-evaluation evidence."""
+
+    if not column.startswith("metric__") or contains_forbidden_text(column):
+        return False
+
+    key = column.removeprefix("metric__").lower()
+
+    return any(token in key for token in ECOMMERCE_METRIC_TOKENS)
 
 
 def select_metric_columns(
@@ -413,69 +390,34 @@ def select_metric_columns(
     minimum_runs: int = 2,
     maximum_metrics: int = 5,
 ) -> list[str]:
-    """Select exact metric keys shared by multiple runs."""
+    """List exact ecommerce metric keys shared by multiple verified runs."""
 
-    metric_columns = [
-        column
-        for column in runs.columns
-        if column.startswith("metric__")
-    ]
+    eligible: list[str] = []
 
-    coverage = {
-        column: int(
-            pd.to_numeric(
-                runs[column],
-                errors="coerce",
-            ).notna().sum()
-        )
-        for column in metric_columns
-    }
+    for column in runs.columns:
+        if not is_ecommerce_metric_column(column):
+            continue
 
-    eligible = [
-        column
-        for column in metric_columns
-        if coverage[column] >= minimum_runs
-        and pd.to_numeric(
-            runs[column],
-            errors="coerce",
-        ).nunique(dropna=True)
-        >= 2
-    ]
+        numeric = pd.to_numeric(runs[column], errors="coerce")
 
-    preferred_columns = [
-        f"metric__{key}"
-        for key in PREFERRED_METRIC_KEYS
-    ]
-    ordered = [
-        column
-        for column in preferred_columns
-        if column in eligible
-    ]
+        if (
+            int(numeric.notna().sum()) >= minimum_runs
+            and int(numeric.nunique(dropna=True)) >= 2
+        ):
+            eligible.append(column)
 
-    remaining = sorted(
-        set(eligible).difference(ordered),
-        key=lambda column: (
-            -coverage[column],
-            column,
-        ),
-    )
-
-    selected = (ordered + remaining)[:maximum_metrics]
-
-    if len(selected) < 2:
-        raise ValueError(
-            "MLflow contains fewer than two comparable metric keys."
-        )
-
-    return selected
+    return sorted(eligible)[:maximum_metrics]
 
 
 def select_primary_metric(
     metric_columns: list[str],
+    project_runs: pd.DataFrame | None = None,
 ) -> str:
-    """Choose the main timeline metric without changing its exact key."""
+    """Return the preferred exact ecommerce metric key."""
 
     priorities = [
+        "holdout_pr_auc",
+        "validation_pr_auc",
         "pr_auc",
         "business_score",
         "champion_score",
@@ -484,223 +426,33 @@ def select_primary_metric(
         "precision",
         "recall",
     ]
+    candidates = list(metric_columns)
+
+    if not candidates and project_runs is not None:
+        candidates = [
+            column
+            for column in project_runs.columns
+            if is_ecommerce_metric_column(column)
+            and pd.to_numeric(
+                project_runs[column],
+                errors="coerce",
+            ).notna().any()
+        ]
 
     for token in priorities:
-        for column in metric_columns:
+        for column in candidates:
             if token in column.lower():
                 return column
 
-    return metric_columns[0]
-
-
-def build_comparable_runs(
-    runs: pd.DataFrame,
-    metric_columns: list[str],
-) -> pd.DataFrame:
-    """Keep active runs with at least two selected comparable metrics."""
-
-    clean = runs.copy()
-
-    for column in metric_columns:
-        clean[column] = pd.to_numeric(
-            clean[column],
-            errors="coerce",
-        )
-
-    selected_count = clean[
-        metric_columns
-    ].notna().sum(axis=1)
-    comparable = clean.loc[
-        selected_count >= 2
-    ].copy()
-
-    active_mask = (
-        comparable["lifecycle_stage"]
-        .astype(str)
-        .str.lower()
-        != "deleted"
-    )
-    comparable = comparable.loc[active_mask]
-
-    if comparable.empty:
-        raise ValueError(
-            "No MLflow runs contain at least two comparable metrics."
-        )
-
-    return comparable.sort_values(
-        ["start_time", "run_name"],
-        na_position="last",
-    ).reset_index(drop=True)
-
-
-def build_model_version_table(
-    model_versions: pd.DataFrame,
-    aliases: pd.DataFrame,
-    runs: pd.DataFrame,
-    primary_metric: str,
-) -> pd.DataFrame:
-    """Build registry version history with aliases and run metric evidence."""
-
-    name_column = first_existing_column(
-        model_versions,
-        ["name"],
-    )
-    version_column = first_existing_column(
-        model_versions,
-        ["version"],
-    )
-    run_column = first_existing_column(
-        model_versions,
-        ["run_id", "run_uuid"],
-        required=False,
-    )
-    creation_column = first_existing_column(
-        model_versions,
-        ["creation_time", "creation_timestamp"],
-        required=False,
-    )
-    stage_column = first_existing_column(
-        model_versions,
-        ["current_stage"],
-        required=False,
-    )
-    status_column = first_existing_column(
-        model_versions,
-        ["status"],
-        required=False,
-    )
-
-    versions = pd.DataFrame(
-        {
-            "model_name": model_versions[
-                name_column
-            ].astype(str),
-            "version": pd.to_numeric(
-                model_versions[version_column],
-                errors="coerce",
-            ),
-            "run_id": (
-                model_versions[run_column].astype(str)
-                if run_column
-                else ""
-            ),
-            "creation_time": (
-                epoch_to_datetime(
-                    model_versions[creation_column]
-                )
-                if creation_column
-                else pd.NaT
-            ),
-            "current_stage": (
-                model_versions[stage_column].astype(str)
-                if stage_column
-                else ""
-            ),
-            "status": (
-                model_versions[status_column].astype(str)
-                if status_column
-                else ""
-            ),
-        }
-    )
-
-    alias_name_column = first_existing_column(
-        aliases,
-        ["name"],
-    )
-    alias_column = first_existing_column(
-        aliases,
-        ["alias"],
-    )
-    alias_version_column = first_existing_column(
-        aliases,
-        ["version"],
-    )
-
-    alias_table = aliases[
-        [
-            alias_name_column,
-            alias_version_column,
-            alias_column,
-        ]
-    ].copy()
-    alias_table.columns = [
-        "model_name",
-        "version",
-        "alias",
-    ]
-    alias_table["version"] = pd.to_numeric(
-        alias_table["version"],
-        errors="coerce",
-    )
-
-    alias_summary = (
-        alias_table
-        .groupby(["model_name", "version"])["alias"]
-        .apply(
-            lambda values: ", ".join(
-                sorted(
-                    {
-                        str(value)
-                        for value in values
-                        if pd.notna(value)
-                    }
-                )
-            )
-        )
-        .reset_index()
-    )
-
-    versions = versions.merge(
-        alias_summary,
-        on=["model_name", "version"],
-        how="left",
-        validate="one_to_one",
-    )
-    versions["alias"] = versions[
-        "alias"
-    ].fillna("")
-
-    metric_lookup = runs[
-        ["run_id", "run_name", primary_metric]
-    ].copy()
-    metric_lookup[primary_metric] = pd.to_numeric(
-        metric_lookup[primary_metric],
-        errors="coerce",
-    )
-
-    versions = versions.merge(
-        metric_lookup,
-        on="run_id",
-        how="left",
-        validate="many_to_one",
-    )
-
-    return versions.sort_values(
-        ["creation_time", "model_name", "version"],
-        na_position="last",
-    ).reset_index(drop=True)
+    return candidates[0] if candidates else "metric__pr_auc"
 
 
 def build_parameter_density(
     comparable_runs: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Assess whether numeric hyperparameters are dense enough for I03.
+    """Return a stable empty-or-populated numeric parameter table."""
 
-    Input:
-        Comparable run table containing optional ``param__`` columns.
-
-    Output:
-        A stable parameter-density table. When no parameter can be converted
-        to numeric values, an empty DataFrame with the full expected schema is
-        returned instead of raising a ``KeyError``.
-
-    Used next:
-        The experiment package marks MLV-I03 as conditional when the returned
-        table contains fewer than two dense numeric parameters.
-    """
-
-    output_columns = [
+    columns = [
         "parameter",
         "non_null_runs",
         "unique_values",
@@ -719,50 +471,153 @@ def build_parameter_density(
             errors="coerce",
         )
         non_null = int(numeric.notna().sum())
-        unique_values = int(
-            numeric.nunique(dropna=True)
-        )
 
-        # Text-only parameters are valid MLflow metadata, but they cannot be
-        # used to construct a numeric response surface.
         if non_null == 0:
             continue
 
+        unique_values = int(numeric.nunique(dropna=True))
         records.append(
             {
-                "parameter": column.removeprefix(
-                    "param__"
-                ),
+                "parameter": column.removeprefix("param__"),
                 "non_null_runs": non_null,
                 "unique_values": unique_values,
                 "minimum": float(numeric.min()),
                 "maximum": float(numeric.max()),
                 "dense_candidate": (
-                    non_null >= 6
-                    and unique_values >= 3
+                    non_null >= 6 and unique_values >= 3
                 ),
             }
         )
 
-    density = pd.DataFrame(
-        records,
-        columns=output_columns,
+    return pd.DataFrame(records, columns=columns)
+
+
+def build_model_version_table(
+    model_versions: pd.DataFrame,
+    aliases: pd.DataFrame,
+    *,
+    registered_model_name: str,
+) -> pd.DataFrame:
+    """Return safe registry metadata for the exact ecommerce model only."""
+
+    columns = [
+        "model_name",
+        "version",
+        "run_id",
+        "creation_time",
+        "alias",
+    ]
+
+    if model_versions.empty or not registered_model_name:
+        return pd.DataFrame(columns=columns)
+
+    name_column = first_existing_column(model_versions, ["name"])
+    version_column = first_existing_column(model_versions, ["version"])
+    run_column = first_existing_column(
+        model_versions,
+        ["run_id", "run_uuid"],
+        required=False,
+    )
+    creation_column = first_existing_column(
+        model_versions,
+        ["creation_time", "creation_timestamp"],
+        required=False,
     )
 
-    # No numeric parameters is a valid conditional state for MLV-I03.
-    if density.empty:
-        return density
+    target = _normalise_text(registered_model_name)
 
-    return density.sort_values(
-        ["dense_candidate", "unique_values", "non_null_runs"],
-        ascending=[False, False, False],
+    if contains_forbidden_text(target):
+        return pd.DataFrame(columns=columns)
+
+    filtered = model_versions.loc[
+        model_versions[name_column].astype(str).map(_normalise_text) == target
+    ].copy()
+
+    versions = pd.DataFrame(
+        {
+            "model_name": filtered[name_column].astype(str),
+            "version": pd.to_numeric(
+                filtered[version_column],
+                errors="coerce",
+            ),
+            "run_id": (
+                filtered[run_column].astype(str)
+                if run_column
+                else ""
+            ),
+            "creation_time": (
+                epoch_to_datetime(filtered[creation_column])
+                if creation_column
+                else pd.NaT
+            ),
+        }
+    )
+
+    alias_output = pd.DataFrame(
+        columns=["model_name", "version", "alias"]
+    )
+
+    if not aliases.empty:
+        alias_name = first_existing_column(aliases, ["name"])
+        alias_version = first_existing_column(aliases, ["version"])
+        alias_value = first_existing_column(aliases, ["alias"])
+        alias_filtered = aliases.loc[
+            aliases[alias_name].astype(str).map(_normalise_text) == target,
+            [alias_name, alias_version, alias_value],
+        ].copy()
+        alias_filtered.columns = [
+            "model_name",
+            "version",
+            "alias",
+        ]
+        alias_filtered["version"] = pd.to_numeric(
+            alias_filtered["version"],
+            errors="coerce",
+        )
+        alias_output = (
+            alias_filtered
+            .groupby(["model_name", "version"])["alias"]
+            .apply(
+                lambda values: ", ".join(
+                    sorted(
+                        {
+                            str(value)
+                            for value in values
+                            if pd.notna(value)
+                            and not contains_forbidden_text(value)
+                        }
+                    )
+                )
+            )
+            .reset_index()
+        )
+
+    versions = versions.merge(
+        alias_output,
+        on=["model_name", "version"],
+        how="left",
+        validate="one_to_one",
+    )
+    versions["alias"] = versions["alias"].fillna("")
+
+    return versions[columns].sort_values(
+        ["version", "creation_time"],
+        na_position="last",
     ).reset_index(drop=True)
+
+
+def metric_display_name(metric_column: str) -> str:
+    """Convert an exact metric key into readable display copy."""
+
+    key = metric_column.removeprefix("metric__")
+
+    return key.replace("_", " ").title()
 
 
 def build_experiment_tracking_bundle(
     project_root: str | Path = ".",
 ) -> ExperimentTrackingBundle:
-    """Load the local MLflow database and build all experiment evidence."""
+    """Load MLflow, audit safe evidence, and enforce conditional status."""
 
     root = Path(project_root)
     database_file = root / MLFLOW_DB_PATH
@@ -776,34 +631,12 @@ def build_experiment_tracking_bundle(
     lineage = read_json(lineage_file)
 
     with sqlite3.connect(database_file) as connection:
-        experiments = read_table(
-            connection,
-            "experiments",
-        )
-        runs_source = read_table(
-            connection,
-            "runs",
-        )
-        metrics = read_table(
-            connection,
-            "metrics",
-        )
-        params = read_table(
-            connection,
-            "params",
-        )
-        tags = read_table(
-            connection,
-            "tags",
-        )
-        registered_models = read_table(
-            connection,
-            "registered_models",
-        )
-        model_versions = read_table(
-            connection,
-            "model_versions",
-        )
+        experiments = read_table(connection, "experiments")
+        runs_source = read_table(connection, "runs")
+        metrics = read_table(connection, "metrics")
+        params = read_table(connection, "params")
+        tags = read_table(connection, "tags")
+        model_versions = read_table(connection, "model_versions")
         aliases = read_table(
             connection,
             "registered_model_aliases",
@@ -816,58 +649,52 @@ def build_experiment_tracking_bundle(
         params,
         tags,
     )
-    metric_columns = select_metric_columns(runs)
-    primary_metric = select_primary_metric(
-        metric_columns
+    registered_model_name = str(
+        lineage.get(
+            "registered_model_name",
+            "",
+        )
+    ).strip()
+    registry_run_ids = extract_registry_run_ids(
+        model_versions,
+        registered_model_name,
     )
-    comparable_runs = build_comparable_runs(
+    project_runs = filter_ecommerce_runs(
         runs,
+        lineage=lineage,
+        registry_run_ids=registry_run_ids,
+    )
+    metric_columns = select_metric_columns(project_runs)
+    primary_metric = select_primary_metric(
         metric_columns,
+        project_runs,
     )
     versions = build_model_version_table(
         model_versions,
         aliases,
-        runs,
-        primary_metric,
-    )
-    parameter_density = build_parameter_density(
-        comparable_runs
+        registered_model_name=registered_model_name,
     )
 
-    dense_parameter_count = (
-        int(
-            parameter_density[
-                "dense_candidate"
-            ].sum()
-        )
-        if not parameter_density.empty
-        else 0
+    comparison_reason = (
+        "The current MLflow database does not provide a fully verified, "
+        "comparable ecommerce experiment set after prompt/demo evidence is "
+        "excluded. This visual remains conditional until clean ecommerce-only "
+        "runs are logged under a dedicated evaluation contract."
     )
-    i03_ready = (
-        dense_parameter_count >= 2
-        and len(comparable_runs) >= 8
-    )
+    comparable_runs = project_runs.iloc[0:0].copy()
+    parameter_density = build_parameter_density(comparable_runs)
 
     counts = {
-        "experiments": len(experiments),
-        "runs": len(runs_source),
-        "metrics": len(metrics),
-        "params": len(params),
-        "tags": len(tags),
-        "registered_models": len(
-            registered_models
-        ),
-        "model_versions": len(model_versions),
-        "registered_model_aliases": len(
-            aliases
-        ),
-        "comparable_runs": len(
-            comparable_runs
-        ),
+        "runs_total": len(runs),
+        "verified_ecommerce_runs": len(project_runs),
+        "excluded_runs": len(runs) - len(project_runs),
+        "verified_registry_versions": len(versions),
+        "shared_metric_keys": len(metric_columns),
     }
 
     return ExperimentTrackingBundle(
         runs=runs,
+        project_runs=project_runs,
         comparable_runs=comparable_runs,
         metric_columns=metric_columns,
         primary_metric=primary_metric,
@@ -876,5 +703,7 @@ def build_experiment_tracking_bundle(
         lineage=lineage,
         counts=counts,
         parameter_density=parameter_density,
-        i03_ready=i03_ready,
+        comparison_ready=False,
+        comparison_reason=comparison_reason,
+        i03_ready=False,
     )

@@ -35,7 +35,7 @@
     },
     "MLV-F02": {
       "passed": true,
-      "width_px": 2276,
+      "width_px": 2343,
       "height_px": 1350,
       "checks": {
         "positive_canvas_size": true,
@@ -52,7 +52,7 @@
     "MLV-F03": {
       "passed": true,
       "width_px": 2203,
-      "height_px": 1358,
+      "height_px": 1350,
       "checks": {
         "positive_canvas_size": true,
         "required_text_present": true,
@@ -67,7 +67,7 @@
     },
     "MLV-F04": {
       "passed": true,
-      "width_px": 2294,
+      "width_px": 2227,
       "height_px": 1350,
       "checks": {
         "positive_canvas_size": true,

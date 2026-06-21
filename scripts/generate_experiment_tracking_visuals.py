@@ -1,10 +1,9 @@
-"""Generate MLflow experiment-tracking visual intelligence artifacts."""
+"""Generate the consolidated Experiment Tracking Readiness page."""
 
 from __future__ import annotations
 
 from pathlib import Path
 import sys
-
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -17,35 +16,26 @@ from src.visualization.experiment_tracking_visuals import (
 
 
 def main() -> None:
-    """Generate I01, I02, I04, and I05 and print concise QA output."""
+    """Generate one readiness page and print concise QA output."""
 
     manifest = generate_experiment_tracking_visual_package()
+    qa = manifest["qa"]["experiment_tracking_readiness"]
 
-    print("Experiment-tracking visual package created.")
-
-    for visual_id, qa_result in manifest["qa"].items():
-        print(
-            f"{visual_id}: "
-            f"passed={qa_result['passed']} | "
-            f"{qa_result['width_px']}x"
-            f"{qa_result['height_px']} px"
-        )
-
+    print("Experiment Tracking Readiness package created.")
     print(
-        "MLV-I03: "
-        + (
-            "ready"
-            if manifest["i03_ready"]
-            else "conditional"
-        )
+        "Readiness page: "
+        f"passed={qa['passed']} | "
+        f"{qa['width_px']}x{qa['height_px']} px"
+    )
+    print("Supported experiment visuals: 0")
+    print(
+        "Conditional: MLV-I01, MLV-I02, MLV-I03, MLV-I04, MLV-I05"
     )
     print(
-        "Insights: "
-        f"{manifest['supporting_files']['insights']}"
+        f"Readiness: {manifest['readiness_artifact']}"
     )
     print(
-        "Manifest: "
-        f"{manifest['supporting_files']['manifest']}"
+        f"Manifest: {manifest['supporting_files']['manifest']}"
     )
 
 

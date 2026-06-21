@@ -221,3 +221,33 @@ def test_generate_robustness_visual_package(
 
     assert "three runs per model" in insight_text
     assert "anomaly-flagged rows" in insight_text
+
+
+
+def test_corrected_robustness_layouts_render_cleanly(tmp_path: Path) -> None:
+    """F02-F04 should pass layout QA after collision fixes."""
+
+    bundle = build_bundle()
+    manifest = generate_robustness_visual_package(
+        project_root=tmp_path,
+        bundle=bundle,
+    )
+    for visual_id in ("MLV-F02", "MLV-F03", "MLV-F04"):
+        assert manifest["qa"][visual_id]["passed"] is True
+
+
+def test_corrected_f03_and_f04_render_without_footer_or_label_collisions(
+    tmp_path: Path,
+) -> None:
+    """Corrected stability and sensitivity layouts must pass visual QA."""
+
+    manifest = generate_robustness_visual_package(
+        project_root=tmp_path,
+        bundle=build_bundle(),
+    )
+
+    for visual_id in ("MLV-F03", "MLV-F04"):
+        result = manifest["qa"][visual_id]
+        assert result["passed"] is True
+        assert result["width_px"] >= 1_600
+        assert result["height_px"] >= 850

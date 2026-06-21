@@ -62,203 +62,201 @@ def _age_text(age_hours: float | None) -> str:
     return f"{age_hours / 24:.1f} days old"
 
 
+
+def delayed_label_retention_text(
+    funnel: pd.DataFrame,
+    index: int,
+) -> str:
+    """Return honest retention copy for one funnel stage."""
+
+    if index == 0:
+        return "Starting population"
+
+    prior_count = int(funnel.iloc[index - 1]["count"])
+    current_count = int(funnel.iloc[index]["count"])
+
+    if prior_count == 0:
+        return "N/A - prior stage has zero records"
+
+    return f"{current_count / prior_count:.1%} of prior stage"
+
+
+
 def create_delayed_label_maturity_funnel(
     bundle: MonitoringVisualBundle,
     output_path: Path,
 ) -> VisualQAResult:
-    """Create J04 actual-count maturity funnel with rejection evidence."""
+    """Create J04 as equal-width maturity cards so zero stages stay visible."""
 
     title = "MLV-J04 | Delayed-Label Maturity Funnel"
     subtitle = (
         "Operational progression from scored visitors to evaluable outcomes; "
-        "zero matured labels is shown as a source-data boundary, not success."
+        "zero stages remain fully visible and are treated as a source-data boundary."
     )
-
     apply_ml_visual_style(DEFAULT_SPEC)
     fig = plt.figure(
-        figsize=(
-            DEFAULT_SPEC.width,
-            DEFAULT_SPEC.height,
-        ),
+        figsize=(DEFAULT_SPEC.width, DEFAULT_SPEC.height),
         facecolor=DEFAULT_SPEC.facecolor,
     )
-    axis = fig.add_axes([0.10, 0.18, 0.56, 0.58])
-    panel = fig.add_axes([0.71, 0.18, 0.25, 0.58])
-
+    axis = fig.add_axes([0.07, 0.18, 0.62, 0.60])
+    panel = fig.add_axes([0.73, 0.18, 0.23, 0.60])
     add_title_block(fig, title=title, subtitle=subtitle)
     add_footer(
         fig,
-        source_note=(
-            "Sources: score export, production logs, delayed-label validation"
-        ),
-        interpretation_note=(
-            "No matured labels means no production-performance claim."
-        ),
+        source_note="Sources: score export, production logs, delayed-label validation",
+        interpretation_note="No matured labels means no production-performance claim.",
     )
 
-    funnel = bundle.funnel.copy()
-    y_positions = np.arange(len(funnel))[::-1]
+    funnel = bundle.funnel.reset_index(drop=True)
     colours = [
-        COLORS["navy"],
-        COLORS["blue"],
-        COLORS["teal"],
-        COLORS["amber"],
-        COLORS["green"],
+        COLORS["navy"], COLORS["blue"], COLORS["teal"],
+        COLORS["amber"], COLORS["green"],
     ]
+    axis.set_xlim(0, 1)
+    axis.set_ylim(0, 1)
+    axis.set_axis_off()
 
-    bars = axis.barh(
-        y_positions,
-        funnel["count"],
-        color=colours,
-        height=0.62,
-        alpha=0.92,
-    )
+    card_height = 0.145
+    card_gap = 0.025
+    start_y = 0.82
 
-    largest = max(int(funnel["count"].max()), 1)
-    axis.set_xlim(0, largest * 1.24)
-
-    for index, (bar, row) in enumerate(
-        zip(bars, funnel.itertuples(index=False))
-    ):
-        count = int(row.count)
-        retention = row.retention_from_prior
-        retention_text = (
-            "Starting population"
-            if pd.isna(retention)
-            else f"{retention:.1%} of prior stage"
+    for index, row in funnel.iterrows():
+        y = start_y - index * (card_height + card_gap)
+        count = int(row["count"])
+        retention_text = delayed_label_retention_text(funnel, index)
+        card = FancyBboxPatch(
+            (0.02, y),
+            0.96,
+            card_height,
+            transform=axis.transAxes,
+            boxstyle="round,pad=0.012,rounding_size=0.018",
+            facecolor=COLORS["white"],
+            edgecolor=colours[index],
+            linewidth=2.0,
         )
-
+        axis.add_patch(card)
+        axis.add_patch(
+            FancyBboxPatch(
+                (0.02, y),
+                0.018,
+                card_height,
+                transform=axis.transAxes,
+                boxstyle="round,pad=0.0,rounding_size=0.012",
+                facecolor=colours[index],
+                edgecolor=colours[index],
+                linewidth=0,
+            )
+        )
         axis.text(
-            count + largest * 0.018,
-            bar.get_y() + bar.get_height() / 2,
-            f"{count:,}\n{retention_text}",
+            0.065,
+            y + card_height * 0.68,
+            str(row["stage"]),
+            transform=axis.transAxes,
             ha="left",
             va="center",
-            fontsize=8.4,
-            fontweight="bold" if index in (0, 4) else "normal",
-            color=COLORS["grey_900"],
+            fontsize=9.3,
+            fontweight="bold",
+            color=COLORS["navy"],
+        )
+        axis.text(
+            0.065,
+            y + card_height * 0.30,
+            retention_text,
+            transform=axis.transAxes,
+            ha="left",
+            va="center",
+            fontsize=7.7,
+            color=COLORS["grey_700"],
+        )
+        axis.text(
+            0.94,
+            y + card_height * 0.52,
+            f"{count:,}",
+            transform=axis.transAxes,
+            ha="right",
+            va="center",
+            fontsize=17,
+            fontweight="bold",
+            color=colours[index],
         )
 
-    axis.set_yticks(
-        y_positions,
-        labels=funnel["stage"],
-    )
-    axis.set_xlabel("Records / visitors")
-    axis.set_ylabel("")
-    style_axes(axis, show_x_grid=True, show_y_grid=False)
+        if index < len(funnel) - 1:
+            axis.annotate(
+                "",
+                xy=(0.50, y - 0.008),
+                xytext=(0.50, y - card_gap + 0.010),
+                xycoords=axis.transAxes,
+                arrowprops={
+                    "arrowstyle": "-|>",
+                    "color": COLORS["grey_300"],
+                    "linewidth": 1.3,
+                },
+            )
 
     panel.set_axis_off()
     panel.text(
-        0.0,
-        0.98,
-        "DELAYED-LABEL EVIDENCE",
+        0.0, 0.98, "DELAYED-LABEL EVIDENCE",
         transform=panel.transAxes,
-        ha="left",
-        va="top",
-        fontsize=9,
-        fontweight="bold",
+        ha="left", va="top",
+        fontsize=9, fontweight="bold",
         color=COLORS["grey_500"],
     )
-
     y_cursor = 0.86
-
     for row in bundle.rejection_summary.itertuples(index=False):
         panel.text(
-            0.0,
-            y_cursor,
-            str(row.reason),
+            0.0, y_cursor, str(row.reason),
             transform=panel.transAxes,
-            ha="left",
-            va="center",
-            fontsize=8.5,
-            color=COLORS["grey_700"],
+            ha="left", va="center",
+            fontsize=8.5, color=COLORS["grey_700"],
         )
         panel.text(
-            0.96,
-            y_cursor,
-            f"{int(row.count):,}",
+            0.96, y_cursor, f"{int(row.count):,}",
             transform=panel.transAxes,
-            ha="right",
-            va="center",
-            fontsize=9,
-            fontweight="bold",
-            color=(
-                COLORS["red"]
-                if int(row.count) > 0
-                else COLORS["grey_500"]
-            ),
+            ha="right", va="center",
+            fontsize=9, fontweight="bold",
+            color=COLORS["red"] if int(row.count) > 0 else COLORS["grey_500"],
         )
         y_cursor -= 0.10
-
     panel.axhline(
         y_cursor + 0.03,
-        xmin=0,
-        xmax=1,
+        xmin=0, xmax=1,
         color=COLORS["grey_200"],
         linewidth=1.0,
     )
-
     evaluable = int(bundle.kpis["evaluable_rows"])
     coverage = float(bundle.kpis["label_coverage_rate"])
-    outcome_available = bool(
-        bundle.kpis["outcome_metrics_available"]
-    )
-
+    outcome_available = bool(bundle.kpis["outcome_metrics_available"])
     panel.text(
-        0.0,
-        y_cursor - 0.04,
-        "Evaluable outcome coverage",
+        0.0, y_cursor - 0.04, "Evaluable outcome coverage",
         transform=panel.transAxes,
-        fontsize=8.5,
-        color=COLORS["grey_700"],
+        fontsize=8.5, color=COLORS["grey_700"], va="top",
+    )
+    panel.text(
+        0.0, y_cursor - 0.13, f"{coverage:.2%}",
+        transform=panel.transAxes,
+        fontsize=21, fontweight="bold",
+        color=COLORS["green"] if evaluable > 0 else COLORS["red"],
         va="top",
     )
     panel.text(
-        0.0,
-        y_cursor - 0.13,
-        f"{coverage:.2%}",
+        0.0, y_cursor - 0.26,
+        "Production metrics available" if outcome_available else "Production metrics unavailable",
         transform=panel.transAxes,
-        fontsize=21,
-        fontweight="bold",
-        color=(
-            COLORS["green"]
-            if evaluable > 0
-            else COLORS["red"]
-        ),
+        fontsize=8.5, fontweight="bold",
+        color=COLORS["green"] if outcome_available else COLORS["red"],
         va="top",
     )
     panel.text(
-        0.0,
-        y_cursor - 0.26,
+        0.0, y_cursor - 0.36,
         (
-            "Production metrics available"
-            if outcome_available
-            else "Production metrics unavailable"
-        ),
-        transform=panel.transAxes,
-        fontsize=8.5,
-        fontweight="bold",
-        color=(
-            COLORS["green"]
-            if outcome_available
-            else COLORS["red"]
-        ),
-        va="top",
-    )
-    panel.text(
-        0.0,
-        y_cursor - 0.36,
-        (
-            "The pipeline is ready, but the source does not contain "
-            "future matured conversion outcomes."
+            "The pipeline is ready, but the source does not contain future "
+            "matured conversion outcomes."
             if not outcome_available
             else "Performance is calculated only from accepted matured labels."
         ),
         transform=panel.transAxes,
-        fontsize=8,
-        color=COLORS["grey_700"],
-        va="top",
-        wrap=True,
+        fontsize=8, color=COLORS["grey_700"],
+        va="top", wrap=True,
     )
 
     return save_figure_with_qa(
