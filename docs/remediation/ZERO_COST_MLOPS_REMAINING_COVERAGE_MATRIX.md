@@ -129,22 +129,34 @@ Prepare the project to evaluate production predictions once future conversion ou
 
 | ID | Requirement | Acceptance evidence | Status |
 |---|---|---|---|
-| `LBL-01` | Define prediction ledger schema | Visitor, score, model, threshold, timestamp, and outcome-window end recorded | `NOT STARTED` |
-| `LBL-02` | Generate stable prediction ID | Every scored record receives a reproducible unique identifier | `NOT STARTED` |
-| `LBL-03` | Store model and data provenance | Model hash, metadata hash, feature schema, and score source recorded | `NOT STARTED` |
-| `LBL-04` | Define delayed-label input schema | Visitor/prediction ID, label, event timestamp, and source documented | `NOT STARTED` |
-| `LBL-05` | Implement label ingestion | Valid label file can be loaded and validated | `NOT STARTED` |
-| `LBL-06` | Join labels to predictions safely | One-to-one or documented join logic prevents duplication | `NOT STARTED` |
-| `LBL-07` | Reject premature labels | Only matured prediction windows enter production evaluation | `NOT STARTED` |
-| `LBL-08` | Handle late-arriving labels | Reprocessing logic updates matured cohorts safely | `NOT STARTED` |
-| `LBL-09` | Handle duplicate and conflicting labels | Validation rules and error reporting implemented | `NOT STARTED` |
-| `LBL-10` | Calculate production metrics | PR-AUC, precision, recall, F1, calibration, and volume calculated when valid | `NOT STARTED` |
-| `LBL-11` | Track performance by model version | Metrics grouped by production model/run ID | `NOT STARTED` |
-| `LBL-12` | Export production-performance snapshot | CSV or JSON output generated for monitoring | `NOT STARTED` |
+| `LBL-01` | Define prediction ledger schema | Visitor, score, model, threshold, timestamp, and outcome-window end recorded | `COMPLETED` |
+| `LBL-02` | Generate stable prediction ID | Every scored record receives a reproducible unique identifier | `COMPLETED` |
+| `LBL-03` | Store model and data provenance | Model hash, metadata hash, feature schema, and score source recorded | `COMPLETED` |
+| `LBL-04` | Define delayed-label input schema | Visitor/prediction ID, label, event timestamp, and source documented | `COMPLETED` |
+| `LBL-05` | Implement label ingestion | Valid label file can be loaded and validated | `COMPLETED` |
+| `LBL-06` | Join labels to predictions safely | One-to-one or documented join logic prevents duplication | `COMPLETED` |
+| `LBL-07` | Reject premature labels | Only matured prediction windows enter production evaluation | `COMPLETED` |
+| `LBL-08` | Handle late-arriving labels | Reprocessing logic updates matured cohorts safely | `COMPLETED` |
+| `LBL-09` | Handle duplicate and conflicting labels | Validation rules and error reporting implemented | `COMPLETED` |
+| `LBL-10` | Calculate production metrics | PR-AUC, precision, recall, F1, calibration, and volume calculated when valid | `COMPLETED` |
+| `LBL-11` | Track performance by model version | Metrics grouped by production model/run ID | `COMPLETED` |
+| `LBL-12` | Export production-performance snapshot | CSV or JSON output generated for monitoring | `COMPLETED` |
 | `LBL-13` | Hide metrics when labels are unavailable | Existing truthfulness behaviour remains enforced | `COMPLETED` |
-| `LBL-14` | Add delayed-label tests | Mature, premature, duplicate, missing, and conflicting cases tested | `NOT STARTED` |
-| `LBL-15` | Document operational process | Score → wait → ingest → join → evaluate workflow documented | `NOT STARTED` |
+| `LBL-14` | Add delayed-label tests | Mature, premature, duplicate, missing, and conflicting cases tested | `COMPLETED` |
+| `LBL-15` | Document operational process | Score → wait → ingest → join → evaluate workflow documented | `COMPLETED` |
 
+## Delayed-label implementation evidence
+
+- Prediction-ledger schema and provenance: `94875cc`, `f66a6bf`
+- Delayed-label input and maturity validation: `f6afa76`, `44f5b54`, `fb3eab5`
+- Production metrics and truthful empty-label behaviour: `5cd5c1e`
+- End-to-end evaluation runner and focused tests: `d5217e8`
+- Operational runbook: `bdc2f0d`
+- Explicit delayed-label CI test step: `aa2263d`
+- Focused delayed-label suite: 43 tests passed
+- Full normal test suite: passed with only the approved opt-in retraining test skipped
+- `EXT-06` remains `BLOCKED` because genuine future production outcomes are unavailable
+- `DOC-07` remains `NOT STARTED` until architecture diagrams are updated
 ---
 
 # 5. Full retraining and CI workflows
@@ -165,7 +177,7 @@ Keep normal CI fast while providing explicit full-pipeline validation.
 | `CI-08` | Add scheduled Evidently generation where feasible | Compact reference/current artifacts used | `NOT STARTED` |
 | `CI-09` | Add MLflow integration test to CI | Temporary local backend is tested | `NOT STARTED` |
 | `CI-10` | Add Evidently generation test to CI | Report creation test runs in CI | `NOT STARTED` |
-| `CI-11` | Add delayed-label tests to CI | Production label workflow tests run | `NOT STARTED` |
+| `CI-11` | Add delayed-label tests to CI | Production label workflow tests run | `COMPLETED` |
 | `CI-12` | Preserve Docker, Helm, and Kubernetes checks | Existing configuration checks remain green | `COMPLETED` |
 | `CI-13` | Upload compact test artifacts on failure | Logs and selected reports available for debugging | `NOT STARTED` |
 | `CI-14` | Set artifact-retention limits | CI storage kept within free usage limits | `NOT STARTED` |
@@ -261,7 +273,7 @@ Keep the full local monitoring stack while optionally publishing compact metrics
 | `DOC-02` | Update main README with Evidently | Report generation and interpretation documented | `NOT STARTED` |
 | `DOC-03` | Add MLflow runbook | Start, stop, inspect, reset, and troubleshoot steps | `NOT STARTED` |
 | `DOC-04` | Add Evidently runbook | Generate, locate, interpret, and troubleshoot reports | `NOT STARTED` |
-| `DOC-05` | Add delayed-label runbook | Ingestion and matured-cohort process documented | `NOT STARTED` |
+| `DOC-05` | Add delayed-label runbook | Ingestion and matured-cohort process documented | `COMPLETED` |
 | `DOC-06` | Add free-deployment guide | Streamlit and optional Grafana steps documented | `DEFERRED` |
 | `DOC-07` | Update architecture diagrams | MLflow, Evidently, and delayed labels included | `NOT STARTED` |
 | `DOC-08` | Update limitations section | Real limitations separated from unfinished requirements | `NOT STARTED` |
@@ -280,8 +292,8 @@ Keep the full local monitoring stack while optionally publishing compact metrics
 |---|---|---|---|
 | `QA-01` | MLflow focused tests pass | Bridge tests and end-to-end champion validation passed | `COMPLETED` |
 | `QA-02` | Evidently focused tests pass | Quality and drift reports verified | `NOT STARTED` |
-| `QA-03` | Delayed-label focused tests pass | Matured-cohort evaluation verified | `NOT STARTED` |
-| `QA-04` | Full normal pytest suite passes | Only approved opt-in tests skipped | `NOT STARTED` |
+| `QA-03` | Delayed-label focused tests pass | Matured-cohort evaluation verified | `COMPLETED` |
+| `QA-04` | Full normal pytest suite passes | Only approved opt-in tests skipped | `COMPLETED` |
 | `QA-05` | Full retraining smoke test passes | Explicit full-pipeline command succeeds | `COMPLETED` |
 | `QA-06` | Docker Compose builds and runs | All required services healthy | `NOT STARTED` |
 | `QA-07` | MLflow service health verified | Local health endpoint, SQLite backend, artifact storage, registry, and alias were verified | `COMPLETED` |
