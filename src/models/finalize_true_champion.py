@@ -1734,6 +1734,14 @@ def main() -> None:
 
     run_optional_mlflow_tracking()
 
+    # Evidently monitoring is optional and runs in its own environment.
+    # It is called only after model artifacts and production scores exist.
+    from src.monitoring.evidently_bridge import (
+        run_optional_evidently_monitoring,
+    )
+
+    run_optional_evidently_monitoring()
+
     print_section("Done")
 
     print("Final true champion workflow completed successfully.")

@@ -190,3 +190,10 @@ mlflow_artifacts/
 # Isolated MLflow Python environment
 .venv-mlflow/
 .mlflow-server.pid
+
+# Isolated Evidently Python environment
+.venv-evidently/
+
+# Generated Evidently monitoring reports
+reports/evidently/
+monitoring/snapshots/evidently_monitoring_summary.json

@@ -1,0 +1,16 @@
+# Isolated local Evidently monitoring environment
+#
+# These numerical versions match the main project and avoid
+# dependency drift between monitoring and production data.
+
+numpy==1.26.4
+pandas==2.1.4
+pyarrow==14.0.2
+scikit-learn==1.4.2
+
+# Open-source monitoring and drift reporting.
+evidently==0.7.21
+
+joblib==1.3.2
+xgboost==3.2.0
+pytest==9.1.0
