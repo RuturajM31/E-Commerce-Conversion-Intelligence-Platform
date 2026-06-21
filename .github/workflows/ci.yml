@@ -45,6 +45,7 @@ jobs:
           cache-dependency-path: |
             requirements.txt
             requirements-app.txt
+            requirements-ci.txt
 
       # Step 3: Install Helm so the CI pipeline can validate the Helm chart.
       - name: Set up Helm
@@ -71,6 +72,11 @@ jobs:
           python -m pip install --dry-run -r requirements-app.txt
 
       # Step 7: Check that the most important third-party libraries can be imported.
+      # Install lightweight tools used only by CI.
+      - name: Install CI quality tools
+        run: |
+          python -m pip install -r requirements-ci.txt
+
       - name: Validate core imports
         run: |
           python - <<'PY'
@@ -104,6 +110,8 @@ jobs:
           test -f docker-compose.yml
           test -f Dockerfile
           test -f requirements.txt
+          test -f requirements-ci.txt
+          test -f data/sample/visitor_features_sample.csv
           test -f README.md
 
       # Step 10: Compile Python files to catch syntax errors before running tests.
@@ -127,6 +135,28 @@ jobs:
             -q -ra -p no:cacheprovider
 
       # Run this heavier check only from the manual button or weekly schedule.
+      # Check the critical CI and smoke-training files.
+      - name: Run critical formatting and lint checks
+        run: |
+          python -m ruff check scripts/audit_security_repro.py scripts/run_smoke_training.py tests/test_audit_security_repro.py tests/test_smoke_training.py tests/test_security_ci_closure.py --select E9,F63,F7,F82
+          python -m ruff format --check scripts/audit_security_repro.py scripts/run_smoke_training.py tests/test_audit_security_repro.py tests/test_smoke_training.py tests/test_security_ci_closure.py
+
+      # Scan pinned runtime dependencies for published vulnerabilities.
+      - name: Run dependency vulnerability scan
+        run: |
+          python -m pip_audit -r requirements.txt --progress-spinner off
+
+      # Fail when current repository files contain unresolved secrets.
+      - name: Run repository secret scan
+        run: |
+          python scripts/audit_security_repro.py --ci
+
+      # Validate the canonical training path without the full local dataset.
+      - name: Run sample-data smoke training
+        run: |
+          python scripts/run_smoke_training.py \
+            --output reports/qa/smoke_training_result.json
+
       - name: Validate MLflow integration
         if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
         env:

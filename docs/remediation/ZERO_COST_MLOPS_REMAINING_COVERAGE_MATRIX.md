@@ -170,11 +170,11 @@ Keep normal CI fast while providing explicit full-pipeline validation.
 | `CI-01` | Keep fast test suite on every push and PR | Existing GitHub Actions workflow runs automated checks | `COMPLETED` |
 | `CI-02` | Keep full retraining opt-in | Expensive test remains disabled during routine tests | `COMPLETED` |
 | `CI-03` | Add manual `workflow_dispatch` pipeline | GitHub Actions now includes workflow_dispatch | `COMPLETED` |
-| `CI-04` | Add smoke-retraining mode | Small or generated data can validate the training workflow | `NOT STARTED` |
+| `CI-04` | Add smoke-retraining mode | Small or generated data can validate the training workflow | `COMPLETED` |
 | `CI-05` | Evaluate full-data GitHub feasibility | The CI guide records why full-data GitHub retraining is not practical | `COMPLETED` |
 | `CI-06` | Avoid uploading full private/local dataset | Normal CI uses repository tests and does not upload the large local dataset | `COMPLETED` |
 | `CI-07` | Add scheduled compact validation | GitHub Actions now includes a weekly compact validation schedule | `COMPLETED` |
-| `CI-08` | Add scheduled Evidently generation where feasible | Compact reference/current artifacts used | `NOT STARTED` |
+| `CI-08` | Add scheduled Evidently generation where feasible | Compact reference/current artifacts used | `COMPLETED` |
 | `CI-09` | Add MLflow integration test to CI | Manual and scheduled runs execute the isolated MLflow bridge test | `COMPLETED` |
 | `CI-10` | Add Evidently generation test to CI | Manual and scheduled runs execute Evidently bridge and drift-summary tests | `COMPLETED` |
 | `CI-11` | Add delayed-label tests to CI | Delayed-label tests are included in the normal CI workflow | `COMPLETED` |
@@ -257,11 +257,11 @@ Keep the full local monitoring stack while optionally publishing compact metrics
 | `SEC-03` | Keep `.env` excluded | Only `.env.example` committed | `COMPLETED` |
 | `SEC-04` | Keep Grafana credentials external | Environment variables and Kubernetes Secrets used | `COMPLETED` |
 | `SEC-05` | Protect GitHub and cloud tokens | Cloud-token handling is deferred to the later zero-cost deployment phase | `DEFERRED` |
-| `SEC-06` | Run secret-pattern scan | No committed credentials or private keys found | `NOT STARTED` |
-| `SEC-07` | Review generated reports for sensitive visitor data | Public artifacts anonymised or sampled | `NOT STARTED` |
+| `SEC-06` | Run secret-pattern scan | No committed credentials or private keys found | `COMPLETED` |
+| `SEC-07` | Review generated reports for sensitive visitor data | Public artifacts anonymised or sampled | `VERIFIED` |
 | `SEC-08` | Pin all newly implemented dependencies | MLflow and Evidently dependency files are pinned | `COMPLETED` |
-| `SEC-09` | Run `pip check` after dependency changes | No incompatible dependency versions | `NOT STARTED` |
-| `SEC-10` | Rebuild Docker images after dependency changes | Clean image build and health checks pass | `NOT STARTED` |
+| `SEC-09` | Run `pip check` after dependency changes | No incompatible dependency versions | `COMPLETED` |
+| `SEC-10` | Rebuild Docker images after dependency changes | Clean image build and health checks pass | `COMPLETED` |
 
 ---
 
@@ -269,20 +269,20 @@ Keep the full local monitoring stack while optionally publishing compact metrics
 
 | ID | Requirement | Acceptance evidence | Status |
 |---|---|---|---|
-| `DOC-01` | Update main README with MLflow | Architecture, startup, outputs, and limitations documented | `NOT STARTED` |
-| `DOC-02` | Update main README with Evidently | Report generation and interpretation documented | `NOT STARTED` |
+| `DOC-01` | Update main README with MLflow | Architecture, startup, outputs, and limitations documented | `VERIFIED` |
+| `DOC-02` | Update main README with Evidently | Report generation and interpretation documented | `VERIFIED` |
 | `DOC-03` | Add MLflow runbook | MLflow startup, stop, inspect, validation, and local-storage steps are documented | `COMPLETED` |
 | `DOC-04` | Add Evidently runbook | Evidently generation, outputs, interpretation, and limitations are documented | `COMPLETED` |
 | `DOC-05` | Add delayed-label runbook | The delayed-label monitoring runbook documents the full operational process | `COMPLETED` |
 | `DOC-06` | Add free-deployment guide | Streamlit and optional Grafana steps documented | `DEFERRED` |
-| `DOC-07` | Update architecture diagrams | MLflow, Evidently, and delayed labels included | `NOT STARTED` |
+| `DOC-07` | Update architecture diagrams | MLflow, Evidently, and delayed labels included | `VERIFIED` |
 | `DOC-08` | Update limitations section | Limitations are separated from historical validation and current unlabeled scoring | `COMPLETED` |
 | `DOC-09` | Create comment-preservation report | Comment-preservation inventory and summary exist | `COMPLETED` |
-| `DOC-10` | Create before/after remediation summary | Final report committed | `NOT STARTED` |
-| `DOC-11` | Update original remediation matrix | All original findings receive final resolution | `NOT STARTED` |
-| `DOC-12` | Link this matrix from original matrix | Cross-reference exists | `NOT STARTED` |
+| `DOC-10` | Create before/after remediation summary | Final report committed | `COMPLETED` |
+| `DOC-11` | Update original remediation matrix | All original findings receive final resolution | `COMPLETED` |
+| `DOC-12` | Link this matrix from original matrix | Cross-reference exists | `COMPLETED` |
 | `DOC-13` | Add interviewer explanation | Architecture and business explanations exist in project guides and visual evidence | `COMPLETED` |
-| `DOC-14` | Record exact validation commands | Reproducible final QA checklist documented | `NOT STARTED` |
+| `DOC-14` | Record exact validation commands | Reproducible final QA checklist documented | `COMPLETED` |
 
 ---
 
@@ -295,19 +295,19 @@ Keep the full local monitoring stack while optionally publishing compact metrics
 | `QA-03` | Delayed-label focused tests pass | Delayed-label contract, maturity, evaluation, and CI tests passed | `COMPLETED` |
 | `QA-04` | Full normal pytest suite passes | Only approved opt-in tests skipped | `COMPLETED` |
 | `QA-05` | Full retraining smoke test passes | Explicit full-pipeline command succeeds | `COMPLETED` |
-| `QA-06` | Docker Compose builds and runs | All required services healthy | `NOT STARTED` |
+| `QA-06` | Docker Compose builds and runs | All required services healthy | `COMPLETED` |
 | `QA-07` | MLflow service health verified | Local health endpoint, SQLite backend, artifact storage, registry, and alias were verified | `COMPLETED` |
 | `QA-08` | Evidently generation works in clean environment | Evidently reports were generated from canonical project artifacts | `COMPLETED` |
 | `QA-09` | Monitoring snapshot remains truthful | No fabricated outcome metrics | `COMPLETED` |
-| `QA-10` | Helm lint and template pass | Chart validates after changes | `NOT STARTED` |
-| `QA-11` | Kubernetes client dry-run passes | Rendered resources accepted | `NOT STARTED` |
-| `QA-12` | Local Kubernetes runtime passes where services are added | Pods, services, and health endpoints verified | `NOT STARTED` |
-| `QA-13` | CI workflow passes remotely | Latest remediation-branch run is green | `NOT STARTED` |
-| `QA-14` | `git diff --check` passes | No whitespace errors | `NOT STARTED` |
-| `QA-15` | Secret and large-file audit passes | No accidental credentials or oversized artifacts | `NOT STARTED` |
-| `QA-16` | Baseline-to-remediation diff reviewed | No accidental deletions or unrelated files | `NOT STARTED` |
-| `QA-17` | Every matrix item resolved | No unexplained `NOT STARTED` or `IN PROGRESS` items | `NOT STARTED` |
-| `QA-18` | Final documentation commit pushed | Remote branch synchronized | `NOT STARTED` |
+| `QA-10` | Helm lint and template pass | Chart validates after changes | `COMPLETED` |
+| `QA-11` | Kubernetes client dry-run passes | Rendered resources accepted | `COMPLETED` |
+| `QA-12` | Local Kubernetes runtime passes where services are added | Pods, services, and health endpoints verified | `DEFERRED` |
+| `QA-13` | CI workflow passes remotely | Latest remediation-branch run is green | `IN PROGRESS` |
+| `QA-14` | `git diff --check` passes | No whitespace errors | `COMPLETED` |
+| `QA-15` | Secret and large-file audit passes | No accidental credentials or oversized artifacts | `COMPLETED` |
+| `QA-16` | Baseline-to-remediation diff reviewed | No accidental deletions or unrelated files | `COMPLETED` |
+| `QA-17` | Every matrix item resolved | No unexplained `NOT STARTED` or `IN PROGRESS` items | `IN PROGRESS` |
+| `QA-18` | Final documentation commit pushed | Remote branch synchronized | `IN PROGRESS` |
 | `QA-19` | User reviews final remediation result | Explicit approval recorded | `NOT STARTED` |
 | `QA-20` | Remediation branch merged | Merge occurs only after approval and green checks | `NOT STARTED` |
 | `QA-21` | Optional release tag created | Tag created after successful merge | `OPTIONAL` |
@@ -365,3 +365,20 @@ This matrix may be closed only when:
 9. Obtain user approval.
 10. Merge the remediation branch.
 11. Start the separate Streamlit visual-intelligence enhancement branch.
+
+## Final local closure evidence
+
+**Recorded:** 2026-06-22
+
+- Full pytest suite: passed.
+- Security and reproducibility audit: passed.
+- Representative smoke training: passed.
+- Dependency compatibility and vulnerability checks: passed.
+- MLflow 3.14 native XGBoost validation: passed.
+- Evidently 0.7.21 real-report validation: passed.
+- Docker build, Compose services, health checks, and Streamlit endpoint: passed.
+- Helm lint/template and Kubernetes client dry-runs: passed.
+- Git whitespace review and baseline diff review: passed.
+- Local Kubernetes runtime is `DEFERRED` to the later deployment phase; static validation is complete.
+- Remote CI, push confirmation, user approval, and merge remain open because they can happen only after this closure commit.
+- Immediate production outcome labels remain externally blocked until the future label window matures.

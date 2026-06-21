@@ -14,6 +14,6 @@ xgboost==3.2.0
 streamlit==1.54.0
 plotly==5.24.1
 
-# Security-validated dependency additions
-# Validated image dependency used by Streamlit and chart exports.
+# Security validation overrides.
+# Candidate only; live requirements remain unchanged.
 pillow==12.2.0

@@ -1,0 +1,3 @@
+# Lightweight tools used only by GitHub Actions and local QA.
+ruff==0.8.6
+pip-audit==2.7.3

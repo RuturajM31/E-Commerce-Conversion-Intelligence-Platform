@@ -33,7 +33,7 @@ def test_core_requirements_are_exactly_pinned():
 
     assert pins["numpy"] == "1.26.4"
     assert pins["pandas"] == "2.1.4"
-    assert pins["scikit-learn"] == "1.4.2"
+    assert pins["scikit-learn"] == "1.5.0"
     assert pins["joblib"] == "1.3.2"
     assert pins["xgboost"] == "3.2.0"
     assert pins["imbalanced-learn"] == "0.14.2"
@@ -44,7 +44,7 @@ def test_app_runtime_can_load_xgboost_champion():
 
     pins = load_requirement_pins("requirements-app.txt")
 
-    assert pins["scikit-learn"] == "1.4.2"
+    assert pins["scikit-learn"] == "1.5.0"
     assert pins["joblib"] == "1.3.2"
     assert pins["xgboost"] == "3.2.0"
 

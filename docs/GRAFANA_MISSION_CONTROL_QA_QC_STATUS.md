@@ -8,7 +8,7 @@
 | Prometheus config update | PASS | Adds `ecommerce_metrics_exporter` scrape job. |
 | Alert rules update | PASS | Adds exporter, duplicate, invalid score, missing value, drift, anomaly, and prediction error alerts. |
 | Grafana mission-control dashboard | PASS | Includes business, model, prediction, data-quality, anomaly, forecast, file availability, and system KPIs. |
-| Grafana password | PASS | Uses local demo password `Techno#123` as requested. |
+| Grafana password | PASS | Supplied at runtime through `GRAFANA_ADMIN_PASSWORD`; no password is stored in Git. |
 
 ## Important
 

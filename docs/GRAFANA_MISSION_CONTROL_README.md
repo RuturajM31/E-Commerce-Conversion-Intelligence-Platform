@@ -141,7 +141,7 @@ Grafana login:
 
 ```text
 Username: admin
-Password: Techno#123
+Password: value supplied at runtime through GRAFANA_ADMIN_PASSWORD
 ```
 
 ## Prometheus Checks

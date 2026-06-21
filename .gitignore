@@ -197,3 +197,9 @@ mlflow_artifacts/
 # Generated Evidently monitoring reports
 reports/evidently/
 monitoring/snapshots/evidently_monitoring_summary.json
+
+# Local CI quality-tools environment
+.venv-ci-tools/
+
+# Local QA and dependency-validation environments
+.venv-security-upgrade/
