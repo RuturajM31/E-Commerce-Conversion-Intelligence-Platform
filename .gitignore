@@ -181,3 +181,12 @@ reports/final/key_business_findings.md
 # Local Alertmanager webhook output
 monitoring/alert_notifications/*
 !monitoring/alert_notifications/.gitkeep
+
+# MLflow local runtime
+mlflow.db
+mlruns/
+mlflow_artifacts/
+
+# Isolated MLflow Python environment
+.venv-mlflow/
+.mlflow-server.pid

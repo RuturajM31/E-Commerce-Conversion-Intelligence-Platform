@@ -1726,6 +1726,14 @@ def main() -> None:
         ),
     )
 
+    # MLflow is optional and runs in its separate environment.
+    # It is called only after all production artifacts are saved.
+    from src.models.mlflow_bridge import (
+        run_optional_mlflow_tracking,
+    )
+
+    run_optional_mlflow_tracking()
+
     print_section("Done")
 
     print("Final true champion workflow completed successfully.")
