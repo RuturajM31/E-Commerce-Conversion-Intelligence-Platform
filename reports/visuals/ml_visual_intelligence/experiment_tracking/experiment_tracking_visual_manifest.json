@@ -1,0 +1,111 @@
+{
+  "category": "ML Visual Intelligence",
+  "package": "Experiment tracking",
+  "counts": {
+    "experiments": 3,
+    "runs": 8,
+    "metrics": 67,
+    "params": 142,
+    "tags": 66,
+    "registered_models": 4,
+    "model_versions": 15,
+    "registered_model_aliases": 13,
+    "comparable_runs": 3
+  },
+  "metric_columns": [
+    "metric__correctness/mean",
+    "metric__groundedness/mean",
+    "metric__relevance/mean",
+    "metric__safety/mean"
+  ],
+  "primary_metric": "metric__correctness/mean",
+  "i03_ready": false,
+  "supported_visuals": [
+    "MLV-I01",
+    "MLV-I02",
+    "MLV-I04",
+    "MLV-I05"
+  ],
+  "conditional_visuals": {
+    "MLV-I03": "Requires dense repeated numeric hyperparameter variation."
+  },
+  "artifacts": {
+    "MLV-I01": "reports/visuals/ml_visual_intelligence/experiment_tracking/mlv-i01_experiment_parallel_coordinates.png",
+    "MLV-I02": "reports/visuals/ml_visual_intelligence/experiment_tracking/mlv-i02_run_performance_timeline.png",
+    "MLV-I04": "reports/visuals/ml_visual_intelligence/experiment_tracking/mlv-i04_run_comparison_matrix.png",
+    "MLV-I05": "reports/visuals/ml_visual_intelligence/experiment_tracking/mlv-i05_champion_challenger_evolution.png"
+  },
+  "supporting_files": {
+    "comparable_runs": "reports/visuals/ml_visual_intelligence/experiment_tracking/comparable_mlflow_runs.csv",
+    "registry_versions": "reports/visuals/ml_visual_intelligence/experiment_tracking/model_registry_versions.csv",
+    "parameter_density": "reports/visuals/ml_visual_intelligence/experiment_tracking/hyperparameter_density.csv",
+    "insights": "reports/visuals/ml_visual_intelligence/experiment_tracking/experiment_tracking_insights.md",
+    "i03_status": "reports/visuals/ml_visual_intelligence/experiment_tracking/i03_hyperparameter_surface_status.md"
+  },
+  "qa": {
+    "MLV-I01": {
+      "passed": true,
+      "width_px": 2243,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-I02": {
+      "passed": true,
+      "width_px": 2270,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-I04": {
+      "passed": true,
+      "width_px": 2251,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-I05": {
+      "passed": true,
+      "width_px": 2368,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    }
+  }
+}
