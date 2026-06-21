@@ -240,7 +240,7 @@ Code written without verification is not complete.
 - [ ] `TEST-08` Add one-model and one-threshold consistency tests.
 - [ ] `TEST-09` Add score-export tests.
 - [ ] `TEST-10` Add leakage and cutoff tests.
-- [ ] `TEST-11` Add monitoring metric-value tests.
+- [x] `TEST-11` Add monitoring metric-value tests.
 - [ ] `TEST-12` Add anomaly-count tests.
 - [ ] `TEST-13` Add business-score-source tests.
 - [ ] `TEST-14` Add model compatibility tests.
@@ -325,7 +325,7 @@ Code written without verification is not complete.
 - [ ] `DOC-04` Document grain, target, observation window, and prediction window.
 - [ ] `DOC-05` Document the production model and threshold source.
 - [ ] `DOC-06` Document the score-generation workflow.
-- [ ] `DOC-07` Document monitoring metric sources.
+- [x] `DOC-07` Document monitoring metric sources.
 - [ ] `DOC-08` Document exact dependency versions.
 - [ ] `DOC-09` Document Docker and Compose workflows.
 - [ ] `DOC-10` Document Kubernetes and Helm workflows.
@@ -336,10 +336,21 @@ Code written without verification is not complete.
 - [ ] `DOC-15` Update all model metrics after retraining.
 - [ ] `DOC-16` Update the developer and interview understanding guide.
 - [ ] `DOC-17` Classify every audit finding accurately.
-- [ ] `DOC-18` Maintain an honest limitations section.
+- [x] `DOC-18` Maintain an honest limitations section.
 - [ ] `DOC-19` Create a comment-preservation report.
 - [ ] `DOC-20` Create a before-and-after remediation summary.
 
+## Delayed-label remediation evidence
+
+- Prediction ledger and provenance: `94875cc`, `f66a6bf`
+- Label ingestion and maturity validation: `f6afa76`, `44f5b54`
+- Production metric calculation and truthful empty-label handling: `5cd5c1e`
+- End-to-end evaluation runner and tests: `d5217e8`
+- Operational monitoring runbook: `bdc2f0d`
+- Explicit CI test coverage: `aa2263d`
+- Zero-cost coverage reconciliation: `602b281`
+- Real outcome evaluation remains externally blocked because the source data
+  contains zero future days after the scoring timestamp
 ## 21. Final QA and sign-off
 
 - [ ] `QA-01` Run the complete required test suite.
