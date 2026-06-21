@@ -11,8 +11,10 @@ import pytest
 
 from src.monitoring.prediction_ledger import (
     PREDICTION_LEDGER_COLUMNS,
+    append_prediction_ledger_row,
     build_prediction_ledger_row,
     initialise_prediction_ledger,
+    read_prediction_ledger,
 )
 
 
@@ -154,3 +156,73 @@ def test_initialise_prediction_ledger_writes_only_the_header(tmp_path):
 
     assert created_path == ledger_path
     assert rows == [PREDICTION_LEDGER_COLUMNS]
+
+def test_append_writes_once_and_skips_exact_duplicate(tmp_path):
+    """Ensure retrying the same prediction does not create duplicate rows."""
+
+    ledger_path = tmp_path / "prediction_ledger.csv"
+    row = build_prediction_ledger_row(
+        **valid_prediction_details()
+    )
+
+    first_result = append_prediction_ledger_row(
+        row,
+        path=ledger_path,
+    )
+    second_result = append_prediction_ledger_row(
+        row,
+        path=ledger_path,
+    )
+
+    stored_rows = read_prediction_ledger(
+        path=ledger_path
+    )
+
+    assert first_result == "written"
+    assert second_result == "duplicate"
+    assert len(stored_rows) == 1
+    assert stored_rows[0]["prediction_id"] == row["prediction_id"]
+
+
+def test_same_prediction_id_with_changed_data_is_rejected(tmp_path):
+    """Prevent silent corruption when an existing ID has different values."""
+
+    ledger_path = tmp_path / "prediction_ledger.csv"
+    row = build_prediction_ledger_row(
+        **valid_prediction_details()
+    )
+
+    append_prediction_ledger_row(
+        row,
+        path=ledger_path,
+    )
+
+    conflicting_row = row.copy()
+    conflicting_row["model_name"] = "Unexpected Different Model"
+
+    with pytest.raises(
+        RuntimeError,
+        match="Conflicting ledger row",
+    ):
+        append_prediction_ledger_row(
+            conflicting_row,
+            path=ledger_path,
+        )
+
+
+def test_append_rejects_incomplete_schema(tmp_path):
+    """Reject rows that do not contain the complete ledger contract."""
+
+    ledger_path = tmp_path / "prediction_ledger.csv"
+    incomplete_row = {
+        "prediction_id": "pred_incomplete",
+    }
+
+    with pytest.raises(
+        ValueError,
+        match="approved schema",
+    ):
+        append_prediction_ledger_row(
+            incomplete_row,
+            path=ledger_path,
+        )

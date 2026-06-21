@@ -284,6 +284,107 @@ def build_prediction_ledger_row(
     }
 
 
+
+def serialise_prediction_ledger_row(
+    row: Dict[str, Any],
+) -> Dict[str, str]:
+    """Validate and convert one ledger row into CSV-safe text values."""
+
+    missing_columns = [
+        column
+        for column in PREDICTION_LEDGER_COLUMNS
+        if column not in row
+    ]
+
+    extra_columns = [
+        column
+        for column in row
+        if column not in PREDICTION_LEDGER_COLUMNS
+    ]
+
+    if missing_columns or extra_columns:
+        raise ValueError(
+            "Prediction ledger row does not match the approved schema. "
+            f"Missing: {missing_columns}. Extra: {extra_columns}."
+        )
+
+    return {
+        column: str(row[column])
+        for column in PREDICTION_LEDGER_COLUMNS
+    }
+
+
+def read_prediction_ledger(
+    path: Path = PREDICTION_LEDGER_PATH,
+) -> list[Dict[str, str]]:
+    """Read existing ledger rows and validate the stored CSV header."""
+
+    if not path.exists():
+        return []
+
+    with path.open(
+        "r",
+        newline="",
+        encoding="utf-8",
+    ) as csv_file:
+        reader = csv.DictReader(csv_file)
+
+        if reader.fieldnames != PREDICTION_LEDGER_COLUMNS:
+            raise ValueError(
+                "Existing prediction ledger has an unexpected schema."
+            )
+
+        return list(reader)
+
+
+def append_prediction_ledger_row(
+    row: Dict[str, Any],
+    path: Path = PREDICTION_LEDGER_PATH,
+) -> str:
+    """Append one unique prediction or safely ignore an exact duplicate."""
+
+    serialised_row = serialise_prediction_ledger_row(row)
+
+    # Create the file and approved header before reading existing records.
+    initialise_prediction_ledger(path)
+
+    existing_rows = read_prediction_ledger(path)
+
+    matching_rows = [
+        existing_row
+        for existing_row in existing_rows
+        if existing_row["prediction_id"]
+        == serialised_row["prediction_id"]
+    ]
+
+    if matching_rows:
+        # The same ID with different stored values indicates corrupted or
+        # conflicting provenance and must not be silently accepted.
+        if any(
+            existing_row != serialised_row
+            for existing_row in matching_rows
+        ):
+            raise RuntimeError(
+                "Conflicting ledger row found for prediction_id "
+                f"{serialised_row['prediction_id']}."
+            )
+
+        return "duplicate"
+
+    with path.open(
+        "a",
+        newline="",
+        encoding="utf-8",
+    ) as csv_file:
+        writer = csv.DictWriter(
+            csv_file,
+            fieldnames=PREDICTION_LEDGER_COLUMNS,
+        )
+        writer.writerow(serialised_row)
+
+    return "written"
+
+
 def initialise_prediction_ledger(
     path: Path = PREDICTION_LEDGER_PATH,
 ) -> Path:
