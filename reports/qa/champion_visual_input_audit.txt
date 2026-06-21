@@ -1,0 +1,57 @@
+CHAMPION VISUAL INPUT AUDIT
+================================================================================
+Project root: /Users/ruturajmokashi/Ai Data Science Course Documents/Machine Learning/ECommerce_Conversion_Intelligence_Platform
+
+TABLE SOURCES
+--------------------------------------------------------------------------------
+Path: reports/tables/manual_model_comparison.csv
+Exists: True
+Shape: 5 rows x 23 columns
+Columns: track, model_name, model_family, reason, training_rows, test_rows, buyer_rate_test, training_seconds, accuracy_at_0_50, precision_at_0_50, recall_at_0_50, f1_at_0_50, roc_auc, pr_auc, best_threshold, best_precision, best_recall, best_f1_score, best_targeted_share, best_lift_vs_random, champion_score, status, error_message
+Columns with nulls: error_message
+
+Path: reports/tables/automl_benchmark_results.csv
+Exists: True
+Shape: 12 rows x 23 columns
+Columns: track, model_name, model_family, reason, training_rows, test_rows, buyer_rate_test, training_seconds, accuracy_at_0_50, precision_at_0_50, recall_at_0_50, f1_at_0_50, roc_auc, pr_auc, best_threshold, best_precision, best_recall, best_f1_score, best_targeted_share, best_lift_vs_random, champion_score, status, error_message
+Columns with nulls: error_message
+
+Path: reports/tables/final_model_selection.csv
+Exists: True
+Shape: 2 rows x 26 columns
+Columns: track, model_name, model_family, reason, training_rows, test_rows, buyer_rate_test, training_seconds, accuracy_at_0_50, precision_at_0_50, recall_at_0_50, f1_at_0_50, roc_auc, pr_auc, best_threshold, best_precision, best_recall, best_f1_score, best_targeted_share, best_lift_vs_random, champion_score, status, error_message, final_candidate_type, final_decision_rank, final_decision
+Columns with nulls: error_message
+
+Path: reports/tables/final_true_champion_comparison.csv
+Exists: True
+Shape: 8 rows x 14 columns
+Columns: evaluation_split, model_name, model_family, training_rows, deployable, pr_auc, roc_auc, best_threshold, best_precision, best_recall, best_f1_score, predicted_positive_rate_at_best_threshold, notes, business_score
+Columns with nulls: None
+
+Path: reports/tables/final_true_champion_summary.csv
+Exists: True
+Shape: 1 rows x 20 columns
+Columns: final_model_name, environment, model_family, selection_metric, selection_split, final_evaluation_split, split_strategy, business_score_weights, best_threshold, pr_auc, roc_auc, best_precision, best_recall, best_f1_score, validation_metrics, final_holdout_metrics, feature_columns, training_data_path, scoring_data_path, notes
+Columns with nulls: None
+
+METADATA SOURCES
+--------------------------------------------------------------------------------
+Path: models/metadata/final_champion_metadata.json
+Exists: True
+Top-level keys: best_f1_score, best_precision, best_recall, best_threshold, business_score_weights, environment, feature_columns, final_evaluation_split, final_holdout_metrics, final_model_name, model_family, notes, pr_auc, roc_auc, scoring_data_path, selection_metric, selection_split, split_strategy, training_data_path, validation_metrics
+
+Path: models/metadata/mlflow_champion_lineage.json
+Exists: True
+Top-level keys: experiment_name, model_uri, registered_model_alias, registered_model_name, registered_model_version, run_id, tracking_uri
+
+VISUALIZATION PACKAGE
+--------------------------------------------------------------------------------
+Path: src/visualization
+Exists: True
+Shared style present: True
+- src/visualization/__init__.py (0 lines)
+- src/visualization/ml_visual_style.py (771 lines)
+
+NEXT USE
+--------------------------------------------------------------------------------
+Use this audit to map exact columns and metadata fields into MLV-A01, MLV-A02, MLV-A03, and MLV-A04.
