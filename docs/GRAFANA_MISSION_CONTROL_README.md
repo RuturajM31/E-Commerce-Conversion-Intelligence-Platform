@@ -48,14 +48,18 @@ metrics-exporter:8000
 
 ### Business KPIs
 
-- Total visitors
-- Converted visitors
-- Conversion rate
+- Total visitors scored
 - High-intent visitors
 - High-intent rate
 - Visitor segment counts
 - Forecast totals by KPI
 - Daily KPI latest values
+- Converted visitors, only when actual outcome labels are available
+- Conversion rate, only when actual outcome labels are available
+
+The current production scoring table is unlabeled. Therefore, converted-visitor
+and conversion-rate metrics are intentionally omitted instead of being reported
+as fabricated zero values.
 
 ### Model KPIs
 

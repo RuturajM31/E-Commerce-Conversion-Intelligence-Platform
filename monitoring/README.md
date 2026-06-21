@@ -82,7 +82,7 @@ Recommended business KPIs:
 Total visitors scored
 High-intent visitors detected
 Expected buyers in high-intent segment
-Conversion rate
+Conversion rate, only when actual outcome labels are available
 High-intent visitor rate
 Estimated marketing efficiency gain
 Top visitor segment distribution
@@ -838,8 +838,8 @@ What Alertmanager does
 Which KPIs are monitored
 How to run the stack
 Which files are included
-What is production-ready
-What is a local project scaffold
+What is implemented and validated locally
+What remains a local project scaffold
 ```
 
 ### Why it matters

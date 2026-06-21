@@ -18,7 +18,7 @@
       },
       "options": {
         "mode": "html",
-        "content": "\n<div style=\"padding: 14px 18px; border-radius: 12px; background: linear-gradient(90deg, rgba(22, 119, 255, 0.22), rgba(19, 191, 166, 0.12)); border: 1px solid rgba(120,150,180,0.35);\">\n  <div style=\"font-size: 25px; font-weight: 800; color: #EAF2FF; letter-spacing: 0.2px;\">\n    E-Commerce Conversion Intelligence \u2014 MLOps Mission Control\n  </div>\n  <div style=\"margin-top: 5px; font-size: 14px; color: #B9C7D6;\">\n    Live health, model quality, high-intent demand, anomaly signals, forecast outlook, and project coverage \u2014 powered by a fast cached monitoring snapshot.\n  </div>\n  <div style=\"margin-top: 8px; font-size: 12px; color: #8FA3B8;\">\n    Portfolio story: heavy batch analytics are separated from lightweight real-time monitoring, so Prometheus scrapes stay fast and Grafana remains responsive.\n  </div>\n</div>\n"
+        "content": "\n<div style=\"padding: 14px 18px; border-radius: 12px; background: linear-gradient(90deg, rgba(22, 119, 255, 0.22), rgba(19, 191, 166, 0.12)); border: 1px solid rgba(120,150,180,0.35);\">\n  <div style=\"font-size: 25px; font-weight: 800; color: #EAF2FF; letter-spacing: 0.2px;\">\n    E-Commerce Conversion Intelligence — MLOps Mission Control\n  </div>\n  <div style=\"margin-top: 5px; font-size: 14px; color: #B9C7D6;\">\n    Current snapshot health, model quality, high-intent demand, anomaly signals, forecast outlook, and project coverage — powered by a fast cached monitoring snapshot.\n  </div>\n  <div style=\"margin-top: 8px; font-size: 12px; color: #8FA3B8;\">\n    Portfolio story: heavy batch analytics are separated from lightweight snapshot-based monitoring, so Prometheus scrapes stay fast and Grafana remains responsive.\n  </div>\n</div>\n"
       },
       "fieldConfig": {
         "defaults": {},
@@ -328,7 +328,7 @@
     {
       "id": 6,
       "type": "stat",
-      "title": "Conversion Rate",
+      "title": "Conversion Rate — Labels Required",
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -375,7 +375,8 @@
         "orientation": "auto",
         "textMode": "auto",
         "wideLayout": true
-      }
+      },
+      "description": "Displayed only when actual conversion outcome labels are available. The unlabeled production scoring table intentionally does not publish this metric."
     },
     {
       "id": 7,
@@ -1147,7 +1148,7 @@
     {
       "id": 20,
       "type": "bargauge",
-      "title": "Visitor Segments \u2014 Current Snapshot",
+      "title": "Visitor Segments — Current Snapshot",
       "gridPos": {
         "h": 7,
         "w": 8,
@@ -1205,7 +1206,7 @@
     {
       "id": 21,
       "type": "bargauge",
-      "title": "Forecast Totals by KPI \u2014 Current Snapshot",
+      "title": "Forecast Totals by KPI — Current Snapshot",
       "gridPos": {
         "h": 7,
         "w": 8,
@@ -2448,7 +2449,7 @@
       },
       "options": {
         "mode": "markdown",
-        "content": "### Why this dashboard is fast\n- Heavy CSV files are processed once by `build_monitoring_snapshot.py`.\n- Prometheus scrapes a lightweight exporter that reads only `ecommerce_metrics_snapshot.json`.\n- This separates batch analytics from real-time monitoring, which is a production-style MLOps pattern."
+        "content": "### Why this dashboard is fast\n- Heavy CSV files are processed once by `build_monitoring_snapshot.py`.\n- Prometheus scrapes a lightweight exporter that reads only `ecommerce_metrics_snapshot.json`.\n- This separates heavy batch analytics from lightweight snapshot-based operational monitoring. The current project does not claim live event-stream processing."
       },
       "fieldConfig": {
         "defaults": {},

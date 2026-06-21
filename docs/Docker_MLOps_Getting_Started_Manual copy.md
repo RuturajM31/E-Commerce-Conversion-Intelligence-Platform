@@ -240,7 +240,7 @@ HTTP/1.1 204 No Content
 Total visitors scored
 High-intent visitors detected
 Expected buyers in high-intent segment
-Conversion rate
+Conversion rate when actual outcome labels are available
 High-intent visitor rate
 Estimated marketing efficiency gain
 Visitor segment distribution

@@ -207,7 +207,7 @@ Code written without verification is not complete.
 - [ ] `DEP-01` Pin the supported Python version.
 - [ ] `DEP-02` Pin scikit-learn to the approved training version.
 - [ ] `DEP-03` Pin pandas, NumPy, joblib, Streamlit, and Plotly.
-- [ ] `DEP-04` Pin MLflow, Evidently, Prometheus, pytest, and remaining dependencies.
+- [ ] `DEP-04` Pin pytest and all implemented Python dependencies; pin monitoring container versions; document MLflow and Evidently as not implemented.
 - [ ] `DEP-05` Align `requirements.txt`, `requirements-app.txt`, and `pyproject.toml`.
 - [ ] `DEP-06` Add a lockfile or frozen requirements file.
 - [ ] `DEP-07` Store environment versions in model metadata.
