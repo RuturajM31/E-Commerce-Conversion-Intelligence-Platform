@@ -22,8 +22,10 @@ from typing import Any, Dict
 
 from src.config.paths import DELAYED_LABEL_INPUT_PATH
 from src.monitoring.prediction_ledger import (
+    PREDICTION_LEDGER_COLUMNS,
     normalise_utc_timestamp,
     require_text,
+    serialise_prediction_ledger_row,
 )
 
 
@@ -36,6 +38,16 @@ DELAYED_LABEL_COLUMNS = [
     "prediction_id",
     "outcome_observed_at",
     "converted",
+    "label_source",
+    "label_recorded_at",
+]
+
+
+# The final joined output keeps all prediction provenance and adds the
+# trustworthy observed outcome used for production performance reporting.
+MATURED_OUTCOME_COLUMNS = PREDICTION_LEDGER_COLUMNS + [
+    "outcome_observed_at",
+    "actual_conversion",
     "label_source",
     "label_recorded_at",
 ]
@@ -205,6 +217,170 @@ def read_delayed_labels(
             )
 
     return rows
+
+
+
+def validate_and_join_matured_outcomes(
+    ledger_rows: list[Dict[str, Any]],
+    label_rows: list[Dict[str, Any]],
+) -> tuple[list[Dict[str, str]], Dict[str, Any]]:
+    """Join only known labels whose complete outcome window has matured."""
+
+    report: Dict[str, Any] = {
+        "total_ledger_rows": len(ledger_rows),
+        "total_label_rows": len(label_rows),
+        "accepted_matured_rows": 0,
+        "duplicate_label_rows": 0,
+        "rejected_invalid_rows": 0,
+        "rejected_unknown_prediction_ids": 0,
+        "rejected_premature_labels": 0,
+        "rejected_conflicting_prediction_ids": 0,
+        "rejections": [],
+    }
+
+    # Validate the stored ledger schema and require one row per prediction ID.
+    ledger_by_id: Dict[str, Dict[str, str]] = {}
+
+    for ledger_row in ledger_rows:
+        serialised_ledger = serialise_prediction_ledger_row(
+            ledger_row
+        )
+        prediction_id = serialised_ledger["prediction_id"]
+
+        if prediction_id in ledger_by_id:
+            raise ValueError(
+                "Prediction ledger contains duplicate prediction_id "
+                f"{prediction_id}."
+            )
+
+        ledger_by_id[prediction_id] = serialised_ledger
+
+    # Validate labels first, then group them by prediction ID.
+    labels_by_id: Dict[str, list[Dict[str, str]]] = {}
+
+    for label_row in label_rows:
+        try:
+            serialised_label = serialise_delayed_label_row(
+                label_row
+            )
+        except (TypeError, ValueError) as error:
+            report["rejected_invalid_rows"] += 1
+            report["rejections"].append(
+                {
+                    "prediction_id": str(
+                        label_row.get(
+                            "prediction_id",
+                            "",
+                        )
+                    ),
+                    "reason": "invalid_label",
+                    "detail": str(error),
+                }
+            )
+            continue
+
+        prediction_id = serialised_label["prediction_id"]
+
+        labels_by_id.setdefault(
+            prediction_id,
+            [],
+        ).append(serialised_label)
+
+    matured_rows: list[Dict[str, str]] = []
+
+    for prediction_id, grouped_labels in labels_by_id.items():
+        # Convert each label row into canonical JSON so exact duplicates and
+        # true conflicts can be distinguished reliably.
+        canonical_labels = {
+            str(sorted(label.items()))
+            for label in grouped_labels
+        }
+
+        if len(canonical_labels) > 1:
+            report[
+                "rejected_conflicting_prediction_ids"
+            ] += 1
+            report["rejections"].append(
+                {
+                    "prediction_id": prediction_id,
+                    "reason": "conflicting_labels",
+                    "detail": (
+                        "Multiple different labels exist for one prediction."
+                    ),
+                }
+            )
+            continue
+
+        # Exact retries are harmless. Keep one row and report the extras.
+        report["duplicate_label_rows"] += (
+            len(grouped_labels) - 1
+        )
+        label = grouped_labels[0]
+
+        ledger_row = ledger_by_id.get(prediction_id)
+
+        if ledger_row is None:
+            report[
+                "rejected_unknown_prediction_ids"
+            ] += 1
+            report["rejections"].append(
+                {
+                    "prediction_id": prediction_id,
+                    "reason": "unknown_prediction_id",
+                    "detail": (
+                        "No matching prediction exists in the ledger."
+                    ),
+                }
+            )
+            continue
+
+        outcome_window_end = datetime.fromisoformat(
+            ledger_row["outcome_window_end"]
+        )
+        outcome_observed_at = datetime.fromisoformat(
+            label["outcome_observed_at"]
+        )
+
+        # The final outcome cannot be trusted until the full configured
+        # conversion window has finished.
+        if outcome_observed_at < outcome_window_end:
+            report["rejected_premature_labels"] += 1
+            report["rejections"].append(
+                {
+                    "prediction_id": prediction_id,
+                    "reason": "premature_label",
+                    "detail": (
+                        "Outcome was observed before the prediction "
+                        "window ended."
+                    ),
+                }
+            )
+            continue
+
+        joined_row = {
+            **ledger_row,
+            "outcome_observed_at": label[
+                "outcome_observed_at"
+            ],
+            "actual_conversion": label["converted"],
+            "label_source": label["label_source"],
+            "label_recorded_at": label[
+                "label_recorded_at"
+            ],
+        }
+
+        matured_rows.append(
+            {
+                column: joined_row[column]
+                for column in MATURED_OUTCOME_COLUMNS
+            }
+        )
+
+    report["accepted_matured_rows"] = len(
+        matured_rows
+    )
+
+    return matured_rows, report
 
 
 def append_delayed_label_row(

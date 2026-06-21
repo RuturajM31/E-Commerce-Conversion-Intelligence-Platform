@@ -11,10 +11,15 @@ import pytest
 
 from src.monitoring.delayed_labels import (
     DELAYED_LABEL_COLUMNS,
+    MATURED_OUTCOME_COLUMNS,
     append_delayed_label_row,
     build_delayed_label_row,
     initialise_delayed_label_input,
     read_delayed_labels,
+    validate_and_join_matured_outcomes,
+)
+from src.monitoring.prediction_ledger import (
+    build_prediction_ledger_row,
 )
 
 
@@ -181,3 +186,173 @@ def test_read_rejects_unexpected_csv_header(tmp_path):
         read_delayed_labels(
             path=label_path
         )
+
+def valid_prediction_ledger_row():
+    """Return one production prediction with a 14-day outcome window."""
+
+    return build_prediction_ledger_row(
+        visitorid=12345,
+        scoring_time="2015-09-18T02:59:47.788000+00:00",
+        purchase_intent_score=0.991,
+        production_threshold=0.98,
+        model_name="Tuned Random Forest",
+        model_generation="final_champion",
+        model_hash="model-sha256-example",
+        metadata_hash="metadata-sha256-example",
+        feature_columns=[
+            "total_events",
+            "view_count",
+            "addtocart_count",
+            "unique_items",
+            "activity_span_ms",
+            "cart_to_view_ratio",
+            "events_per_unique_item",
+        ],
+        score_source="final_champion_visitor_scores.csv",
+    )
+
+
+def valid_matured_label(ledger_row, converted=1):
+    """Return one outcome observed after the full prediction window."""
+
+    return build_delayed_label_row(
+        prediction_id=ledger_row["prediction_id"],
+        outcome_observed_at=ledger_row["outcome_window_end"],
+        converted=converted,
+        label_source="retailrocket_future_events",
+        label_recorded_at="2015-10-03T09:00:00+00:00",
+    )
+
+
+def test_matured_label_joins_to_exactly_one_prediction():
+    """Accept a known label after the complete outcome window."""
+
+    ledger_row = valid_prediction_ledger_row()
+    label_row = valid_matured_label(ledger_row)
+
+    matured_rows, report = validate_and_join_matured_outcomes(
+        ledger_rows=[ledger_row],
+        label_rows=[label_row],
+    )
+
+    assert len(matured_rows) == 1
+    assert list(matured_rows[0]) == MATURED_OUTCOME_COLUMNS
+    assert matured_rows[0]["prediction_id"] == ledger_row["prediction_id"]
+    assert matured_rows[0]["actual_conversion"] == "1"
+    assert report["accepted_matured_rows"] == 1
+
+
+def test_premature_label_is_rejected():
+    """Do not evaluate a prediction before its 14-day window ends."""
+
+    ledger_row = valid_prediction_ledger_row()
+
+    premature_label = build_delayed_label_row(
+        prediction_id=ledger_row["prediction_id"],
+        outcome_observed_at="2015-09-25T09:00:00+00:00",
+        converted=1,
+        label_source="premature_test",
+        label_recorded_at="2015-09-25T10:00:00+00:00",
+    )
+
+    matured_rows, report = validate_and_join_matured_outcomes(
+        ledger_rows=[ledger_row],
+        label_rows=[premature_label],
+    )
+
+    assert matured_rows == []
+    assert report["rejected_premature_labels"] == 1
+
+
+def test_unknown_prediction_id_is_rejected():
+    """Reject labels that cannot be traced to a ledger prediction."""
+
+    unknown_label = build_delayed_label_row(
+        prediction_id="pred_unknown123",
+        outcome_observed_at="2015-10-03T09:00:00+00:00",
+        converted=0,
+        label_source="unknown_test",
+        label_recorded_at="2015-10-03T10:00:00+00:00",
+    )
+
+    matured_rows, report = validate_and_join_matured_outcomes(
+        ledger_rows=[],
+        label_rows=[unknown_label],
+    )
+
+    assert matured_rows == []
+    assert report["rejected_unknown_prediction_ids"] == 1
+
+
+def test_exact_duplicate_labels_are_counted_once():
+    """Accept one outcome while recording harmless ingestion retries."""
+
+    ledger_row = valid_prediction_ledger_row()
+    label_row = valid_matured_label(ledger_row)
+
+    matured_rows, report = validate_and_join_matured_outcomes(
+        ledger_rows=[ledger_row],
+        label_rows=[label_row, label_row.copy()],
+    )
+
+    assert len(matured_rows) == 1
+    assert report["duplicate_label_rows"] == 1
+    assert report["accepted_matured_rows"] == 1
+
+
+def test_conflicting_labels_for_one_prediction_are_rejected():
+    """Reject one prediction receiving both converted and not converted."""
+
+    ledger_row = valid_prediction_ledger_row()
+
+    positive_label = valid_matured_label(
+        ledger_row,
+        converted=1,
+    )
+    negative_label = valid_matured_label(
+        ledger_row,
+        converted=0,
+    )
+
+    matured_rows, report = validate_and_join_matured_outcomes(
+        ledger_rows=[ledger_row],
+        label_rows=[positive_label, negative_label],
+    )
+
+    assert matured_rows == []
+    assert report["rejected_conflicting_prediction_ids"] == 1
+
+
+def test_duplicate_prediction_ids_in_ledger_are_rejected():
+    """Protect the one-row-per-prediction ledger grain."""
+
+    ledger_row = valid_prediction_ledger_row()
+
+    with pytest.raises(
+        ValueError,
+        match="duplicate prediction_id",
+    ):
+        validate_and_join_matured_outcomes(
+            ledger_rows=[ledger_row, ledger_row.copy()],
+            label_rows=[],
+        )
+
+
+def test_invalid_label_row_is_reported_not_joined():
+    """Keep malformed label input out of production evaluation."""
+
+    ledger_row = valid_prediction_ledger_row()
+
+    invalid_label = {
+        "prediction_id": ledger_row["prediction_id"],
+    }
+
+    matured_rows, report = validate_and_join_matured_outcomes(
+        ledger_rows=[ledger_row],
+        label_rows=[invalid_label],
+    )
+
+    assert matured_rows == []
+    assert report["rejected_invalid_rows"] == 1
+    assert report["rejections"][0]["reason"] == "invalid_label"
+
