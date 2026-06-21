@@ -1,0 +1,86 @@
+{
+  "category": "ML Visual Intelligence",
+  "package": "Production monitoring",
+  "generated_at_utc": "2026-06-21T16:46:03.684752+00:00",
+  "kpis": {
+    "score_rows": 78998,
+    "prediction_rows": 9,
+    "ledger_rows": 0,
+    "matured_rows": 0,
+    "label_rows": 0,
+    "evaluable_rows": 0,
+    "label_coverage_rate": 0.0,
+    "outcome_metrics_available": false,
+    "snapshot_timestamp": "2026-06-20T23:19:33.092792064+00:00",
+    "prediction_timestamp": "2026-06-19T09:25:50.300985+00:00",
+    "registered_model_name": "ecommerce-conversion-champion",
+    "registered_model_version": "3",
+    "registered_model_alias": "champion",
+    "available_sources": 4,
+    "total_sources": 7,
+    "fresh_sources": 3
+  },
+  "warnings": [
+    "No matured evaluable production outcomes are available.",
+    "Production performance metrics are unavailable by design."
+  ],
+  "supported_visuals": [
+    "MLV-J04",
+    "MLV-J08"
+  ],
+  "conditional_visuals": [
+    "MLV-J01",
+    "MLV-J02",
+    "MLV-J05"
+  ],
+  "blocked_visuals": [
+    "MLV-J03",
+    "MLV-J06",
+    "MLV-J07"
+  ],
+  "artifacts": {
+    "MLV-J04": "reports/visuals/ml_visual_intelligence/monitoring/mlv-j04_delayed_label_maturity_funnel.png",
+    "MLV-J08": "reports/visuals/ml_visual_intelligence/monitoring/mlv-j08_monitoring_freshness_and_data_coverage_card.png"
+  },
+  "supporting_files": {
+    "funnel": "reports/visuals/ml_visual_intelligence/monitoring/delayed_label_funnel.csv",
+    "rejections": "reports/visuals/ml_visual_intelligence/monitoring/delayed_label_rejections.csv",
+    "source_status": "reports/visuals/ml_visual_intelligence/monitoring/monitoring_source_status.csv",
+    "insights": "reports/visuals/ml_visual_intelligence/monitoring/monitoring_visual_insights.md",
+    "status": "reports/visuals/ml_visual_intelligence/monitoring/monitoring_visual_status.md"
+  },
+  "qa": {
+    "MLV-J04": {
+      "passed": true,
+      "width_px": 2600,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-J08": {
+      "passed": true,
+      "width_px": 2203,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    }
+  }
+}
