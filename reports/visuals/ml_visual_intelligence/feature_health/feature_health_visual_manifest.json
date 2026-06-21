@@ -1,0 +1,84 @@
+{
+  "category": "ML Visual Intelligence",
+  "package": "Data and feature health",
+  "source_rows": 78998,
+  "features": [
+    "total_events",
+    "view_count",
+    "addtocart_count",
+    "unique_items",
+    "activity_span_ms",
+    "cart_to_view_ratio",
+    "events_per_unique_item"
+  ],
+  "clustered_order": [
+    "addtocart_count",
+    "cart_to_view_ratio",
+    "activity_span_ms",
+    "events_per_unique_item",
+    "unique_items",
+    "total_events",
+    "view_count"
+  ],
+  "artifacts": {
+    "MLV-H01": "reports/visuals/ml_visual_intelligence/feature_health/mlv-h01_feature_distribution_profile.png",
+    "MLV-H02": "reports/visuals/ml_visual_intelligence/feature_health/mlv-h02_feature_correlation_cluster_map.png",
+    "MLV-H04": "reports/visuals/ml_visual_intelligence/feature_health/mlv-h04_missingness_and_validity_map.png"
+  },
+  "supporting_files": {
+    "distribution_summary": "reports/visuals/ml_visual_intelligence/feature_health/feature_distribution_summary.csv",
+    "correlation_matrix": "reports/visuals/ml_visual_intelligence/feature_health/feature_correlation_matrix.csv",
+    "validity_summary": "reports/visuals/ml_visual_intelligence/feature_health/feature_validity_summary.csv",
+    "insights": "reports/visuals/ml_visual_intelligence/feature_health/feature_health_insights.md"
+  },
+  "qa": {
+    "MLV-H01": {
+      "passed": true,
+      "width_px": 2290,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-H02": {
+      "passed": true,
+      "width_px": 2308,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-H04": {
+      "passed": true,
+      "width_px": 2227,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    }
+  }
+}
