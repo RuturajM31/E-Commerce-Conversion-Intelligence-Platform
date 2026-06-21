@@ -1,0 +1,49 @@
+{
+  "matrix_version": "1.0",
+  "created_date": "2026-06-21",
+  "project": "E-Commerce Conversion Intelligence Platform",
+  "total_rows": 204,
+  "areas": {
+    "GOV": 12,
+    "AUDIT": 16,
+    "UX": 15,
+    "SHARED": 18,
+    "EXEC": 12,
+    "SEG": 12,
+    "KNN": 10,
+    "BATCH": 10,
+    "MODEL": 14,
+    "XAI": 12,
+    "FCST": 12,
+    "JOURNEY": 10,
+    "ANOM": 10,
+    "MON": 14,
+    "ARCH": 10,
+    "QA": 17
+  },
+  "statuses": {
+    "PLANNED": 191,
+    "CONDITIONAL": 13
+  },
+  "required_categories": [
+    "EXEC",
+    "SEG",
+    "KNN",
+    "BATCH",
+    "MODEL",
+    "XAI",
+    "FCST",
+    "JOURNEY",
+    "ANOM",
+    "MON",
+    "ARCH"
+  ],
+  "theme_rule": "Preserve and enhance the current Streamlit theme; do not redesign from scratch.",
+  "existing_visual_rule": "Audit every existing visual as KEEP, ENHANCE, REPLACE, MOVE, or RETIRE before coding.",
+  "implementation_gate": "After remediation, final QA, approval, and remediation merge.",
+  "files": [
+    "docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_COVERAGE_MATRIX.md",
+    "docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_COVERAGE_MATRIX.csv",
+    "docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_HANDOFF.md"
+  ]
+}
