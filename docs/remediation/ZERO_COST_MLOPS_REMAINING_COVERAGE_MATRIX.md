@@ -90,25 +90,33 @@ Add practical local MLflow tracking without requiring Databricks or paid hosting
 
 Generate practical local data-quality, feature-drift, and prediction-drift reports.
 
+### Implementation evidence
+
+- Evidently implementation commit: `f25e482`
+- Focused Evidently validation completed successfully.
+- Full project tests remained green after the implementation.
+- Dependency compatibility was checked with `pip check`.
+- These rows were reconciled because the original matrix-update command failed before saving the status changes.
+
 | ID | Requirement | Acceptance evidence | Status |
 |---|---|---|---|
-| `EVD-01` | Add Evidently as a pinned dependency | Compatible version recorded in dependency files | `NOT STARTED` |
-| `EVD-02` | Define reference dataset | Training or validated historical reference cohort documented | `NOT STARTED` |
-| `EVD-03` | Define current dataset | Latest production scoring cohort documented | `NOT STARTED` |
-| `EVD-04` | Enforce matching feature schema | Reference and current data use canonical model features | `NOT STARTED` |
-| `EVD-05` | Generate data-quality report | HTML and machine-readable report generated | `NOT STARTED` |
-| `EVD-06` | Generate feature-drift report | Per-feature drift results generated | `NOT STARTED` |
-| `EVD-07` | Generate prediction-drift report | Score-distribution drift generated | `NOT STARTED` |
-| `EVD-08` | Handle absent outcome labels | Report runs without pretending current targets exist | `NOT STARTED` |
-| `EVD-09` | Generate report summary table | Compact CSV or JSON summary produced for Streamlit and monitoring | `NOT STARTED` |
-| `EVD-10` | Save reports under controlled paths | Reports stored in `monitoring/evidently/reports/` | `NOT STARTED` |
-| `EVD-11` | Add report timestamps and provenance | Data hashes, model version, period, and creation timestamp stored | `NOT STARTED` |
-| `EVD-12` | Integrate with monitoring refresh | Monitoring build process can regenerate Evidently outputs | `NOT STARTED` |
+| `EVD-01` | Add Evidently as a pinned dependency | Compatible version recorded in dependency files | `COMPLETED` |
+| `EVD-02` | Define reference dataset | Training or validated historical reference cohort documented | `COMPLETED` |
+| `EVD-03` | Define current dataset | Latest production scoring cohort documented | `COMPLETED` |
+| `EVD-04` | Enforce matching feature schema | Reference and current data use canonical model features | `COMPLETED` |
+| `EVD-05` | Generate data-quality report | HTML and machine-readable report generated | `COMPLETED` |
+| `EVD-06` | Generate feature-drift report | Per-feature drift results generated | `COMPLETED` |
+| `EVD-07` | Generate prediction-drift report | Score-distribution drift generated | `COMPLETED` |
+| `EVD-08` | Handle absent outcome labels | Report runs without pretending current targets exist | `COMPLETED` |
+| `EVD-09` | Generate report summary table | Compact CSV or JSON summary produced for Streamlit and monitoring | `COMPLETED` |
+| `EVD-10` | Save reports under controlled paths | Reports stored in `monitoring/evidently/reports/` | `COMPLETED` |
+| `EVD-11` | Add report timestamps and provenance | Data hashes, model version, period, and creation timestamp stored | `COMPLETED` |
+| `EVD-12` | Integrate with monitoring refresh | Monitoring build process can regenerate Evidently outputs | `COMPLETED` |
 | `EVD-13` | Add Streamlit Evidently summary | Monitoring page links to or summarises current reports | `DEFERRED` |
-| `EVD-14` | Add drift threshold interpretation | Stable, warning, and critical states documented | `NOT STARTED` |
-| `EVD-15` | Add tests for report creation | Tests verify expected files and metric structure | `NOT STARTED` |
-| `EVD-16` | Test missing/extra columns | Clear failure or controlled alignment behaviour verified | `NOT STARTED` |
-| `EVD-17` | Test empty and small current cohorts | Report generation handles invalid cohorts honestly | `NOT STARTED` |
+| `EVD-14` | Add drift threshold interpretation | Stable, warning, and critical states documented | `IN PROGRESS` |
+| `EVD-15` | Add tests for report creation | Tests verify expected files and metric structure | `COMPLETED` |
+| `EVD-16` | Test missing/extra columns | Clear failure or controlled alignment behaviour verified | `COMPLETED` |
+| `EVD-17` | Test empty and small current cohorts | Report generation handles invalid cohorts honestly | `COMPLETED` |
 | `EVD-18` | Document Evidently limitations | Statistical drift is not described as causal model failure | `NOT STARTED` |
 
 ---
