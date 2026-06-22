@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Simple control command for the local Kubernetes demo.
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+START_SCRIPT="$PROJECT_ROOT/scripts/k8s_demo_start.sh"
+STOP_SCRIPT="$PROJECT_ROOT/scripts/k8s_demo_stop.sh"
+RUNTIME_DIR="$PROJECT_ROOT/.runtime"
+PASSWORD_FILE="$RUNTIME_DIR/grafana_admin_password"
+START_LOG="$RUNTIME_DIR/k8s_demo_start.log"
+STOP_LOG="$RUNTIME_DIR/k8s_demo_stop.log"
+WRAPPER_NAME="./E-Commerce-Conversion-Intelligence-Platform"
+GRAFANA_USER="${GRAFANA_ADMIN_USER:-admin}"
+
+show_help() {
+  cat <<HELP
+E-Commerce Conversion Intelligence Platform
+
+Usage:
+  $WRAPPER_NAME start       Start the local Kubernetes demo
+  $WRAPPER_NAME stop        Stop local Kubernetes port-forwards
+  $WRAPPER_NAME password    Show the current local Grafana password
+  $WRAPPER_NAME help        Show this help
+
+The Grafana password is generated locally, never committed to Git, and removed
+when the demo is stopped.
+HELP
+}
+
+require_file() {
+  local path="$1"
+  [[ -f "$path" ]] || { echo "ERROR: Required file is missing: $path"; exit 1; }
+}
+
+prepare_runtime() {
+  umask 077
+  mkdir -p "$RUNTIME_DIR"
+  chmod 700 "$RUNTIME_DIR"
+}
+
+create_or_load_password() {
+  prepare_runtime
+  if [[ ! -s "$PASSWORD_FILE" ]]; then
+    command -v openssl >/dev/null 2>&1 || {
+      echo "ERROR: OpenSSL is required to generate the Grafana password."
+      exit 1
+    }
+    openssl rand -hex 24 > "$PASSWORD_FILE"
+    chmod 600 "$PASSWORD_FILE"
+  fi
+
+  local password
+  password="$(tr -d '\r\n' < "$PASSWORD_FILE")"
+  [[ "$password" =~ ^[0-9a-fA-F]{48}$ ]] || {
+    echo "ERROR: The local Grafana password file is invalid."
+    echo "Remove it and run start again: rm -f \"$PASSWORD_FILE\""
+    exit 1
+  }
+  printf '%s' "$password"
+}
+
+start_platform() {
+  require_file "$START_SCRIPT"
+  prepare_runtime
+  local password
+  password="$(create_or_load_password)"
+
+  echo "Starting E-Commerce Conversion Intelligence Platform..."
+  if GRAFANA_ADMIN_USER="$GRAFANA_USER" \
+     GRAFANA_ADMIN_PASSWORD="$password" \
+     "$START_SCRIPT" > "$START_LOG" 2>&1; then
+    echo "GOOD: Platform started"
+    echo "Grafana user: $GRAFANA_USER"
+    echo "Grafana password: use '$WRAPPER_NAME password'"
+    echo "Full start log: $START_LOG"
+    echo
+    tail -n 20 "$START_LOG"
+    return 0
+  fi
+
+  local code=$?
+  echo "ERROR: Platform start failed"
+  echo "Full start log: $START_LOG"
+  tail -n 30 "$START_LOG" || true
+  return "$code"
+}
+
+stop_platform() {
+  require_file "$STOP_SCRIPT"
+  prepare_runtime
+  echo "Stopping E-Commerce Conversion Intelligence Platform..."
+
+  set +e
+  "$STOP_SCRIPT" > "$STOP_LOG" 2>&1
+  local code=$?
+  set -e
+
+  rm -f "$PASSWORD_FILE"
+
+  if [[ "$code" -eq 0 ]]; then
+    echo "GOOD: Platform stopped"
+    echo "GOOD: Local Grafana password removed"
+    echo "Full stop log: $STOP_LOG"
+    echo
+    tail -n 15 "$STOP_LOG"
+    return 0
+  fi
+
+  echo "ERROR: Platform stop script failed"
+  echo "GOOD: Local Grafana password was still removed"
+  echo "Full stop log: $STOP_LOG"
+  tail -n 25 "$STOP_LOG" || true
+  return "$code"
+}
+
+show_password() {
+  [[ -s "$PASSWORD_FILE" ]] || {
+    echo "ERROR: No active local Grafana password was found."
+    echo "Start the platform first: $WRAPPER_NAME start"
+    exit 1
+  }
+  chmod 600 "$PASSWORD_FILE"
+  cat "$PASSWORD_FILE"
+}
+
+case "${1:-help}" in
+  start) start_platform ;;
+  stop) stop_platform ;;
+  password) show_password ;;
+  help|--help|-h) show_help ;;
+  *) echo "ERROR: Unknown command: ${1:-}"; echo; show_help; exit 2 ;;
+esac

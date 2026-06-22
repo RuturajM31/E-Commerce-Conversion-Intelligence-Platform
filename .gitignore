@@ -207,3 +207,6 @@ monitoring/snapshots/evidently_monitoring_summary.json
 # Keep the compact representative dataset used by GitHub CI
 !data/sample/
 !data/sample/visitor_features_sample.csv
+
+# Local runtime secrets and wrapper logs
+.runtime/
