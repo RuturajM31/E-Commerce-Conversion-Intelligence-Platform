@@ -37,7 +37,7 @@ def test_key_streamlit_pages_exist():
         "5_Anomaly_Outlier.py",
         "6_Monitoring_Drift_Health.py",
         "7_MLOps_Architecture.py",
-        "8_MVD_Coverage_Proof.py",
+        "8_ML_Validation_Evidence.py",
     ]
 
     existing_pages = {path.name for path in Path("app/pages").glob("*.py")}

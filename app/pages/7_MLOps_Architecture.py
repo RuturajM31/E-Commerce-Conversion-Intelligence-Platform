@@ -231,7 +231,7 @@ PROJECT_FILES: Dict[str, Path] = {
     "Champion visitor scores": Path("data/processed/champion_visitor_scores.csv"),
     "Forecast outputs": Path("reports/tables/business_forecast_future.csv"),
     "Anomaly outputs": Path("reports/tables/anomaly_summary.csv"),
-    "MVD coverage matrix": Path("reports/tables/mvd_method_coverage_matrix.csv"),
+    "ML validation coverage matrix": Path("reports/tables/mvd_method_coverage_matrix.csv"),
     "Single prediction log": Path("monitoring/prediction_logs/prediction_log.csv"),
     "Batch scoring log": Path("monitoring/prediction_logs/batch_scoring_log.csv"),
 }

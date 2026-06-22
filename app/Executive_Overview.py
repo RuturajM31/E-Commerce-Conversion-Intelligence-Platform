@@ -945,7 +945,7 @@ with module_6:
     render_html(
         '<div class="flow-card">'
         '<div class="flow-icon">🧩</div>'
-        '<div class="flow-title">MVD coverage proof</div>'
+        '<div class="flow-title">ML validation and evidence</div>'
         '<div class="flow-text">PCA, K-Means, DBSCAN, LOF, imbalance, tuning, boosting, and full Day 1–15 matrix.</div>'
         '</div>'
     )

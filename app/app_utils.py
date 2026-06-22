@@ -68,6 +68,13 @@ MVD_DBSCAN_SUMMARY_PATH = Path("reports/tables/mvd_dbscan_summary.csv")
 MVD_LOF_SUMMARY_PATH = Path("reports/tables/mvd_lof_outlier_summary.csv")
 MVD_OUTLIER_COMPARISON_PATH = Path("reports/tables/mvd_outlier_method_comparison.csv")
 
+# Package 1 interactive ML validation evidence.
+ML_VALIDATION_PROJECTION_PATH = Path("reports/tables/ml_validation_projection_sample.csv")
+ML_VALIDATION_PCA_VARIANCE_PATH = Path("reports/tables/ml_validation_pca_variance.csv")
+ML_VALIDATION_PCA_LOADINGS_PATH = Path("reports/tables/ml_validation_pca_loadings.csv")
+ML_VALIDATION_CLUSTER_PROFILE_PATH = Path("reports/tables/ml_validation_cluster_profile.csv")
+ML_VALIDATION_METHOD_SUMMARY_PATH = Path("reports/tables/ml_validation_method_summary.csv")
+
 
 # --------------------------------------------------
 # 3. SAFE HTML HELPERS
@@ -448,6 +455,11 @@ def load_model_selection_tables() -> Dict[str, pd.DataFrame]:
         "mvd_dbscan_summary": read_table_if_exists(MVD_DBSCAN_SUMMARY_PATH),
         "mvd_lof_summary": read_table_if_exists(MVD_LOF_SUMMARY_PATH),
         "mvd_outlier_comparison": read_table_if_exists(MVD_OUTLIER_COMPARISON_PATH),
+        "ml_validation_projection": read_table_if_exists(ML_VALIDATION_PROJECTION_PATH),
+        "ml_validation_pca_variance": read_table_if_exists(ML_VALIDATION_PCA_VARIANCE_PATH),
+        "ml_validation_pca_loadings": read_table_if_exists(ML_VALIDATION_PCA_LOADINGS_PATH),
+        "ml_validation_cluster_profile": read_table_if_exists(ML_VALIDATION_CLUSTER_PROFILE_PATH),
+        "ml_validation_method_summary": read_table_if_exists(ML_VALIDATION_METHOD_SUMMARY_PATH),
     }
 
 

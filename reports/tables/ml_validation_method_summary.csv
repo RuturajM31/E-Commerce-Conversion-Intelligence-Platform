@@ -1,0 +1,4 @@
+method,selected_parameters,cluster_count,noise_or_outlier_count,noise_or_outlier_rate,silhouette_score,sample_rows,evidence_scope
+K-Means,k=3,3.0,0,0.0,0.5791949982412128,8000,Package 1 deterministic sample
+DBSCAN,"eps=2.0, min_samples=5",3.0,24,0.003,0.6520849399816749,8000,Package 1 deterministic sample
+LOF,"n_neighbors=20, contamination=0.040",,320,0.04,,8000,Package 1 deterministic sample
