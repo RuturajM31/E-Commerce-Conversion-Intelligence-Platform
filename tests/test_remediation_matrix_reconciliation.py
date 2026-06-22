@@ -67,38 +67,28 @@ def test_core_remediation_items_are_resolved() -> None:
     assert not missing, f"Expected resolved master items are still open: {missing}"
 
 
-def test_local_closure_keeps_only_real_future_gates_open() -> None:
-    """Only Git review, approval, and merge should remain open."""
+def test_final_closure_has_no_open_master_rows() -> None:
+    """All master rows should be closed after approval and merge."""
 
     states = master_states()
 
-    expected_open = {
+    final_gates = {
         "GIT-09",
         "QA-13",
         "QA-14",
     }
 
-    wrongly_closed = sorted(item_id for item_id in expected_open if states.get(item_id))
+    incorrectly_open_final_gates = sorted(
+        item_id for item_id in final_gates if not states.get(item_id)
+    )
 
-    assert not wrongly_closed, "Future gates were closed too early: " f"{wrongly_closed}"
+    assert not incorrectly_open_final_gates, (
+        "Final approval or merge rows remain open: " f"{incorrectly_open_final_gates}"
+    )
 
-    expected_closed = {
-        "DATA-12",
-        "MOD-09",
-        "DEP-10",
-        "SEC-10",
-        "TEST-16",
-        "CI-10",
-        "CI-11",
-        "CI-13",
-        "DOC-14",
-        "DOC-20",
-        "QA-01",
-    }
+    all_open_rows = sorted(item_id for item_id, is_closed in states.items() if not is_closed)
 
-    still_open = sorted(item_id for item_id in expected_closed if not states.get(item_id))
-
-    assert not still_open, "Completed local remediation rows remain open: " f"{still_open}"
+    assert not all_open_rows, "Master remediation rows remain open: " f"{all_open_rows}"
 
 
 def test_evidently_and_delayed_label_rows_are_current() -> None:
