@@ -218,7 +218,7 @@ jobs:
 
           test -s /tmp/ecommerce-helm-rendered.yaml
 
-          kubectl apply             --dry-run=client             --validate=false             -f /tmp/ecommerce-helm-rendered.yaml             >/dev/null
+          python scripts/validate_rendered_kubernetes_yaml.py /tmp/ecommerce-helm-rendered.yaml
 
           grep -q "grafana-admin-credentials"             /tmp/ecommerce-helm-rendered.yaml
 
