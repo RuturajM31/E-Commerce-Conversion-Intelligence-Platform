@@ -302,14 +302,14 @@ Keep the full local monitoring stack while optionally publishing compact metrics
 | `QA-10` | Helm lint and template pass | Chart validates after changes | `COMPLETED` |
 | `QA-11` | Kubernetes client dry-run passes | Rendered resources accepted | `COMPLETED` |
 | `QA-12` | Local Kubernetes runtime passes where services are added | Pods, services, and health endpoints verified | `DEFERRED` |
-| `QA-13` | CI workflow passes remotely | Latest remediation-branch run is green | `IN PROGRESS` |
+| `QA-13` | CI workflow passes remotely | Latest remediation-branch run is green | `COMPLETED` |
 | `QA-14` | `git diff --check` passes | No whitespace errors | `COMPLETED` |
 | `QA-15` | Secret and large-file audit passes | No accidental credentials or oversized artifacts | `COMPLETED` |
 | `QA-16` | Baseline-to-remediation diff reviewed | No accidental deletions or unrelated files | `COMPLETED` |
-| `QA-17` | Every matrix item resolved | No unexplained `NOT STARTED` or `IN PROGRESS` items | `IN PROGRESS` |
-| `QA-18` | Final documentation commit pushed | Remote branch synchronized | `IN PROGRESS` |
-| `QA-19` | User reviews final remediation result | Explicit approval recorded | `NOT STARTED` |
-| `QA-20` | Remediation branch merged | Merge occurs only after approval and green checks | `NOT STARTED` |
+| `QA-17` | Every matrix item resolved | No unexplained `NOT STARTED` or `IN PROGRESS` items | `COMPLETED` |
+| `QA-18` | Final documentation commit pushed | Remote branch synchronized | `COMPLETED` |
+| `QA-19` | User reviews final remediation result | Explicit approval recorded | `COMPLETED` |
+| `QA-20` | Remediation branch merged | Merge occurs only after approval and green checks | `COMPLETED` |
 | `QA-21` | Optional release tag created | Tag created after successful merge | `OPTIONAL` |
 
 ---
@@ -382,3 +382,11 @@ This matrix may be closed only when:
 - Local Kubernetes runtime is `DEFERRED` to the later deployment phase; static validation is complete.
 - Remote CI, push confirmation, user approval, and merge remain open because they can happen only after this closure commit.
 - Immediate production outcome labels remain externally blocked until the future label window matures.
+
+## Approved remediation merge
+
+- Approval date: `2026-06-22`
+- Merge commit: `ecf9393`
+- Remote GitHub CI: `COMPLETED`
+- User approval: `COMPLETED`
+- Remediation merge: `COMPLETED`

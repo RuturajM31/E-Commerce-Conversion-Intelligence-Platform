@@ -24,7 +24,7 @@ Code written without verification is not complete.
 - [x] `GIT-06` Use small, meaningful commits by remediation phase.
 - [x] `GIT-07` Review `git diff` before every commit.
 - [x] `GIT-08` Keep `main` unchanged until final approval.
-- [ ] `GIT-09` Merge only after every matrix item is resolved.
+- [x] `GIT-09` Merge only after every matrix item is resolved.
 
 ## 2. Project structure and code quality
 
@@ -365,8 +365,8 @@ Code written without verification is not complete.
 - [x] `QA-10` Review every matrix item.
 - [x] `QA-11` Create the final before-and-after change summary.
 - [x] `QA-12` Confirm every item is fixed, verified, excluded with reason, or blocked with next action.
-- [ ] `QA-13` Obtain user approval before merge.
-- [ ] `QA-14` Merge only after approval and final green checks.
+- [x] `QA-13` Obtain user approval before merge.
+- [x] `QA-14` Merge only after approval and final green checks.
 
 ## Final remediation closure notes
 
@@ -417,10 +417,17 @@ The check mark means the row has a documented final resolution. That resolution 
 | `OUT-11` | Verified Already Correct | The Docker Compose Streamlit health check passed against the current application outputs. |
 | `QA-02` | Blocked | A new expensive full retrain was not rerun during final closure. The existing real-data artifacts, full tests, and representative smoke training passed. Next action: run an opt-in full retrain when source data is available. |
 
-### Gates intentionally left open
+### Final gates completed
 
-- `GIT-09`: closes only after every final gate is resolved.
-- `QA-13`: closes only after explicit user approval.
-- `QA-14`: closes only after the approved merge.
+- `GIT-09`: completed after final Git review and green remote CI.
+- `QA-13`: completed after explicit user approval.
+- `QA-14`: completed through merge commit `ecf9393`.
 
 See [Zero-Cost MLOps Remaining Coverage Matrix](ZERO_COST_MLOPS_REMAINING_COVERAGE_MATRIX.md) and [Final Remediation Closure Report](FINAL_REMEDIATION_CLOSURE_REPORT.md).
+
+## Approved remediation merge
+
+- Approval date: `2026-06-22`
+- Merge commit: `ecf9393`
+- GitHub Actions: all tests passed before merge.
+- Master remediation matrix: fully resolved.
