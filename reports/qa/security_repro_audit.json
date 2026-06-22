@@ -1,0 +1,97 @@
+{
+  "python": "3.10.9 (main, Apr  2 2025, 20:16:57) [Clang 13.0.0 (clang-1300.0.29.30)]",
+  "findings": [
+    {
+      "area": "Repository environment files",
+      "status": "PASS",
+      "detail": "Only the safe .env.example file is present.",
+      "evidence": [
+        ".env.example"
+      ]
+    },
+    {
+      "area": "Repository secret-pattern scan",
+      "status": "PASS",
+      "detail": "No obvious committed credentials were found.",
+      "evidence": []
+    },
+    {
+      "area": "Platform password configuration",
+      "status": "PASS",
+      "detail": "Deployment passwords use runtime variables or Secret references.",
+      "evidence": []
+    },
+    {
+      "area": "Git history high-risk secret scan",
+      "status": "PASS",
+      "detail": "No private-key or high-risk token signatures were found.",
+      "evidence": []
+    },
+    {
+      "area": "Retired Grafana demo credential",
+      "status": "INFO",
+      "detail": "The former demo value is retired and must never be reused. Current configuration requires a runtime secret.",
+      "evidence": [
+        "74380ac 2026-06-20 Secure Kubernetes and Helm alerting",
+        "8aa32d2 2026-06-20 Add secure local alert delivery",
+        "03e508e 2026-06-18 Initial commit: ecommerce conversion intelligence MLOps platform"
+      ]
+    },
+    {
+      "area": "Dependency health: main",
+      "status": "PASS",
+      "detail": "Installed packages report compatible dependencies.",
+      "evidence": [
+        "No broken requirements found."
+      ]
+    },
+    {
+      "area": "Dependency health: MLflow",
+      "status": "PASS",
+      "detail": "Installed packages report compatible dependencies.",
+      "evidence": [
+        "No broken requirements found."
+      ]
+    },
+    {
+      "area": "Dependency health: Evidently",
+      "status": "PASS",
+      "detail": "Installed packages report compatible dependencies.",
+      "evidence": [
+        "No broken requirements found."
+      ]
+    },
+    {
+      "area": "Representative sample data",
+      "status": "PASS",
+      "detail": "Small repository data exists for tests and CI.",
+      "evidence": [
+        "reports/qa/smoke_training_result.json"
+      ]
+    },
+    {
+      "area": "Probability calibration evidence",
+      "status": "PASS",
+      "detail": "Calibration code or evidence exists.",
+      "evidence": [
+        "docs/remediation/REMEDIATION_COVERAGE_MATRIX.md",
+        "reports/qa/security_repro_audit.json",
+        "reports/qa/security_repro_audit.md",
+        "scripts/audit_security_repro.py",
+        "src/monitoring/production_performance.py",
+        "tests/test_production_performance.py"
+      ]
+    },
+    {
+      "area": "CI quality and security checks",
+      "status": "PASS",
+      "detail": "CI contains formatting, vulnerability, secret, and sample-training checks.",
+      "evidence": [
+        "formatting_or_lint: FOUND",
+        "dependency_scan: FOUND",
+        "secret_scan: FOUND",
+        "sample_smoke_training: FOUND"
+      ]
+    }
+  ]
+}

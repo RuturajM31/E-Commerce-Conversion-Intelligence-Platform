@@ -1,0 +1,157 @@
+{{- if .Values.alerting.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  namespace: {{ .Values.namespace }}
+data:
+  alertmanager.yml: |
+    global:
+      resolve_timeout: 5m
+
+    route:
+      receiver: local-webhook
+      group_by:
+        - alertname
+        - component
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+
+    receivers:
+      - name: local-webhook
+        webhook_configs:
+          - url: http://alert-webhook-service:{{ .Values.ports.alertWebhook }}/alerts
+            send_resolved: true
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert-webhook
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alert-webhook
+  template:
+    metadata:
+      labels:
+        app: alert-webhook
+    spec:
+      containers:
+        - name: alert-webhook
+          image: "{{ .Values.images.alertWebhook.repository }}:{{ .Values.images.alertWebhook.tag }}"
+          imagePullPolicy: {{ .Values.images.alertWebhook.pullPolicy }}
+          command:
+            - python
+            - -m
+            - src.monitoring.alert_webhook_receiver
+          env:
+            - name: PROJECT_ROOT
+              value: /app
+            - name: ALERT_WEBHOOK_PORT
+              value: "{{ .Values.ports.alertWebhook }}"
+            - name: ALERT_NOTIFICATION_DIR
+              value: /app/monitoring/alert_notifications
+          ports:
+            - containerPort: {{ .Values.ports.alertWebhook }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.ports.alertWebhook }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.ports.alertWebhook }}
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          volumeMounts:
+            - name: alert-storage
+              mountPath: /app/monitoring/alert_notifications
+      volumes:
+        - name: alert-storage
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alert-webhook-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: alert-webhook
+  ports:
+    - name: http
+      port: {{ .Values.ports.alertWebhook }}
+      targetPort: {{ .Values.ports.alertWebhook }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertmanager
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alertmanager
+  template:
+    metadata:
+      labels:
+        app: alertmanager
+    spec:
+      containers:
+        - name: alertmanager
+          image: "{{ .Values.images.alertmanager.repository }}:{{ .Values.images.alertmanager.tag }}"
+          imagePullPolicy: {{ .Values.images.alertmanager.pullPolicy }}
+          args:
+            - --config.file=/etc/alertmanager/alertmanager.yml
+          ports:
+            - containerPort: {{ .Values.ports.alertmanager }}
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: {{ .Values.ports.alertmanager }}
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: {{ .Values.ports.alertmanager }}
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          volumeMounts:
+            - name: alertmanager-config
+              mountPath: /etc/alertmanager/alertmanager.yml
+              subPath: alertmanager.yml
+      volumes:
+        - name: alertmanager-config
+          configMap:
+            name: alertmanager-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: alertmanager
+  ports:
+    - name: http
+      port: {{ .Values.ports.alertmanager }}
+      targetPort: {{ .Values.ports.alertmanager }}
+{{- end }}

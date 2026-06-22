@@ -32,15 +32,17 @@ from sklearn.metrics import (
     recall_score,
     roc_auc_score,
 )
-from sklearn.model_selection import train_test_split
 from sklearn.utils.class_weight import compute_sample_weight
 
 from src.models.model_config import (
     CHAMPION_SCORE_WEIGHTS,
     FEATURE_COLUMNS,
     RANDOM_STATE,
+    SPLIT_COLUMN,
     TARGET_COLUMN,
     THRESHOLDS_TO_TEST,
+    TRAIN_SPLIT,
+    VALIDATION_SPLIT,
 )
 
 
@@ -269,10 +271,12 @@ def calculate_champion_score(pr_auc, roc_auc, best_threshold_row):
 # Train and evaluate one model
 # --------------------------------------------------
 
-def train_and_evaluate_model(model_config, full_training_data):
-    """Train one model and return its metrics, threshold table, and fitted model."""
+def train_and_evaluate_model(
+    model_config,
+    full_training_data,
+):
+    """Train on historical train rows and evaluate on validation rows."""
 
-    # Read basic information from model registry.
     model_name = model_config["model_name"]
     track = model_config["track"]
     model_family = model_config["model_family"]
@@ -282,43 +286,50 @@ def train_and_evaluate_model(model_config, full_training_data):
 
     print(f"\nTraining model: {track} | {model_name}")
 
-    # Create model-specific sample.
-    #
-    # Example:
-    #   KNN may use fewer rows.
-    #   Logistic Regression can use more rows.
+    if SPLIT_COLUMN not in full_training_data.columns:
+        raise ValueError(
+            f"Training data is missing '{SPLIT_COLUMN}'."
+        )
+
+    train_data = full_training_data.loc[
+        full_training_data[SPLIT_COLUMN] == TRAIN_SPLIT
+    ].copy()
+
+    validation_data = full_training_data.loc[
+        full_training_data[SPLIT_COLUMN] == VALIDATION_SPLIT
+    ].copy()
+
+    if train_data.empty:
+        raise ValueError("Training split contains no rows.")
+
+    if validation_data.empty:
+        raise ValueError("Validation split contains no rows.")
+
     model_data = create_stratified_sample(
-        data=full_training_data,
+        data=train_data,
         max_rows=max_rows,
     )
 
-    # X = model input features.
-    X = model_data[FEATURE_COLUMNS]
+    X_train = model_data[FEATURE_COLUMNS]
+    y_train = model_data[TARGET_COLUMN].astype(int)
 
-    # y = target variable we want to predict.
-    y = model_data[TARGET_COLUMN]
+    X_validation = validation_data[FEATURE_COLUMNS]
+    y_validation = validation_data[TARGET_COLUMN].astype(int)
 
-    # Split into train and test.
-    #
-    # stratify=y keeps buyer/non-buyer ratio similar in both train and test.
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=0.25,
-        stratify=y,
-        random_state=RANDOM_STATE,
-    )
+    if y_train.nunique() < 2:
+        raise ValueError(
+            "Training split must contain both target classes."
+        )
 
-    # clone() creates a fresh copy of the pipeline.
-    # This avoids one training run affecting another model.
+    if y_validation.nunique() < 2:
+        raise ValueError(
+            "Validation split must contain both target classes."
+        )
+
     pipeline = clone(model_config["pipeline"])
 
     start_time = time.time()
 
-    # Some models do not support class_weight directly.
-    # For those models, we pass sample_weight into fit().
-    #
-    # sample_weight gives rare buyers more importance during training.
     if uses_sample_weight:
         sample_weight = compute_sample_weight(
             class_weight="balanced",
@@ -330,7 +341,6 @@ def train_and_evaluate_model(model_config, full_training_data):
             y_train,
             model__sample_weight=sample_weight,
         )
-
     else:
         pipeline.fit(
             X_train,
@@ -339,96 +349,124 @@ def train_and_evaluate_model(model_config, full_training_data):
 
     training_seconds = time.time() - start_time
 
-    # Get purchase intent probability for each test visitor.
     y_probability = get_prediction_probability(
         model=pipeline,
-        X_test=X_test,
+        X_test=X_validation,
     )
 
-    # Default 0.50 threshold prediction.
-    #
-    # We calculate it for reference,
-    # but final business threshold may be different.
-    y_pred_default = (y_probability >= 0.50).astype(int)
+    y_pred_default = (
+        y_probability >= 0.50
+    ).astype(int)
 
-    # Evaluate all business thresholds.
     threshold_data, best_threshold_row = evaluate_thresholds(
-        y_true=y_test,
+        y_true=y_validation,
         y_probability=y_probability,
     )
 
-    # Ranking metrics.
+    threshold_data.insert(
+        0,
+        "evaluation_split",
+        VALIDATION_SPLIT,
+    )
+
+    threshold_data.insert(
+        0,
+        "model_name",
+        model_name,
+    )
+
     roc_auc = roc_auc_score(
-        y_test,
+        y_validation,
         y_probability,
     )
 
     pr_auc = average_precision_score(
-        y_test,
+        y_validation,
         y_probability,
     )
 
-    # Default threshold metrics.
     accuracy_default = accuracy_score(
-        y_test,
+        y_validation,
         y_pred_default,
     )
 
     precision_default = precision_score(
-        y_test,
+        y_validation,
         y_pred_default,
         zero_division=0,
     )
 
     recall_default = recall_score(
-        y_test,
+        y_validation,
         y_pred_default,
         zero_division=0,
     )
 
     f1_default = f1_score(
-        y_test,
+        y_validation,
         y_pred_default,
         zero_division=0,
     )
 
-    # Calculate one ranking score for champion selection.
     champion_score = calculate_champion_score(
         pr_auc=pr_auc,
         roc_auc=roc_auc,
         best_threshold_row=best_threshold_row,
     )
 
-    # Build one row for the model comparison table.
     result_row = {
+        "evaluation_split": VALIDATION_SPLIT,
         "track": track,
         "model_name": model_name,
         "model_family": model_family,
         "reason": reason,
-        "training_rows": len(X_train),
-        "test_rows": len(X_test),
-        "buyer_rate_test": y_test.mean(),
-        "training_seconds": round(training_seconds, 2),
+        "training_rows": int(len(X_train)),
+        "validation_rows": int(len(X_validation)),
+        "buyer_rate_validation": float(
+            y_validation.mean()
+        ),
+        "training_seconds": round(
+            training_seconds,
+            2,
+        ),
         "accuracy_at_0_50": accuracy_default,
         "precision_at_0_50": precision_default,
         "recall_at_0_50": recall_default,
         "f1_at_0_50": f1_default,
         "roc_auc": roc_auc,
         "pr_auc": pr_auc,
-        "best_threshold": best_threshold_row["threshold"],
-        "best_precision": best_threshold_row["precision"],
-        "best_recall": best_threshold_row["recall"],
-        "best_f1_score": best_threshold_row["f1_score"],
-        "best_targeted_share": best_threshold_row["targeted_share"],
-        "best_lift_vs_random": best_threshold_row["lift_vs_random"],
+        "best_threshold": best_threshold_row[
+            "threshold"
+        ],
+        "best_precision": best_threshold_row[
+            "precision"
+        ],
+        "best_recall": best_threshold_row[
+            "recall"
+        ],
+        "best_f1_score": best_threshold_row[
+            "f1_score"
+        ],
+        "best_targeted_share": best_threshold_row[
+            "targeted_share"
+        ],
+        "best_lift_vs_random": best_threshold_row[
+            "lift_vs_random"
+        ],
         "champion_score": champion_score,
+        "uses_sample_weight": bool(
+            uses_sample_weight
+        ),
+        "configured_max_training_rows": int(
+            max_rows
+        ),
         "status": "success",
         "error_message": "",
     }
 
     print(
         f"Finished {model_name} | "
-        f"PR-AUC={pr_auc:.4f} | "
+        f"Validation PR-AUC={pr_auc:.4f} | "
         f"ROC-AUC={roc_auc:.4f} | "
         f"Best F1={best_threshold_row['f1_score']:.4f}"
     )
@@ -440,22 +478,21 @@ def train_and_evaluate_model(model_config, full_training_data):
 # Failed model result helper
 # --------------------------------------------------
 
-def create_failed_result_row(model_config, error):
-    """Create a result row when a model fails."""
+def create_failed_result_row(
+    model_config,
+    error,
+):
+    """Create a validation-result row when model training fails."""
 
-    # WHY THIS EXISTS:
-    #   In AutoML-style benchmarking, some models may fail.
-    #   We do not want the whole workflow to crash.
-    #   We log the failure and continue with other models.
-
-    failed_row = {
+    return {
+        "evaluation_split": VALIDATION_SPLIT,
         "track": model_config["track"],
         "model_name": model_config["model_name"],
         "model_family": model_config["model_family"],
         "reason": model_config["reason"],
         "training_rows": np.nan,
-        "test_rows": np.nan,
-        "buyer_rate_test": np.nan,
+        "validation_rows": np.nan,
+        "buyer_rate_validation": np.nan,
         "training_seconds": np.nan,
         "accuracy_at_0_50": np.nan,
         "precision_at_0_50": np.nan,
@@ -470,11 +507,15 @@ def create_failed_result_row(model_config, error):
         "best_targeted_share": np.nan,
         "best_lift_vs_random": np.nan,
         "champion_score": np.nan,
+        "uses_sample_weight": bool(
+            model_config["uses_sample_weight"]
+        ),
+        "configured_max_training_rows": int(
+            model_config["max_rows"]
+        ),
         "status": "failed",
         "error_message": str(error),
     }
-
-    return failed_row
 
 
 # --------------------------------------------------

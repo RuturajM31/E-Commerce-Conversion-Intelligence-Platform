@@ -286,15 +286,44 @@ def load_optional_csv(path: str) -> pd.DataFrame:
 
 
 def get_natural_conversion_rate() -> float:
-    """Calculate natural conversion rate from visitor feature table."""
+    """Return the labeled final-holdout buyer rate used for lift.
 
-    visitor_features = load_optional_csv("data/processed/visitor_features.csv")
+    The production visitor table intentionally has no outcome label.
+    Therefore, lift must use the untouched labeled evaluation holdout,
+    not the current production scoring population.
+    """
 
-    if visitor_features.empty or "converted" not in visitor_features.columns:
-        return 0.008269
+    holdout = load_optional_csv(
+        "reports/tables/final_true_champion_holdout.csv"
+    )
 
-    return float(visitor_features["converted"].mean())
+    if holdout.empty:
+        raise RuntimeError(
+            "Final holdout results are unavailable. "
+            "Run: python3 -m src.models.finalize_true_champion"
+        )
 
+    if "positive_rate" in holdout.columns:
+        rates = pd.to_numeric(
+            holdout["positive_rate"],
+            errors="coerce",
+        ).dropna()
+
+        if not rates.empty and 0 < float(rates.iloc[0]) <= 1:
+            return float(rates.iloc[0])
+
+    required = {"rows", "positive_rows"}
+
+    if required.issubset(holdout.columns):
+        rows = float(holdout.iloc[0]["rows"])
+        positives = float(holdout.iloc[0]["positive_rows"])
+
+        if rows > 0 and 0 <= positives <= rows:
+            return positives / rows
+
+    raise RuntimeError(
+        "Final holdout results do not contain a valid labeled buyer rate."
+    )
 
 def calculate_lift() -> float:
     """Calculate lift using final precision and natural conversion rate."""

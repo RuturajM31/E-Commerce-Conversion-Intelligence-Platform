@@ -1,0 +1,46 @@
+{
+  "category": "ML Visual Intelligence",
+  "package": "Experiment tracking readiness",
+  "final_evidence_decision": "single_readiness_page",
+  "comparison_ready": false,
+  "comparison_reason": "The current MLflow database does not provide a fully verified, comparable ecommerce experiment set after prompt/demo evidence is excluded. This visual remains conditional until clean ecommerce-only runs are logged under a dedicated evaluation contract.",
+  "counts": {
+    "runs_total": 8,
+    "verified_ecommerce_runs": 2,
+    "excluded_runs": 6,
+    "verified_registry_versions": 3,
+    "shared_metric_keys": 0
+  },
+  "supported_visuals": [],
+  "conditional_visuals": {
+    "MLV-I01": "The current MLflow database does not provide a fully verified, comparable ecommerce experiment set after prompt/demo evidence is excluded. This visual remains conditional until clean ecommerce-only runs are logged under a dedicated evaluation contract.",
+    "MLV-I02": "The current MLflow database does not provide a fully verified, comparable ecommerce experiment set after prompt/demo evidence is excluded. This visual remains conditional until clean ecommerce-only runs are logged under a dedicated evaluation contract.",
+    "MLV-I03": "Requires dense repeated numeric hyperparameter variation across clean ecommerce runs.",
+    "MLV-I04": "The current MLflow database does not provide a fully verified, comparable ecommerce experiment set after prompt/demo evidence is excluded. This visual remains conditional until clean ecommerce-only runs are logged under a dedicated evaluation contract.",
+    "MLV-I05": "Requires a clean ecommerce-only champion-challenger registry history with comparable evaluation evidence."
+  },
+  "readiness_artifact": "reports/visuals/ml_visual_intelligence/experiment_tracking/experiment_tracking_readiness.png",
+  "supporting_files": {
+    "source_audit": "reports/visuals/ml_visual_intelligence/experiment_tracking/experiment_source_audit.csv",
+    "registry_versions": "reports/visuals/ml_visual_intelligence/experiment_tracking/verified_ecommerce_registry_versions.csv",
+    "insights": "reports/visuals/ml_visual_intelligence/experiment_tracking/experiment_tracking_insights.md"
+  },
+  "qa": {
+    "experiment_tracking_readiness": {
+      "passed": true,
+      "width_px": 2215,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    }
+  }
+}

@@ -1,24 +1,29 @@
 # Core data stack
-numpy>=1.26.0
-pandas>=2.1.0
-scipy>=1.11.0
+numpy==1.26.4
+pandas==2.1.4
+scipy==1.11.4
+pyarrow==23.0.1
 
 # Machine learning
-scikit-learn>=1.3.0
-joblib>=1.3.0
-xgboost>=2.0.0
+scikit-learn==1.5.0
+joblib==1.3.2
+xgboost==3.2.0
+imbalanced-learn==0.14.2
 
 # Forecasting
-statsmodels>=0.14.0
-prophet>=1.1.5
+statsmodels==0.14.6
+prophet==1.3.0
 
 # Dashboard
-streamlit>=1.36.0
-plotly>=5.20.0
+streamlit==1.54.0
+plotly==5.24.1
 
-# Testing and code quality
-pytest>=8.0.0
+# Testing
+pytest==9.1.0
 
-# Optional notebooks / exploration
-matplotlib>=3.8.0
-seaborn>=0.13.0
+# Project charts
+matplotlib==3.7.5
+
+# Security-validated dependency additions
+# Validated image dependency used by Streamlit and chart exports.
+pillow==12.2.0

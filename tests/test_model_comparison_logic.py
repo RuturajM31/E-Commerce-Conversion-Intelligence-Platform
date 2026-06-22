@@ -1,76 +1,177 @@
-import os
+"""Validation tests for generated model-comparison results."""
+
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
-import pytest
 
 
-def test_xgboost_and_logistic_are_compared_when_available():
-    """The benchmark should compare XGBoost-style models against Logistic Regression when results exist.
+FINAL_COMPARISON_PATH = Path(
+    "reports/tables/final_true_champion_comparison.csv"
+)
 
-    We do not force XGBoost to beat Logistic Regression every time by default.
-    That would be a weak test because model ranking can change by data split, features, tuning, and metric.
-    """
+CANDIDATE_PATHS = [
+    FINAL_COMPARISON_PATH,
+    Path("reports/tables/manual_model_comparison.csv"),
+    Path("reports/tables/automl_benchmark_results.csv"),
+]
 
-    candidate_paths = [
-        Path("reports/tables/final_true_champion_comparison.csv"),
-        Path("reports/tables/manual_model_comparison.csv"),
-        Path("reports/tables/automl_benchmark_results.csv"),
+
+def normalize_boolean_flags(values: pd.Series) -> pd.Series:
+    """Convert supported CSV boolean values into True or False."""
+
+    normalized = values.astype(str).str.strip().str.lower()
+
+    valid_values = {
+        "true",
+        "false",
+        "1",
+        "0",
+        "yes",
+        "no",
+    }
+
+    invalid_values = normalized[~normalized.isin(valid_values)]
+
+    assert invalid_values.empty, (
+        "Invalid model-selection flag values: "
+        f"{sorted(invalid_values.unique())}"
+    )
+
+    return normalized.isin({"true", "1", "yes"})
+
+
+def test_logistic_and_xgboost_are_in_comparison_results():
+    """The benchmark must evaluate both baseline and boosting families."""
+
+    available_paths = [
+        path
+        for path in CANDIDATE_PATHS
+        if path.exists()
     ]
 
-    available = [path for path in candidate_paths if path.exists()]
+    assert available_paths, (
+        "No model-comparison tables are available."
+    )
 
-    if not available:
-        pytest.skip("No model comparison table is available yet.")
+    comparison_tables = []
+
+    for path in available_paths:
+        table = pd.read_csv(path)
+
+        if "model_name" in table.columns:
+            comparison_tables.append(
+                table[["model_name"]].copy()
+            )
+
+    assert comparison_tables, (
+        "Available comparison tables have no model_name column."
+    )
 
     comparison = pd.concat(
-        [pd.read_csv(path) for path in available],
+        comparison_tables,
         ignore_index=True,
     )
 
-    if "model_name" not in comparison.columns:
-        pytest.skip("Comparison table has no model_name column.")
+    names = (
+        comparison["model_name"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+    )
 
-    names = comparison["model_name"].astype(str).str.lower()
+    assert names.str.contains("logistic").any(), (
+        "Logistic Regression was not found in the benchmark."
+    )
 
-    has_logistic = names.str.contains("logistic").any()
-    has_xgboost = names.str.contains("xgboost|xgb").any()
-
-    assert has_logistic, "Logistic Regression was not found in model comparison results."
-
-    if not has_xgboost:
-        pytest.skip("XGBoost was not available or not included in this run.")
-
-    assert has_xgboost
+    assert names.str.contains(
+        "xgboost|xgb",
+        regex=True,
+    ).any(), (
+        "XGBoost was not found in the benchmark."
+    )
 
 
-def test_xgboost_beats_logistic_only_when_strict_mode_enabled():
-    """Optional strict check for XGBoost beating Logistic Regression.
+def test_business_scores_are_valid_and_rankable():
+    """Champion selection must use valid finite business scores.
 
-    This is not enabled by default because it is not always a valid expectation.
-    To force this check:
-        REQUIRE_XGB_BEATS_LR=1 pytest tests/test_model_comparison_logic.py -q
+    The test does not force a specific algorithm to win. It checks that
+    every candidate has a usable score and that a highest-scoring model
+    can be identified deterministically.
     """
 
-    if os.getenv("REQUIRE_XGB_BEATS_LR") != "1":
-        pytest.skip("Strict XGBoost > Logistic test skipped by default.")
+    assert FINAL_COMPARISON_PATH.exists(), (
+        f"Missing final comparison table: {FINAL_COMPARISON_PATH}"
+    )
 
-    path = Path("reports/tables/final_true_champion_comparison.csv")
+    comparison = pd.read_csv(
+        FINAL_COMPARISON_PATH
+    )
 
-    if not path.exists():
-        pytest.skip("Final champion comparison table is not available.")
+    required_columns = {
+        "model_name",
+        "business_score",
+    }
 
-    comparison = pd.read_csv(path)
+    missing_columns = required_columns - set(
+        comparison.columns
+    )
 
-    if "model_name" not in comparison.columns or "business_score" not in comparison.columns:
-        pytest.skip("Required comparison columns are missing.")
+    assert not missing_columns, (
+        f"Missing comparison columns: {missing_columns}"
+    )
 
-    names = comparison["model_name"].astype(str).str.lower()
+    assert not comparison.empty
 
-    logistic = comparison[names.str.contains("logistic")]
-    xgb = comparison[names.str.contains("xgboost|xgb")]
+    model_names = (
+        comparison["model_name"]
+        .astype(str)
+        .str.strip()
+    )
 
-    if logistic.empty or xgb.empty:
-        pytest.skip("Need both Logistic and XGBoost rows for strict comparison.")
+    scores = pd.to_numeric(
+        comparison["business_score"],
+        errors="coerce",
+    )
 
-    assert xgb["business_score"].max() > logistic["business_score"].max()
+    assert model_names.ne("").all()
+    assert scores.notna().all()
+    assert np.isfinite(scores).all()
+    assert (scores >= 0).all()
+
+    best_index = scores.idxmax()
+    best_model_name = model_names.loc[best_index]
+
+    assert best_model_name
+
+    # Validate an explicit selection flag when the table contains one.
+    flag_column = next(
+        (
+            column
+            for column in [
+                "is_selected",
+                "is_best_model",
+            ]
+            if column in comparison.columns
+        ),
+        None,
+    )
+
+    if flag_column is not None:
+        selected = normalize_boolean_flags(
+            comparison[flag_column]
+        )
+
+        assert selected.sum() == 1, (
+            "Exactly one final model must be selected."
+        )
+
+        selected_score = scores.loc[selected].iloc[0]
+
+        assert np.isclose(
+            selected_score,
+            scores.max(),
+        ), (
+            "The selected model does not have the highest "
+            "recorded business score."
+        )

@@ -1,0 +1,47 @@
+{
+  "category": "ML Visual Intelligence",
+  "package": "Segment intelligence",
+  "source_rows": 78998,
+  "segment_order": [
+    "High Intent",
+    "Strong Intent",
+    "Warm Intent",
+    "Low Intent",
+    "Cold Visitor"
+  ],
+  "outcomes_available": false,
+  "supported_visuals": [
+    "MLV-G02"
+  ],
+  "conditional_visuals": {
+    "MLV-G01": "Actual outcomes by segment unavailable.",
+    "MLV-G03": "Row-level actual labels unavailable.",
+    "MLV-G04": "Validated cohort outcomes and value unavailable."
+  },
+  "artifacts": {
+    "MLV-G02": "reports/visuals/ml_visual_intelligence/segment_intelligence/mlv-g02_score_distribution_by_segment.png"
+  },
+  "supporting_files": {
+    "segment_summary": "reports/visuals/ml_visual_intelligence/segment_intelligence/segment_score_summary.csv",
+    "insights": "reports/visuals/ml_visual_intelligence/segment_intelligence/segment_intelligence_insights.md",
+    "conditional_status": "reports/visuals/ml_visual_intelligence/segment_intelligence/segment_conditional_status.md"
+  },
+  "qa": {
+    "MLV-G02": {
+      "passed": true,
+      "width_px": 2203,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    }
+  }
+}

@@ -21,6 +21,9 @@ import joblib
 import numpy as np
 import pandas as pd
 
+from src.models.environment_provenance import (
+    get_environment_provenance,
+)
 from src.models.model_config import (
     AUTOML_RESULTS_PATH,
     AUTOML_TRACK_NAME,
@@ -252,6 +255,9 @@ def save_model_selection_outputs(
     metadata = {
         "selected_at_utc": get_current_utc_timestamp(),
         "selection_stage": "initial_champion_from_manual_vs_automl_benchmark",
+        "environment": get_environment_provenance(),
+        "selection_split": "validation",
+        "final_holdout_used": False,
         "champion_model_name": final_champion_row["model_name"],
         "champion_track": final_champion_row["track"],
         "champion_model_family": final_champion_row["model_family"],
@@ -260,10 +266,9 @@ def save_model_selection_outputs(
         "feature_columns": FEATURE_COLUMNS,
         "target_column": TARGET_COLUMN,
         "selection_logic": (
-            "Initial champion selected by comparing the manual champion "
-            "against the AutoML-style champion using champion_score, PR-AUC, "
-            "best F1, recall, ROC-AUC, lift vs random targeting, and "
-            "deployment suitability."
+            "Initial champion selected only from chronological validation "
+            "results. The final holdout is reserved for the later true-champion "
+            "workflow and is not used during this initial benchmark."
         ),
         "metrics": {
             "roc_auc": float(final_champion_row["roc_auc"]),

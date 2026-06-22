@@ -68,6 +68,11 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 
+from src.models.environment_provenance import (
+    get_environment_provenance,
+)
+from src.models.score_export import save_final_champion_scores
+
 # --------------------------------------------------
 # 1. BASIC SETTINGS
 # --------------------------------------------------
@@ -80,12 +85,16 @@ TARGET_COLUMN = "converted"
 
 # Visitor ID is useful for joining with anomaly files, but not as a model feature.
 ID_COLUMN = "visitorid"
+SPLIT_COLUMN = "data_split"
 
 # These timestamp columns are not used directly as model features.
 # We already use activity_span_ms as a usable numeric feature.
 TIME_COLUMNS = [
     "first_event_time",
     "last_event_time",
+    "snapshot_time",
+    "observation_start",
+    "target_end",
 ]
 
 # We tune on a sample so the script does not become too slow.
@@ -130,7 +139,13 @@ CHAMPION_SCORE_WEIGHTS = {
 # Keep all paths relative to the project root.
 # This avoids personal local paths inside the project.
 
-FEATURES_PATH = Path("data/processed/visitor_features.csv")
+FEATURES_PATH = Path(
+    "data/processed/visitor_training_snapshots.csv"
+)
+
+SCORING_FEATURES_PATH = Path(
+    "data/processed/visitor_features.csv"
+)
 ANOMALY_SCORES_PATH = Path("data/processed/visitor_anomaly_scores.csv")
 
 CURRENT_CHAMPION_MODEL_PATH = Path("models/trained/champion_model.joblib")
@@ -144,7 +159,13 @@ FINAL_SUMMARY_PATH = Path("reports/tables/final_true_champion_summary.csv")
 FINAL_STABILITY_PATH = Path("reports/tables/final_true_champion_stability.csv")
 FINAL_SENSITIVITY_PATH = Path("reports/tables/final_true_champion_sensitivity.csv")
 FINAL_THRESHOLDS_PATH = Path("reports/tables/final_true_champion_thresholds.csv")
-FINAL_CHAMPION_SCORES_PATH = Path("data/processed/final_champion_visitor_scores.csv")
+FINAL_CHAMPION_SCORES_PATH = Path(
+    "data/processed/final_champion_visitor_scores.csv"
+)
+
+FINAL_HOLDOUT_PATH = Path(
+    "reports/tables/final_true_champion_holdout.csv"
+)
 
 
 # --------------------------------------------------
@@ -320,24 +341,68 @@ def create_split(
     X: pd.DataFrame,
     y: pd.Series,
     visitor_ids: pd.Series,
-) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series, pd.Series, pd.Series]:
-    """Create one consistent train/test split.
+    split_labels: pd.Series,
+) -> Dict[str, Dict[str, object]]:
+    """Use the predefined chronological dataset splits.
 
-    Stratify means:
-        Keep the buyer/non-buyer ratio similar in train and test.
+    train:
+        Used to fit and tune candidate models.
 
-    Why:
-        Conversion is rare, so random splitting without stratify can be unstable.
+    validation:
+        Used to compare candidates and choose the threshold.
+
+    final_holdout:
+        Used once after the champion has been selected.
     """
 
-    return train_test_split(
-        X,
-        y,
-        visitor_ids,
-        test_size=0.20,
-        random_state=RANDOM_STATE,
-        stratify=y,
+    required_splits = {
+        "train",
+        "validation",
+        "final_holdout",
+    }
+
+    actual_splits = set(
+        split_labels.dropna().astype(str).unique()
     )
+
+    missing_splits = required_splits.difference(actual_splits)
+
+    if missing_splits:
+        raise ValueError(
+            "Training dataset is missing required splits: "
+            f"{sorted(missing_splits)}"
+        )
+
+    output: Dict[str, Dict[str, object]] = {}
+
+    for split_name in [
+        "train",
+        "validation",
+        "final_holdout",
+    ]:
+        mask = split_labels.astype(str).eq(split_name)
+
+        X_split = X.loc[mask].copy()
+        y_split = y.loc[mask].copy()
+        ids_split = visitor_ids.loc[mask].copy()
+
+        if X_split.empty:
+            raise ValueError(
+                f"{split_name} split contains no rows."
+            )
+
+        if y_split.nunique() < 2:
+            raise ValueError(
+                f"{split_name} split must contain both classes."
+            )
+
+        output[split_name] = {
+            "X": X_split,
+            "y": y_split,
+            "visitor_ids": ids_split,
+        }
+
+    return output
 
 
 def sample_training_data(
@@ -459,6 +524,7 @@ def summarize_model_performance(
     roc_auc = roc_auc_score(y_true, y_score)
 
     summary = {
+        "evaluation_split": "validation",
         "model_name": model_name,
         "model_family": model_family,
         "training_rows": training_rows,
@@ -478,6 +544,57 @@ def summarize_model_performance(
     return summary, threshold_table
 
 
+def summarize_fixed_threshold_performance(
+    model_name: str,
+    y_true: pd.Series,
+    y_score: np.ndarray,
+    threshold: float,
+) -> Dict[str, float]:
+    """Evaluate the selected champion once on final holdout data."""
+
+    y_pred = (
+        np.asarray(y_score) >= float(threshold)
+    ).astype(int)
+
+    precision = precision_score(
+        y_true,
+        y_pred,
+        zero_division=0,
+    )
+
+    recall = recall_score(
+        y_true,
+        y_pred,
+        zero_division=0,
+    )
+
+    f1 = f1_score(
+        y_true,
+        y_pred,
+        zero_division=0,
+    )
+
+    return {
+        "evaluation_split": "final_holdout",
+        "model_name": model_name,
+        "threshold": float(threshold),
+        "rows": int(len(y_true)),
+        "positive_rows": int(y_true.sum()),
+        "positive_rate": float(y_true.mean()),
+        "predicted_positive_rows": int(y_pred.sum()),
+        "predicted_positive_rate": float(y_pred.mean()),
+        "pr_auc": float(
+            average_precision_score(y_true, y_score)
+        ),
+        "roc_auc": float(
+            roc_auc_score(y_true, y_score)
+        ),
+        "precision": float(precision),
+        "recall": float(recall),
+        "f1_score": float(f1),
+    }
+
+
 def predict_scores(model, X_test: pd.DataFrame) -> np.ndarray:
     """Return positive-class probabilities from a fitted classifier."""
 
@@ -491,8 +608,8 @@ def predict_scores(model, X_test: pd.DataFrame) -> np.ndarray:
 # --------------------------------------------------
 
 def evaluate_existing_champion(
-    X_test: pd.DataFrame,
-    y_test: pd.Series,
+    X_validation: pd.DataFrame,
+    y_validation: pd.Series,
 ) -> Tuple[Optional[object], Optional[Dict[str, float]], Optional[pd.DataFrame]]:
     """Load and evaluate the already-existing champion model.
 
@@ -508,16 +625,19 @@ def evaluate_existing_champion(
 
     model = joblib.load(CURRENT_CHAMPION_MODEL_PATH)
 
-    y_score = predict_scores(model, X_test)
+    y_score = predict_scores(model, X_validation)
 
     summary, threshold_table = summarize_model_performance(
         model_name="Existing Champion Model",
-        y_true=y_test,
+        y_true=y_validation,
         y_score=y_score,
         training_rows=0,
-        model_family="Existing artifact",
-        notes="Previously selected champion model loaded from models/trained/champion_model.joblib.",
-        deployable=True,
+        model_family="Legacy artifact",
+        notes=(
+            "Legacy champion trained before leakage remediation. "
+            "Evaluated for reference only and excluded from final selection."
+        ),
+        deployable=False,
     )
 
     return model, summary, threshold_table
@@ -846,8 +966,8 @@ def load_test_anomaly_flags(test_visitor_ids: pd.Series) -> pd.Series:
 
 def run_anomaly_sensitivity_check(
     model_scores: Dict[str, np.ndarray],
-    y_test: pd.Series,
-    test_visitor_ids: pd.Series,
+    y_validation: pd.Series,
+    validation_visitor_ids: pd.Series,
 ) -> pd.DataFrame:
     """Compare model performance on all visitors vs non-anomalous visitors.
 
@@ -855,7 +975,7 @@ def run_anomaly_sensitivity_check(
         We want to know if a model only performs well because of extreme visitors.
     """
 
-    anomaly_flags = load_test_anomaly_flags(test_visitor_ids)
+    anomaly_flags = load_test_anomaly_flags(validation_visitor_ids)
 
     normal_mask = ~anomaly_flags
 
@@ -867,7 +987,7 @@ def run_anomaly_sensitivity_check(
                 {
                     "model_name": "not_available",
                     "evaluation_group": "anomaly_file_missing_or_no_flags",
-                    "test_rows": len(y_test),
+                    "validation_rows": len(y_validation),
                     "pr_auc": np.nan,
                     "roc_auc": np.nan,
                     "note": "Anomaly file was missing or no anomaly flags were available.",
@@ -876,28 +996,28 @@ def run_anomaly_sensitivity_check(
         )
 
     for model_name, y_score in model_scores.items():
-        all_pr_auc = average_precision_score(y_test, y_score)
-        normal_pr_auc = average_precision_score(y_test[normal_mask], y_score[normal_mask])
+        all_pr_auc = average_precision_score(y_validation, y_score)
+        normal_pr_auc = average_precision_score(y_validation[normal_mask], y_score[normal_mask])
 
-        all_roc_auc = roc_auc_score(y_test, y_score)
-        normal_roc_auc = roc_auc_score(y_test[normal_mask], y_score[normal_mask])
+        all_roc_auc = roc_auc_score(y_validation, y_score)
+        normal_roc_auc = roc_auc_score(y_validation[normal_mask], y_score[normal_mask])
 
         rows.append(
             {
                 "model_name": model_name,
-                "evaluation_group": "all_test_visitors",
-                "test_rows": len(y_test),
+                "evaluation_group": "all_validation_visitors",
+                "validation_rows": len(y_validation),
                 "pr_auc": all_pr_auc,
                 "roc_auc": all_roc_auc,
-                "note": "Performance on full test set.",
+                "note": "Performance on full validation set.",
             }
         )
 
         rows.append(
             {
                 "model_name": model_name,
-                "evaluation_group": "non_anomalous_test_visitors",
-                "test_rows": int(normal_mask.sum()),
+                "evaluation_group": "non_anomalous_validation_visitors",
+                "validation_rows": int(normal_mask.sum()),
                 "pr_auc": normal_pr_auc,
                 "roc_auc": normal_roc_auc,
                 "note": "Performance after removing anomaly-flagged visitors.",
@@ -1004,54 +1124,137 @@ def choose_final_champion(comparison: pd.DataFrame) -> pd.Series:
 def save_final_outputs(
     final_model,
     final_summary: pd.Series,
+    final_holdout_summary: Dict[str, float],
     feature_columns: List[str],
     comparison: pd.DataFrame,
     threshold_tables: List[pd.DataFrame],
     stability: pd.DataFrame,
     sensitivity: pd.DataFrame,
 ) -> None:
-    """Save final model, metadata, and result tables."""
+    """Save the selected model and separate validation/holdout evidence."""
 
     joblib.dump(final_model, FINAL_MODEL_PATH)
 
-    comparison.to_csv(FINAL_COMPARISON_PATH, index=False)
+    comparison.to_csv(
+        FINAL_COMPARISON_PATH,
+        index=False,
+    )
 
     if threshold_tables:
-        all_thresholds = pd.concat(threshold_tables, ignore_index=True)
-        all_thresholds.to_csv(FINAL_THRESHOLDS_PATH, index=False)
+        all_thresholds = pd.concat(
+            threshold_tables,
+            ignore_index=True,
+        )
+
+        all_thresholds.to_csv(
+            FINAL_THRESHOLDS_PATH,
+            index=False,
+        )
 
     if not stability.empty:
-        stability.to_csv(FINAL_STABILITY_PATH, index=False)
+        stability.to_csv(
+            FINAL_STABILITY_PATH,
+            index=False,
+        )
 
     if not sensitivity.empty:
-        sensitivity.to_csv(FINAL_SENSITIVITY_PATH, index=False)
+        sensitivity.to_csv(
+            FINAL_SENSITIVITY_PATH,
+            index=False,
+        )
+
+    pd.DataFrame(
+        [final_holdout_summary]
+    ).to_csv(
+        FINAL_HOLDOUT_PATH,
+        index=False,
+    )
+
+    validation_metrics = {
+        "business_score": float(
+            final_summary["business_score"]
+        ),
+        "pr_auc": float(
+            final_summary["pr_auc"]
+        ),
+        "roc_auc": float(
+            final_summary["roc_auc"]
+        ),
+        "precision": float(
+            final_summary["best_precision"]
+        ),
+        "recall": float(
+            final_summary["best_recall"]
+        ),
+        "f1_score": float(
+            final_summary["best_f1_score"]
+        ),
+        "threshold": float(
+            final_summary["best_threshold"]
+        ),
+    }
 
     metadata = {
         "final_model_name": final_summary["model_name"],
+        "environment": get_environment_provenance(),
         "model_family": final_summary["model_family"],
-        "selection_metric": "business_score",
+        "selection_metric": "validation_business_score",
+        "selection_split": "validation",
+        "final_evaluation_split": "final_holdout",
+        "split_strategy": (
+            "Predefined chronological rolling snapshots "
+            "with purge gaps."
+        ),
         "business_score_weights": CHAMPION_SCORE_WEIGHTS,
-        "best_threshold": float(final_summary["best_threshold"]),
-        "pr_auc": float(final_summary["pr_auc"]),
-        "roc_auc": float(final_summary["roc_auc"]),
-        "best_precision": float(final_summary["best_precision"]),
-        "best_recall": float(final_summary["best_recall"]),
-        "best_f1_score": float(final_summary["best_f1_score"]),
+        "best_threshold": float(
+            final_summary["best_threshold"]
+        ),
+        "pr_auc": float(
+            final_holdout_summary["pr_auc"]
+        ),
+        "roc_auc": float(
+            final_holdout_summary["roc_auc"]
+        ),
+        "best_precision": float(
+            final_holdout_summary["precision"]
+        ),
+        "best_recall": float(
+            final_holdout_summary["recall"]
+        ),
+        "best_f1_score": float(
+            final_holdout_summary["f1_score"]
+        ),
+        "validation_metrics": validation_metrics,
+        "final_holdout_metrics": final_holdout_summary,
         "feature_columns": feature_columns,
+        "training_data_path": str(FEATURES_PATH),
+        "scoring_data_path": str(SCORING_FEATURES_PATH),
         "notes": str(final_summary["notes"]),
     }
 
-    with open(FINAL_METADATA_PATH, "w", encoding="utf-8") as file:
-        json.dump(metadata, file, indent=4)
+    with open(
+        FINAL_METADATA_PATH,
+        "w",
+        encoding="utf-8",
+    ) as file:
+        json.dump(
+            metadata,
+            file,
+            indent=4,
+        )
 
-    summary_df = pd.DataFrame([metadata])
-    summary_df.to_csv(FINAL_SUMMARY_PATH, index=False)
+    pd.DataFrame(
+        [metadata]
+    ).to_csv(
+        FINAL_SUMMARY_PATH,
+        index=False,
+    )
 
-    print("\nSaved final champion model and outputs:")
+    print("\nSaved final champion outputs:")
     print(f"- {FINAL_MODEL_PATH}")
     print(f"- {FINAL_METADATA_PATH}")
     print(f"- {FINAL_COMPARISON_PATH}")
-    print(f"- {FINAL_SUMMARY_PATH}")
+    print(f"- {FINAL_HOLDOUT_PATH}")
 
 
 # --------------------------------------------------
@@ -1069,20 +1272,58 @@ def main() -> None:
 
     data = load_visitor_features()
 
+    if SPLIT_COLUMN not in data.columns:
+        raise ValueError(
+            f"Training dataset is missing '{SPLIT_COLUMN}'."
+        )
+
     X, y, visitor_ids, feature_columns = build_model_matrix(data)
 
-    print_section("Step 2: Create train/test split")
+    print_section(
+        "Step 2: Load chronological train, validation, and holdout splits"
+    )
 
-    X_train, X_test, y_train, y_test, train_visitor_ids, test_visitor_ids = create_split(
+    split_data = create_split(
         X=X,
         y=y,
         visitor_ids=visitor_ids,
+        split_labels=data[SPLIT_COLUMN],
+    )
+
+    X_train = split_data["train"]["X"]
+    y_train = split_data["train"]["y"]
+    train_visitor_ids = split_data["train"]["visitor_ids"]
+
+    X_validation = split_data["validation"]["X"]
+    y_validation = split_data["validation"]["y"]
+    validation_visitor_ids = (
+        split_data["validation"]["visitor_ids"]
+    )
+
+    X_holdout = split_data["final_holdout"]["X"]
+    y_holdout = split_data["final_holdout"]["y"]
+    holdout_visitor_ids = (
+        split_data["final_holdout"]["visitor_ids"]
     )
 
     print(f"Train rows: {len(X_train):,}")
-    print(f"Test rows: {len(X_test):,}")
-    print(f"Train conversion rate: {y_train.mean():.4%}")
-    print(f"Test conversion rate: {y_test.mean():.4%}")
+    print(f"Validation rows: {len(X_validation):,}")
+    print(f"Final holdout rows: {len(X_holdout):,}")
+
+    print(
+        f"Train conversion rate: "
+        f"{y_train.mean():.4%}"
+    )
+
+    print(
+        f"Validation conversion rate: "
+        f"{y_validation.mean():.4%}"
+    )
+
+    print(
+        f"Final holdout conversion rate: "
+        f"{y_holdout.mean():.4%}"
+    )
 
     model_objects: Dict[str, object] = {}
     model_scores: Dict[str, np.ndarray] = {}
@@ -1092,13 +1333,13 @@ def main() -> None:
     print_section("Step 3: Evaluate existing champion")
 
     existing_model, existing_summary, existing_thresholds = evaluate_existing_champion(
-        X_test=X_test,
-        y_test=y_test,
+        X_validation=X_validation,
+        y_validation=y_validation,
     )
 
     if existing_model is not None:
         model_objects["Existing Champion Model"] = existing_model
-        model_scores["Existing Champion Model"] = predict_scores(existing_model, X_test)
+        model_scores["Existing Champion Model"] = predict_scores(existing_model, X_validation)
         summary_rows.append(existing_summary)
         threshold_tables.append(existing_thresholds)
 
@@ -1109,11 +1350,11 @@ def main() -> None:
         y_train=y_train,
     )
 
-    logistic_scores = predict_scores(logistic_model, X_test)
+    logistic_scores = predict_scores(logistic_model, X_validation)
 
     logistic_summary, logistic_thresholds = summarize_model_performance(
         model_name="Logistic Regression Class Weight",
-        y_true=y_test,
+        y_true=y_validation,
         y_score=logistic_scores,
         training_rows=len(X_train),
         model_family="Linear baseline",
@@ -1133,11 +1374,11 @@ def main() -> None:
         y_train=y_train,
     )
 
-    rf_class_weight_scores = predict_scores(rf_class_weight_model, X_test)
+    rf_class_weight_scores = predict_scores(rf_class_weight_model, X_validation)
 
     rf_class_weight_summary, rf_class_weight_thresholds = summarize_model_performance(
         model_name="Random Forest Class Weight",
-        y_true=y_test,
+        y_true=y_validation,
         y_score=rf_class_weight_scores,
         training_rows=len(X_train),
         model_family="Random Forest",
@@ -1157,11 +1398,11 @@ def main() -> None:
         y_train=y_train,
     )
 
-    tuned_rf_scores = predict_scores(tuned_rf_model, X_test)
+    tuned_rf_scores = predict_scores(tuned_rf_model, X_validation)
 
     tuned_rf_summary, tuned_rf_thresholds = summarize_model_performance(
         model_name="Tuned Random Forest",
-        y_true=y_test,
+        y_true=y_validation,
         y_score=tuned_rf_scores,
         training_rows=len(X_train),
         model_family="Random Forest",
@@ -1182,11 +1423,11 @@ def main() -> None:
     )
 
     if xgb_baseline_model is not None:
-        xgb_baseline_scores = predict_scores(xgb_baseline_model, X_test)
+        xgb_baseline_scores = predict_scores(xgb_baseline_model, X_validation)
 
         xgb_baseline_summary, xgb_baseline_thresholds = summarize_model_performance(
             model_name="XGBoost Baseline",
-            y_true=y_test,
+            y_true=y_validation,
             y_score=xgb_baseline_scores,
             training_rows=len(X_train),
             model_family="Boosting",
@@ -1207,11 +1448,11 @@ def main() -> None:
     )
 
     if tuned_xgb_model is not None:
-        tuned_xgb_scores = predict_scores(tuned_xgb_model, X_test)
+        tuned_xgb_scores = predict_scores(tuned_xgb_model, X_validation)
 
         tuned_xgb_summary, tuned_xgb_thresholds = summarize_model_performance(
             model_name="Tuned XGBoost",
-            y_true=y_test,
+            y_true=y_validation,
             y_score=tuned_xgb_scores,
             training_rows=len(X_train),
             model_family="Boosting",
@@ -1232,11 +1473,11 @@ def main() -> None:
     )
 
     if smote_model is not None:
-        smote_scores = predict_scores(smote_model, X_test)
+        smote_scores = predict_scores(smote_model, X_validation)
 
         smote_summary, smote_thresholds = summarize_model_performance(
             model_name="SMOTE Logistic Regression Sample",
-            y_true=y_test,
+            y_true=y_validation,
             y_score=smote_scores,
             training_rows=min(len(X_train), 80_000),
             model_family="Imbalance handling",
@@ -1264,7 +1505,7 @@ def main() -> None:
 
         ensemble_summary, ensemble_thresholds = summarize_model_performance(
             model_name="Probability Average Ensemble",
-            y_true=y_test,
+            y_true=y_validation,
             y_score=ensemble_scores,
             training_rows=len(X_train),
             model_family="Ensemble check",
@@ -1306,8 +1547,8 @@ def main() -> None:
 
     sensitivity = run_anomaly_sensitivity_check(
         model_scores=model_scores,
-        y_test=y_test,
-        test_visitor_ids=test_visitor_ids,
+        y_validation=y_validation,
+        validation_visitor_ids=validation_visitor_ids,
     )
 
     print(sensitivity.head(20))
@@ -1328,8 +1569,8 @@ def main() -> None:
 
     stability = run_stability_check(
         candidate_models=stability_models,
-        X=X,
-        y=y,
+        X=X_train,
+        y=y_train,
     )
 
     if not stability.empty:
@@ -1346,24 +1587,94 @@ def main() -> None:
 
         print(stability_summary)
 
-    print_section("Step 14: Select and save final true champion")
+    print_section(
+        "Step 14: Select champion from validation results"
+    )
 
-    final_summary = choose_final_champion(comparison)
+    final_summary = choose_final_champion(
+        comparison
+    )
 
-    final_model_name = final_summary["model_name"]
-    final_model = model_objects[final_model_name]
+    final_model_name = final_summary[
+        "model_name"
+    ]
 
-    print(f"Final true champion selected: {final_model_name}")
-    print(f"Business score: {final_summary['business_score']:.4f}")
-    print(f"Best threshold: {final_summary['best_threshold']:.2f}")
-    print(f"PR-AUC: {final_summary['pr_auc']:.4f}")
-    print(f"Best precision: {final_summary['best_precision']:.4f}")
-    print(f"Best recall: {final_summary['best_recall']:.4f}")
-    print(f"Best F1: {final_summary['best_f1_score']:.4f}")
+    selected_model = model_objects[
+        final_model_name
+    ]
+
+    print(
+        "Validation champion selected: "
+        f"{final_model_name}"
+    )
+
+    print(
+        "Validation business score: "
+        f"{final_summary['business_score']:.4f}"
+    )
+
+    print(
+        "Validation-selected threshold: "
+        f"{final_summary['best_threshold']:.2f}"
+    )
+
+    print_section(
+        "Step 15: Retrain champion on train plus validation"
+    )
+
+    X_train_validation = pd.concat(
+        [
+            X_train,
+            X_validation,
+        ],
+        axis=0,
+    )
+
+    y_train_validation = pd.concat(
+        [
+            y_train,
+            y_validation,
+        ],
+        axis=0,
+    )
+
+    final_model = clone(selected_model)
+
+    final_model.fit(
+        X_train_validation,
+        y_train_validation,
+    )
+
+    print_section(
+        "Step 16: Evaluate once on untouched final holdout"
+    )
+
+    holdout_scores = predict_scores(
+        final_model,
+        X_holdout,
+    )
+
+    final_holdout_summary = (
+        summarize_fixed_threshold_performance(
+            model_name=final_model_name,
+            y_true=y_holdout,
+            y_score=holdout_scores,
+            threshold=float(
+                final_summary["best_threshold"]
+            ),
+        )
+    )
+
+    print(
+        pd.DataFrame(
+            [final_holdout_summary]
+        ).to_string(index=False)
+    )
 
     save_final_outputs(
         final_model=final_model,
         final_summary=final_summary,
+        final_holdout_summary=final_holdout_summary,
         feature_columns=feature_columns,
         comparison=comparison,
         threshold_tables=threshold_tables,
@@ -1371,12 +1682,65 @@ def main() -> None:
         sensitivity=sensitivity,
     )
 
+    print_section(
+        "Step 17: Score the latest production visitor table"
+    )
+
+    if not SCORING_FEATURES_PATH.exists():
+        raise FileNotFoundError(
+            "Production scoring feature table is missing: "
+            f"{SCORING_FEATURES_PATH}"
+        )
+
+    scoring_data = pd.read_csv(
+        SCORING_FEATURES_PATH
+    )
+
+    required_scoring_columns = [
+        ID_COLUMN,
+        *feature_columns,
+    ]
+
+    missing_scoring_columns = [
+        column
+        for column in required_scoring_columns
+        if column not in scoring_data.columns
+    ]
+
+    if missing_scoring_columns:
+        raise ValueError(
+            "Production scoring data is missing columns: "
+            f"{missing_scoring_columns}"
+        )
+
+    X_scoring = scoring_data[
+        feature_columns
+    ].copy()
+
     save_final_champion_scores(
         final_model=final_model,
-        X=X,
-        visitor_ids=visitor_ids,
-        threshold=float(final_summary["best_threshold"]),
+        X=X_scoring,
+        visitor_ids=scoring_data[ID_COLUMN],
+        threshold=float(
+            final_summary["best_threshold"]
+        ),
     )
+
+    # MLflow is optional and runs in its separate environment.
+    # It is called only after all production artifacts are saved.
+    from src.models.mlflow_bridge import (
+        run_optional_mlflow_tracking,
+    )
+
+    run_optional_mlflow_tracking()
+
+    # Evidently monitoring is optional and runs in its own environment.
+    # It is called only after model artifacts and production scores exist.
+    from src.monitoring.evidently_bridge import (
+        run_optional_evidently_monitoring,
+    )
+
+    run_optional_evidently_monitoring()
 
     print_section("Done")
 

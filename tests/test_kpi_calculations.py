@@ -18,7 +18,7 @@ def read_csv_or_skip(path: str) -> pd.DataFrame:
 def test_conversion_rate_is_valid():
     """Conversion rate should be a valid percentage between 0 and 1."""
 
-    data = read_csv_or_skip("data/processed/visitor_features.csv")
+    data = read_csv_or_skip("data/processed/visitor_training_snapshots.csv")
 
     assert "converted" in data.columns
 

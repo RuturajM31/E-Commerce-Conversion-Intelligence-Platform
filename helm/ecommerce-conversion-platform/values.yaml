@@ -69,6 +69,16 @@ images:
     tag: "11.3.0"
     pullPolicy: IfNotPresent
 
+  alertWebhook:
+    repository: ecommerce_conversion_intelligence_platform-alert-webhook
+    tag: latest
+    pullPolicy: Never
+
+  alertmanager:
+    repository: prom/alertmanager
+    tag: v0.27.0
+    pullPolicy: IfNotPresent
+
 # Internal container and service ports.
 ports:
   streamlit: 8501
@@ -76,10 +86,15 @@ ports:
   prometheus: 9090
   blackbox: 9115
   grafana: 3000
+  alertWebhook: 5001
+  alertmanager: 9093
 
-# Local demo Grafana credentials.
-# Do not use hardcoded passwords like this in production.
-# In production, use Kubernetes Secrets or an external secret manager.
+# Grafana credentials are stored in a Kubernetes Secret.
+# The startup script creates this Secret from environment variables.
 grafana:
-  adminUser: admin
-  adminPassword: "Techno#123"
+  existingSecret: grafana-admin-credentials
+  adminUserKey: admin-user
+  adminPasswordKey: admin-password
+
+alerting:
+  enabled: true

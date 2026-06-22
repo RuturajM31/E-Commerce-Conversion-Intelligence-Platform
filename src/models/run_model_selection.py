@@ -35,7 +35,11 @@ from src.models.model_config import (
     FINAL_CHAMPION_MODEL_PATH,
     FINAL_SELECTION_PATH,
     MANUAL_RESULTS_PATH,
+    SPLIT_COLUMN,
     TARGET_COLUMN,
+    TRAIN_SPLIT,
+    VALIDATION_SPLIT,
+    FINAL_HOLDOUT_SPLIT,
     create_model_output_folders,
 )
 from src.models.model_evaluation import run_benchmark_track
@@ -47,52 +51,89 @@ from src.models.model_selection import select_and_save_final_champion
 # --------------------------------------------------
 
 def load_training_data():
-    """Load and validate the visitor-level training dataset."""
+    """Load the leakage-safe chronological training dataset."""
 
-    print("\nLoading visitor-level training data...")
+    print("\nLoading rolling visitor training snapshots...")
 
-    # Read the feature table created earlier by build_visitor_features.py.
+    if not DATA_PATH.exists():
+        raise FileNotFoundError(
+            f"Missing training dataset: {DATA_PATH}"
+        )
+
     data = pd.read_csv(DATA_PATH)
 
-    # The model needs these columns.
-    required_columns = FEATURE_COLUMNS + [TARGET_COLUMN]
+    required_columns = [
+        *FEATURE_COLUMNS,
+        TARGET_COLUMN,
+        SPLIT_COLUMN,
+    ]
 
-    # Check if any required columns are missing.
     missing_columns = [
-        column for column in required_columns
+        column
+        for column in required_columns
         if column not in data.columns
     ]
 
     if missing_columns:
         raise ValueError(
-            f"Missing required columns in training data: {missing_columns}"
+            "Missing required training columns: "
+            f"{missing_columns}"
         )
 
-    # Keep only the columns needed for model training.
-    # This prevents accidental leakage from extra columns.
-    training_data = data[required_columns].copy()
-
-    # Remove rows with missing values in model columns.
-    # Our current feature engineering should already avoid this,
-    # but this is an extra safety check.
-    before_drop = len(training_data)
+    training_data = data[
+        required_columns
+    ].copy()
 
     training_data = training_data.dropna(
         subset=required_columns,
     )
 
-    after_drop = len(training_data)
+    training_data[TARGET_COLUMN] = (
+        training_data[TARGET_COLUMN]
+        .astype(int)
+    )
 
-    dropped_rows = before_drop - after_drop
+    training_data[SPLIT_COLUMN] = (
+        training_data[SPLIT_COLUMN]
+        .astype(str)
+    )
 
-    if dropped_rows > 0:
-        print(f"Dropped rows with missing values: {dropped_rows}")
+    required_splits = {
+        TRAIN_SPLIT,
+        VALIDATION_SPLIT,
+        FINAL_HOLDOUT_SPLIT,
+    }
 
-    # Make sure the target is integer 0/1.
-    training_data[TARGET_COLUMN] = training_data[TARGET_COLUMN].astype(int)
+    actual_splits = set(
+        training_data[SPLIT_COLUMN].unique()
+    )
 
-    print(f"Training rows available: {len(training_data):,}")
-    print(f"Buyer rate: {training_data[TARGET_COLUMN].mean():.4%}")
+    missing_splits = required_splits.difference(
+        actual_splits
+    )
+
+    if missing_splits:
+        raise ValueError(
+            "Training dataset is missing splits: "
+            f"{sorted(missing_splits)}"
+        )
+
+    summary = (
+        training_data.groupby(SPLIT_COLUMN)
+        .agg(
+            rows=(TARGET_COLUMN, "size"),
+            positives=(TARGET_COLUMN, "sum"),
+            positive_rate=(TARGET_COLUMN, "mean"),
+        )
+    )
+
+    print("\nChronological split summary:")
+    print(summary.to_string())
+
+    print(
+        "\nFinal holdout is loaded for evidence only. "
+        "The benchmark engine does not use it."
+    )
 
     return training_data
 

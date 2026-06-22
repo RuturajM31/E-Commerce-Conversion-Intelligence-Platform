@@ -23,4 +23,4 @@ This project uses a layered MLOps deployment approach:
 
 ## Interview line
 
-> I separated the heavy analytics workload from live monitoring by generating a small metrics snapshot. Then I exposed that snapshot through a lightweight Prometheus exporter. Finally, I packaged the app and monitoring stack for Kubernetes using Helm, showing how the project can move from local development toward production-style deployment.
+> I separated the heavy analytics workload from operational monitoring by generating a small metrics snapshot. Prometheus reads that snapshot through a lightweight exporter, which keeps dashboard refreshes fast without claiming live event processing. I then packaged the app and monitoring stack for a locally validated Kubernetes and Helm deployment path.

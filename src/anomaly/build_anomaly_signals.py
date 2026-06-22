@@ -27,7 +27,7 @@
 #   python3 -m src.anomaly.build_anomaly_signals
 #
 # OUTPUTS:
-#   data/processed/champion_visitor_scores.csv
+#   data/processed/final_champion_visitor_scores.csv
 #   data/processed/visitor_anomaly_scores.csv
 #   reports/tables/anomaly_summary.csv
 #   reports/tables/anomaly_rule_summary.csv
@@ -36,16 +36,25 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import Dict, List
 
-import joblib
 import numpy as np
 import pandas as pd
 
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
+
+from src.models.production_model import (
+    get_production_threshold,
+    load_production_bundle,
+)
+from src.models.score_export import (
+    FINAL_SCORE_MANIFEST_PATH,
+    FINAL_SCORE_PATH,
+    load_valid_cached_scores,
+    save_final_champion_scores,
+)
 
 
 # --------------------------------------------------
@@ -53,10 +62,10 @@ from sklearn.preprocessing import StandardScaler
 # --------------------------------------------------
 
 VISITOR_FEATURES_PATH = Path("data/processed/visitor_features.csv")
-CHAMPION_MODEL_PATH = Path("models/trained/champion_model.joblib")
-CHAMPION_METADATA_PATH = Path("models/metadata/champion_model_metadata.json")
 
-CHAMPION_VISITOR_SCORES_PATH = Path("data/processed/champion_visitor_scores.csv")
+# Scores created from the shared active production model.
+PRODUCTION_VISITOR_SCORES_PATH = FINAL_SCORE_PATH
+PRODUCTION_SCORE_MANIFEST_PATH = FINAL_SCORE_MANIFEST_PATH
 VISITOR_ANOMALY_SCORES_PATH = Path("data/processed/visitor_anomaly_scores.csv")
 
 REPORT_TABLES_DIR = Path("reports/tables")
@@ -92,38 +101,18 @@ TOP_ANOMALY_ROWS = 10_000
 def create_output_folders() -> None:
     """Create output folders."""
 
-    CHAMPION_VISITOR_SCORES_PATH.parent.mkdir(parents=True, exist_ok=True)
+    PRODUCTION_VISITOR_SCORES_PATH.parent.mkdir(parents=True, exist_ok=True)
     VISITOR_ANOMALY_SCORES_PATH.parent.mkdir(parents=True, exist_ok=True)
     REPORT_TABLES_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def load_json(path: Path) -> Dict:
-    """Load JSON safely."""
+def get_feature_columns(
+    visitor_features: pd.DataFrame,
+    production_bundle: Dict,
+) -> List[str]:
+    """Validate the features required by the active production model."""
 
-    if not path.exists():
-        return {}
-
-    with open(path, "r", encoding="utf-8") as file:
-        return json.load(file)
-
-
-def get_feature_columns(visitor_features: pd.DataFrame) -> List[str]:
-    """Get model feature columns from metadata or fallback list."""
-
-    metadata = load_json(CHAMPION_METADATA_PATH)
-
-    feature_columns = metadata.get(
-        "feature_columns",
-        [
-            "total_events",
-            "view_count",
-            "addtocart_count",
-            "unique_items",
-            "activity_span_ms",
-            "cart_to_view_ratio",
-            "events_per_unique_item",
-        ],
-    )
+    feature_columns = production_bundle["feature_columns"]
 
     missing_columns = [
         column for column in feature_columns
@@ -155,52 +144,51 @@ def load_visitor_features() -> pd.DataFrame:
 
 
 def create_champion_visitor_scores(visitor_features: pd.DataFrame) -> pd.DataFrame:
-    """Create champion purchase-intent scores for all visitors."""
+    """Load validated cached scores or regenerate production scores."""
 
-    # WHY CREATE THIS FILE:
-    #   Older visitor_scores.csv may come from the old baseline model.
-    #   This file explicitly belongs to the final champion model.
+    production_bundle = load_production_bundle()
 
-    if CHAMPION_VISITOR_SCORES_PATH.exists():
-        scores = pd.read_csv(CHAMPION_VISITOR_SCORES_PATH)
+    cached_scores, validation_message = load_valid_cached_scores(
+        production_bundle,
+        visitor_features["visitorid"],
+        score_path=PRODUCTION_VISITOR_SCORES_PATH,
+        manifest_path=PRODUCTION_SCORE_MANIFEST_PATH,
+    )
 
-        required_columns = ["visitorid", "purchase_intent_score"]
+    required_columns = ["visitorid", "purchase_intent_score"]
 
-        if all(column in scores.columns for column in required_columns):
-            print(f"Using existing champion scores: {CHAMPION_VISITOR_SCORES_PATH}")
-            return scores[required_columns].copy()
+    if cached_scores is not None:
+        print(validation_message)
+        return cached_scores[required_columns].copy()
 
-    if not CHAMPION_MODEL_PATH.exists():
-        raise FileNotFoundError(
-            "champion_model.joblib not found. Run model selection first."
-        )
+    print(
+        "Cached final champion scores are not reusable: "
+        f"{validation_message}. Regenerating."
+    )
 
-    print("Creating champion visitor scores...")
-
-    feature_columns = get_feature_columns(visitor_features)
-
-    model = joblib.load(CHAMPION_MODEL_PATH)
+    feature_columns = get_feature_columns(
+        visitor_features,
+        production_bundle,
+    )
 
     X = visitor_features[feature_columns].copy()
 
-    chunk_size = 100_000
-    score_chunks = []
+    score_table, _ = save_final_champion_scores(
+        final_model=production_bundle["model"],
+        X=X,
+        visitor_ids=visitor_features["visitorid"],
+        threshold=get_production_threshold(
+            production_bundle["metadata"]
+        ),
+        model_path=production_bundle["model_path"],
+        metadata_path=production_bundle["metadata_path"],
+        score_path=PRODUCTION_VISITOR_SCORES_PATH,
+        manifest_path=PRODUCTION_SCORE_MANIFEST_PATH,
+        model_generation=production_bundle["generation"],
+        chunk_size=100_000,
+    )
 
-    for start in range(0, len(X), chunk_size):
-        end = start + chunk_size
-        chunk_scores = model.predict_proba(X.iloc[start:end])[:, 1]
-        score_chunks.append(chunk_scores)
-
-    purchase_intent_scores = np.concatenate(score_chunks)
-
-    scores = visitor_features[["visitorid"]].copy()
-    scores["purchase_intent_score"] = purchase_intent_scores
-
-    scores.to_csv(CHAMPION_VISITOR_SCORES_PATH, index=False)
-
-    print(f"Saved champion scores to: {CHAMPION_VISITOR_SCORES_PATH}")
-
-    return scores
+    return score_table[required_columns].copy()
 
 
 def add_percentile_columns(data: pd.DataFrame, columns: List[str]) -> pd.DataFrame:

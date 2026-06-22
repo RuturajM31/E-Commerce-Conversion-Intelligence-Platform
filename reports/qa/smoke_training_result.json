@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "purpose": "Small-data CI validation only; not production evidence.",
+  "data_path": "data/sample/visitor_features_sample.csv",
+  "rows": 120,
+  "train_rows": 90,
+  "test_rows": 30,
+  "feature_columns": [
+    "total_events",
+    "view_count",
+    "addtocart_count",
+    "unique_items",
+    "activity_span_ms",
+    "cart_to_view_ratio",
+    "events_per_unique_item"
+  ],
+  "target_counts": {
+    "0": 84,
+    "1": 36
+  },
+  "roc_auc": 0.8783068783068783,
+  "pr_auc": 0.9000000000000001,
+  "probability_min": 0.025150233287574656,
+  "probability_max": 0.9565204842807351
+}

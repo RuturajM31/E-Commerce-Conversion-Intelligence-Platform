@@ -1,0 +1,99 @@
+{
+  "category": "ML Visual Intelligence",
+  "package": "Champion selection",
+  "sources": [
+    "reports/tables/final_true_champion_comparison.csv",
+    "models/metadata/final_champion_metadata.json",
+    "models/metadata/mlflow_champion_lineage.json"
+  ],
+  "artifacts": {
+    "MLV-A01": "reports/visuals/ml_visual_intelligence/champion_selection/mlv-a01_model_performance_frontier.png",
+    "MLV-A02": "reports/visuals/ml_visual_intelligence/champion_selection/mlv-a02_multi-metric_model_ranking.png",
+    "MLV-A03": "reports/visuals/ml_visual_intelligence/champion_selection/mlv-a03_validation_to_holdout_generalisation_slopegraph.png",
+    "MLV-A04": "reports/visuals/ml_visual_intelligence/champion_selection/mlv-a04_champion_scorecard_identity.png"
+  },
+  "supporting_files": {
+    "ranking_csv": "reports/visuals/ml_visual_intelligence/champion_selection/champion_model_ranking.csv",
+    "generalisation_csv": "reports/visuals/ml_visual_intelligence/champion_selection/champion_generalisation_metrics.csv",
+    "insights": "reports/visuals/ml_visual_intelligence/champion_selection/champion_selection_insights.md"
+  },
+  "champion": {
+    "model_name": "Tuned XGBoost",
+    "model_family": "Boosting",
+    "threshold": 0.98,
+    "pr_auc": 0.15186619185675237,
+    "roc_auc": 0.848444891741996,
+    "precision": 0.2857142857142857,
+    "recall": 0.20754716981132076,
+    "f1_score": 0.24043715846994534,
+    "holdout_rows": 248639,
+    "positive_rows": 318,
+    "predicted_positive_rows": 231
+  },
+  "qa": {
+    "MLV-A01": {
+      "passed": true,
+      "width_px": 2304,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-A02": {
+      "passed": true,
+      "width_px": 2282,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-A03": {
+      "passed": true,
+      "width_px": 2330,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    },
+    "MLV-A04": {
+      "passed": true,
+      "width_px": 2251,
+      "height_px": 1350,
+      "checks": {
+        "positive_canvas_size": true,
+        "required_text_present": true,
+        "text_inside_canvas": true,
+        "legends_inside_canvas": true,
+        "axes_inside_figure": true,
+        "file_created": true,
+        "file_not_empty": true,
+        "minimum_export_width": true,
+        "minimum_export_height": true
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+# Isolated local MLflow service
+#
+# These numerical-library versions match the main project.
+# Pinning PyArrow prevents pip from compiling it from source.
+
+numpy==1.26.4
+pandas==2.1.4
+pyarrow==23.0.1
+scikit-learn==1.5.0
+matplotlib==3.7.5
+
+# Experiment tracking server and UI.
+mlflow==3.14.0
+joblib==1.3.2
+xgboost==3.2.0
+
+# Security-validated dependency additions
+# Security-validated cryptography version supported by MLflow.
+cryptography==48.0.1

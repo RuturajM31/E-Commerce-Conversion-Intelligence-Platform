@@ -1,0 +1,154 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  namespace: ecommerce-mlops
+data:
+  alertmanager.yml: |
+    global:
+      resolve_timeout: 5m
+
+    route:
+      receiver: local-webhook
+      group_by:
+        - alertname
+        - component
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+
+    receivers:
+      - name: local-webhook
+        webhook_configs:
+          - url: http://alert-webhook-service:5001/alerts
+            send_resolved: true
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert-webhook
+  namespace: ecommerce-mlops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alert-webhook
+  template:
+    metadata:
+      labels:
+        app: alert-webhook
+    spec:
+      containers:
+        - name: alert-webhook
+          image: ecommerce_conversion_intelligence_platform-alert-webhook:latest
+          imagePullPolicy: Never
+          command:
+            - python
+            - -m
+            - src.monitoring.alert_webhook_receiver
+          env:
+            - name: PROJECT_ROOT
+              value: /app
+            - name: ALERT_WEBHOOK_PORT
+              value: "5001"
+            - name: ALERT_NOTIFICATION_DIR
+              value: /app/monitoring/alert_notifications
+          ports:
+            - containerPort: 5001
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5001
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5001
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          volumeMounts:
+            - name: alert-storage
+              mountPath: /app/monitoring/alert_notifications
+      volumes:
+        - name: alert-storage
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alert-webhook-service
+  namespace: ecommerce-mlops
+spec:
+  selector:
+    app: alert-webhook
+  ports:
+    - name: http
+      port: 5001
+      targetPort: 5001
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertmanager
+  namespace: ecommerce-mlops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alertmanager
+  template:
+    metadata:
+      labels:
+        app: alertmanager
+    spec:
+      containers:
+        - name: alertmanager
+          image: prom/alertmanager:v0.27.0
+          args:
+            - --config.file=/etc/alertmanager/alertmanager.yml
+          ports:
+            - containerPort: 9093
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9093
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9093
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          volumeMounts:
+            - name: alertmanager-config
+              mountPath: /etc/alertmanager/alertmanager.yml
+              subPath: alertmanager.yml
+      volumes:
+        - name: alertmanager-config
+          configMap:
+            name: alertmanager-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager-service
+  namespace: ecommerce-mlops
+spec:
+  selector:
+    app: alertmanager
+  ports:
+    - name: http
+      port: 9093
+      targetPort: 9093

@@ -33,6 +33,15 @@ data:
       scrape_interval: 15s
       evaluation_interval: 15s
 
+    rule_files:
+      - /etc/prometheus/rules/alert_rules.yml
+
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+                - alertmanager-service:9093
+
     scrape_configs:
       - job_name: prometheus
         static_configs:
@@ -64,6 +73,9 @@ data:
 
           - target_label: __address__
             replacement: blackbox-exporter-service:9115
+
+  alert_rules.yml: |
+{{ .Files.Get "files/alert_rules.yml" | nindent 4 }}
 
 ---
 apiVersion: apps/v1
@@ -103,6 +115,10 @@ spec:
             - name: prometheus-config
               mountPath: /etc/prometheus/prometheus.yml
               subPath: prometheus.yml
+
+            - name: prometheus-config
+              mountPath: /etc/prometheus/rules/alert_rules.yml
+              subPath: alert_rules.yml
 
       volumes:
         - name: prometheus-config
