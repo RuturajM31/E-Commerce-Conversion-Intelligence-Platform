@@ -8,7 +8,8 @@ from collections import Counter
 from pathlib import Path
 
 
-DOCS = Path("docs/streamlit")
+ROOT = Path(__file__).resolve().parents[1]
+DOCS = ROOT / "docs" / "streamlit"
 INVENTORY = DOCS / "PACKAGE_03_CURRENT_VISUAL_INVENTORY.csv"
 QUARANTINE = DOCS / "PACKAGE_03_QUARANTINE_DECISION_REGISTER.csv"
 AUDIT_EVIDENCE = DOCS / "PACKAGE_03_AUDIT_EVIDENCE.csv"
@@ -51,7 +52,7 @@ def test_inventory_remains_complete_and_source_grounded() -> None:
     assert EXPECTED_PAGES == {row["page"] for row in rows}
 
     for row in rows:
-        source = Path(row["source_file"])
+        source = ROOT / row["source_file"]
         assert source.is_file(), row
         assert row["source_anchor"] in source.read_text(encoding="utf-8"), row
 

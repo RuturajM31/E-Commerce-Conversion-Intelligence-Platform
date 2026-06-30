@@ -264,10 +264,8 @@ def test_all_pages_call_their_closure_extensions() -> None:
     required_calls = {
         "app/pages/1_Visitor_Intent_Predictor.py": "render_visitor_similarity_explainability()",
         "app/pages/2_Batch_Scoring.py": "render_batch_campaign_intelligence(",
-        "app/pages/3_Model_Benchmark_Selection.py": "render_model_decision_intelligence()",
         "app/pages/4_Business_KPI_Forecasting.py": "render_forecast_decision_intelligence()",
         "app/pages/5_Anomaly_Outlier.py": "render_anomaly_investigation_intelligence()",
-        "app/pages/6_Monitoring_Drift_Health.py": "render_monitoring_health_intelligence()",
         "app/pages/7_MLOps_Architecture.py": "render_architecture_governance_intelligence()",
         "app/pages/9_Customer_Segmentation_Journey.py": "render_segmentation_and_journey_page()",
     }
@@ -288,3 +286,36 @@ def test_matrix_still_contains_all_204_unique_rows() -> None:
     )
     assert len(matrix) == 204
     assert matrix["ID"].nunique() == 204
+
+def test_standalone_governed_pages_replace_obsolete_closure_renderers() -> None:
+    """Standalone governed pages must stay complete without duplicate renderers."""
+
+    model_relative = "app/pages/3_Model_Benchmark_Selection.py"
+    model_text = (ROOT / model_relative).read_text(encoding="utf-8")
+
+    for token in (
+        "build_model_comparison_chart",
+        "build_precision_recall_chart",
+        "build_threshold_chart",
+        "build_stability_chart",
+        "holdout_lift",
+    ):
+        assert token in model_text, model_relative
+
+    assert "render_model_decision_intelligence" not in model_text
+
+    monitoring_relative = "app/pages/6_Monitoring_Drift_Health.py"
+    monitoring_text = (ROOT / monitoring_relative).read_text(
+        encoding="utf-8"
+    )
+
+    for token in (
+        "MINIMUM_LIVE_SAMPLE = 30",
+        "def calculate_psi(",
+        "Insufficient live data",
+        "One prediction cannot establish production drift.",
+        "def parse_drift_report(",
+    ):
+        assert token in monitoring_text, monitoring_relative
+
+    assert "render_monitoring_health_intelligence" not in monitoring_text

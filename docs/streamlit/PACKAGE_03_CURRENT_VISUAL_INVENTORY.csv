@@ -14,59 +14,10 @@ P03-0001,SVE-AUD-01;SVE-AUD-11;SVE-AUD-12;SVE-AUD-13;SVE-AUD-14;SVE-AUD-16,Execu
         (""Evidence: validated holdout"", ""positive""),
     ],
 )","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0002,SVE-AUD-01;SVE-AUD-11;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,491,KPI_GRID,"[('Validated target quality', f'{precision:.1%}', 'Expected buyers among threshold-selected visitors'), ('Natural buyer rate', f'{natural_rate:.2%}', 'Observed buyer rate in the fi","render_kpi_grid(
-    [
-        (
-            ""Validated target quality"",
-            f""{precision:.1%}"",
-            ""Expected buyers among threshold-selected visitors"",
-        ),
-        (
-            ""Natural buyer rate"",
-            f""{natural_rate:.2%}"",
-            ""Observed buyer rate in the final holdout"",
-        ),
-        (
-            ""Targeting lift"",
-            f""{lift:.1f}×"",
-            ""Selected-audience quality versus random targeting"",
-        ),
-        (
-            ""Threshold-eligible audience"",
-            f""{eligible_visitors:,}"",
-            f""From {int(holdout['rows']):,} validated holdout visitors"",
-        ),
-    ]
-)","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0003,SVE-AUD-01;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,516,SOURCE_NOTE,render_source_note,"render_source_note(
-    source=(
-        ""reports/tables/final_true_champion_holdout.csv; ""
-        ""data/processed/final_champion_visitor_scores.csv; ""
-        ""reports/metadata/ml_validation_manifest.json""
-    ),
-    evidence_type=""Validated holdout and generated ML evidence"",
-    refreshed_at=evidence.source_timestamp,
-    extra=(
-        ""Holdout metrics measure validated model behaviour. Campaign value ""
-        ""below is scenario-based because the source data has no reliable ""
-        ""transaction revenue.""
-    ),
-)","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0004,SVE-AUD-01;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,531,SECTION_HEADER,Campaign scenario,"render_section_header(
-    ""Campaign scenario"",
-    ""Choose the audience and test the commercial assumptions"",
-    (
-        ""The model supplies target quality. Contact cost and buyer value are ""
-        ""explicit assumptions that can be changed and exported.""
-    ),
-)","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0005,SVE-AUD-01;SVE-AUD-11;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,546,CONTROL,Campaign target size,"target_size = st.slider(
-        ""Campaign target size"",
-        min_value=1,
-        max_value=maximum_target,
-        value=default_target,
-        help=""Cannot exceed the threshold-eligible holdout audience."",
-    )","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0002,SVE-AUD-01;SVE-AUD-11;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,491,KPI_GRID,"[('Validated target quality', f'{precision:.1%}', 'Expected buyers among threshold-selected visitors'), ('Natural buyer rate', f'{natural_rate:.2%}', 'Observed buyer rate in the fi",Expected buyers among threshold-selected visitors,"final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0003,SVE-AUD-01;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,516,SOURCE_NOTE,render_source_note,reports/metadata/ml_validation_manifest.json,"final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0004,SVE-AUD-01;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,531,SECTION_HEADER,Campaign scenario,Choose the audience and test the commercial assumptions,"final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0005,SVE-AUD-01;SVE-AUD-11;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,546,CONTROL,Campaign target size,Campaign target size,"final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
 P03-0006,SVE-AUD-01,Executive Overview,app/Executive_Overview.py,555,CONTROL,Contact cost per visitor,"contact_cost = st.number_input(
         ""Contact cost per visitor"",
         min_value=0.0,
@@ -81,102 +32,17 @@ P03-0007,SVE-AUD-01,Executive Overview,app/Executive_Overview.py,564,CONTROL,Ass
         step=5.00,
         format=""%.2f"",
     )","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0008,SVE-AUD-01;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,581,KPI_GRID,"[('Expected buyers', f""{scenario['expected_buyers']:.1f}"", f'Model precision applied to {target_size:,} selected visitors'), ('Campaign cost', f""{scenario['campaign_cost']:,.2f}"", ","render_kpi_grid(
-    [
-        (
-            ""Expected buyers"",
-            f""{scenario['expected_buyers']:.1f}"",
-            f""Model precision applied to {target_size:,} selected visitors"",
+P03-0008,SVE-AUD-01;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,581,KPI_GRID,"[('Expected buyers', f""{scenario['expected_buyers']:.1f}"", f'Model precision applied to {target_size:,} selected visitors'), ('Campaign cost', f""{scenario['campaign_cost']:,.2f}"", ",",
         ),
-        (
-            ""Campaign cost"",
-            f""{scenario['campaign_cost']:,.2f}"",
-            ""Target size × contact cost"",
-        ),
-        (
-            ""Net expected value"",
-            f""{scenario['net_value']:,.2f}"",
-            ""Expected buyer value minus campaign cost"",
-        ),
-        (
-            ""Scenario ROI"",
-            f""{scenario['roi']:.1%}"",
-            ""Assumption-based return before operational overhead"",
-        ),
-    ]
-)","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
+        (","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
 P03-0009,SVE-AUD-01;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,614,SECTION_HEADER,Audience decision,"render_section_header(
     ""Audience decision"",
     ""From broad traffic to a measurable buyer opportunity"",
 )","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0010,SVE-AUD-01,Executive Overview,app/Executive_Overview.py,619,CHART,build_funnel_figure(funnel),"st.plotly_chart(
-    build_funnel_figure(funnel),
-    use_container_width=True,
-    key=""exec_targeting_funnel"",
-)","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0011,SVE-AUD-01;SVE-AUD-11;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,624,INTERPRETATION,render_interpretation,"render_interpretation(
-    what_it_shows=(
-        ""The complete decision path from source visitors through validated ""
-        ""holdout evidence, threshold eligibility, campaign selection, and ""
-        ""expected buyers.""
-    ),
-    how_to_read=(
-        ""Each stage narrows the audience. The final stage is an expectation ""
-        ""calculated from validated precision, not an observed campaign result.""
-    ),
-    actual_finding=(
-        f""{target_size:,} selected visitors are expected to contain ""
-        f""{scenario['expected_buyers']:.1f} buyers.""
-    ),
-    conclusion=(
-        ""The model supports a deliberately narrow audience with much higher ""
-        ""buyer concentration than random outreach.""
-    ),
-    recommended_action=(
-        ""Use the campaign target as the operational shortlist and preserve ""
-        ""the excluded population for holdout measurement.""
-    ),
-    limitation=(
-        ""Source, holdout, and campaign stages represent different evidence ""
-        ""scopes and must not be interpreted as one production batch.""
-    ),
-)","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0012,SVE-AUD-01,Executive Overview,app/Executive_Overview.py,652,CHART,"build_efficiency_figure(source_visitors=source_visitors, target_size=target_size, expected_buyers=scenario['expected_buyers'], baseline_rate=natural_rate)","st.plotly_chart(
-    build_efficiency_figure(
-        source_visitors=source_visitors,
-        target_size=target_size,
-        expected_buyers=scenario[""expected_buyers""],
-        baseline_rate=natural_rate,
-    ),
-    use_container_width=True,
-    key=""exec_efficiency_comparison"",
-)","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0013,SVE-AUD-01;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,662,INTERPRETATION,render_interpretation,"render_interpretation(
-    what_it_shows=(
-        ""Selected-audience share, expected buyer yield, and natural random ""
-        ""buyer yield in one comparable view.""
-    ),
-    how_to_read=(
-        ""A small audience share with a much larger buyer yield represents ""
-        ""efficient prioritisation.""
-    ),
-    actual_finding=(
-        f""The scenario targets {(target_size / source_visitors if source_visitors else 0.0):.2%} of source ""
-        f""visitors with an expected {precision:.1%} buyer yield.""
-    ),
-    conclusion=(
-        ""Campaign efficiency comes from concentrating spend on the strongest ""
-        ""validated intent signals.""
-    ),
-    recommended_action=(
-        ""Start with the highest-ranked eligible visitors and increase target ""
-        ""size only when incremental economics remain positive.""
-    ),
-    limitation=(
-        ""Precision may change when audience size, channel, season, or live ""
-        ""visitor behaviour differs from the holdout.""
-    ),
-)","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0010,SVE-AUD-01,Executive Overview,app/Executive_Overview.py,619,CHART,build_funnel_figure(funnel),exec_targeting_funnel,"final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0011,SVE-AUD-01;SVE-AUD-11;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,624,INTERPRETATION,render_interpretation,The model supports a deliberately narrow audience with much higher,"final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0012,SVE-AUD-01,Executive Overview,app/Executive_Overview.py,652,CHART,"build_efficiency_figure(source_visitors=source_visitors, target_size=target_size, expected_buyers=scenario['expected_buyers'], baseline_rate=natural_rate)",exec_efficiency_comparison,"final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0013,SVE-AUD-01;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,662,INTERPRETATION,render_interpretation,Start with the highest-ranked eligible visitors and increase target,"final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
 P03-0014,SVE-AUD-01;SVE-AUD-12,Executive Overview,app/Executive_Overview.py,689,SECTION_HEADER,Audience composition,"render_section_header(
     ""Audience composition"",
     ""Understand who is inside the selected campaign audience"",
@@ -186,11 +52,7 @@ P03-0015,SVE-AUD-01,Executive Overview,app/Executive_Overview.py,711,CONTROL,Com
         composition_views,
         horizontal=True,
     )","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0016,SVE-AUD-01,Executive Overview,app/Executive_Overview.py,722,CHART,composition_figure,"st.plotly_chart(
-        composition_figure,
-        use_container_width=True,
-        key=f""exec_composition_{composition_view}"",
-    )","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0016,SVE-AUD-01,Executive Overview,app/Executive_Overview.py,722,CHART,composition_figure,exec_composition_{composition_view},"final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
 P03-0017,SVE-AUD-01;SVE-AUD-11;SVE-AUD-12;SVE-AUD-14,Executive Overview,app/Executive_Overview.py,727,INTERPRETATION,render_interpretation,"render_interpretation(
         what_it_shows=(
             f""Distribution of the current threshold-selected campaign ""
@@ -236,43 +98,14 @@ P03-0019,SVE-AUD-01;SVE-AUD-11;SVE-AUD-12,Executive Overview,app/Executive_Overv
         ),
     ]
 )","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0020,SVE-AUD-01;SVE-AUD-11,Executive Overview,app/Executive_Overview.py,779,DETAIL_CARDS,"[('Evidence type', 'Final untouched holdout', f""{int(holdout['rows']):,} rows, {int(holdout['positive_rows']):,} observed buyers""), ('Decision rule', f""Score ≥ {float(holdout['thre","render_detail_cards(
-    [
-        (
-            ""Evidence type"",
-            ""Final untouched holdout"",
-            (
-                f""{int(holdout['rows']):,} rows, ""
-                f""{int(holdout['positive_rows']):,} observed buyers""
-            ),
+P03-0020,SVE-AUD-01;SVE-AUD-11,Executive Overview,app/Executive_Overview.py,779,DETAIL_CARDS,"[('Evidence type', 'Final untouched holdout', f""{int(holdout['rows']):,} rows, {int(holdout['positive_rows']):,} observed buyers""), ('Decision rule', f""Score ≥ {float(holdout['thre","),
         ),
-        (
-            ""Decision rule"",
-            f""Score ≥ {float(holdout['threshold']):.2f}"",
-            (
-                f""{eligible_visitors:,} visitors pass the production threshold""
-            ),
-        ),
-        (
-            ""Reliability"",
-            ""Probability caution"",
-            (
-                ""Ranking quality is validated; business use should focus on ""
-                ""threshold decisions rather than treating scores as guaranteed ""
-                ""purchase probabilities.""
-            ),
-        ),
-    ]
-)","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
+        (","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
 P03-0021,SVE-AUD-01;SVE-AUD-13,Executive Overview,app/Executive_Overview.py,808,SECTION_HEADER,Forward outlook,"render_section_header(
     ""Forward outlook"",
     ""Compact KPI forecast with uncertainty when available"",
 )","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0022,SVE-AUD-01;SVE-AUD-13,Executive Overview,app/Executive_Overview.py,825,CHART,forecast_figure,"st.plotly_chart(
-        forecast_figure,
-        use_container_width=True,
-        key=""exec_forward_outlook"",
-    )","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0022,SVE-AUD-01;SVE-AUD-13,Executive Overview,app/Executive_Overview.py,825,CHART,forecast_figure,exec_forward_outlook,"final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
 P03-0023,SVE-AUD-01;SVE-AUD-12;SVE-AUD-13,Executive Overview,app/Executive_Overview.py,830,INTERPRETATION,render_interpretation,"render_interpretation(
         what_it_shows=""The approved forward KPI forecast and its uncertainty."",
         how_to_read=(
@@ -307,11 +140,7 @@ P03-0025,SVE-AUD-01;SVE-AUD-14;SVE-AUD-16,Executive Overview,app/Executive_Overv
     ""Risk and operations"",
     ""Anomaly exposure and production-readiness evidence"",
 )","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0026,SVE-AUD-01;SVE-AUD-14,Executive Overview,app/Executive_Overview.py,877,CHART,anomaly_figure,"st.plotly_chart(
-        anomaly_figure,
-        use_container_width=True,
-        key=""exec_anomaly_distribution"",
-    )","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0026,SVE-AUD-01;SVE-AUD-14,Executive Overview,app/Executive_Overview.py,877,CHART,anomaly_figure,exec_anomaly_distribution,"final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
 P03-0027,SVE-AUD-01;SVE-AUD-12;SVE-AUD-14,Executive Overview,app/Executive_Overview.py,882,INTERPRETATION,render_interpretation,"render_interpretation(
         what_it_shows=(
             ""Current LOF anomaly-score distribution for the governed ""
@@ -338,11 +167,7 @@ P03-0027,SVE-AUD-01;SVE-AUD-12;SVE-AUD-14,Executive Overview,app/Executive_Overv
             ""business harm.""
         ),
     )","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0028,SVE-AUD-01;SVE-AUD-16,Executive Overview,app/Executive_Overview.py,911,CHART,build_readiness_figure(readiness),"st.plotly_chart(
-    build_readiness_figure(readiness),
-    use_container_width=True,
-    key=""exec_readiness_strip"",
-)","final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0028,SVE-AUD-01;SVE-AUD-16,Executive Overview,app/Executive_Overview.py,911,CHART,build_readiness_figure(readiness),exec_readiness_strip,"final holdout, selected-score evidence, validation projection, forecast and repository readiness artifacts",current executive scenario or evidence row,visitorid; date + target_name; artifact category,holdout metrics; score/segment/anomaly fields; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 2,SOURCE_VERIFIED_VISUAL_QA_PENDING
 P03-0029,SVE-AUD-01;SVE-AUD-16,Executive Overview,app/Executive_Overview.py,916,INTERPRETATION,render_interpretation,"render_interpretation(
     what_it_shows=(
         ""Application, scoring, drift, alerting, and delayed-label readiness ""
@@ -586,48 +411,20 @@ P03-0064,SVE-AUD-03;SVE-AUD-11,Batch Scoring,app/pages/2_Batch_Scoring.py,996,ME
                 ""log_method"": log_method,
             }
         )","uploaded visitor CSV, champion evidence and scored batch output",one uploaded/scored visitor or one batch summary,visitorid or stable input row,required model features; score; segment; decision; threshold,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 4,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0065,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,888,CHART,build_pr_auc_chart(master_table),"st.plotly_chart(
-            build_pr_auc_chart(master_table),
-            use_container_width=True,
-        )","final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0066,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,899,CHART,build_precision_recall_chart(master_table),"st.plotly_chart(
-            build_precision_recall_chart(master_table),
-            use_container_width=True,
-        )","final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0067,SVE-AUD-04;SVE-AUD-11,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,924,CHART,threshold_chart,"st.plotly_chart(
-            threshold_chart,
-            use_container_width=True,
-        )","final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0068,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,940,CHART,stability_chart,"st.plotly_chart(
-            stability_chart,
-            use_container_width=True,
-        )","final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0069,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,968,TABLE,sensitivity,"st.dataframe(
-        sensitivity,
-        use_container_width=True,
-        hide_index=True,
-    )","final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0070,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,991,DISCLOSURE,Final model comparison table,"with st.expander(""Final model comparison table"", expanded=True):","final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0071,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,993,TABLE,display_table,"st.dataframe(
-            display_table,
-            use_container_width=True,
-            hide_index=True,
-        )","final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0072,SVE-AUD-04;SVE-AUD-11,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,1002,DISCLOSURE,Threshold table,"with st.expander(""Threshold table""):","final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0073,SVE-AUD-04;SVE-AUD-11,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,1004,TABLE,thresholds,"st.dataframe(
-            thresholds,
-            use_container_width=True,
-            hide_index=True,
-        )","final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0074,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,1012,DISCLOSURE,Stability table,"with st.expander(""Stability table""):","final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0075,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,1014,TABLE,stability,"st.dataframe(
-            stability,
-            use_container_width=True,
-            hide_index=True,
-        )","final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0076,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,1022,DISCLOSURE,Manual and AutoML-style benchmark tables,"with st.expander(""Manual and AutoML-style benchmark tables""):","final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0077,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,1028,TABLE,manual_results,"st.dataframe(manual_results, use_container_width=True, hide_index=True)","final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0078,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,1034,TABLE,automl_results,"st.dataframe(automl_results, use_container_width=True, hide_index=True)","final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0065,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,888,CHART,build_pr_auc_chart(master_table),plotly_chart,"final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0066,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,899,CHART,build_precision_recall_chart(master_table),build_precision_recall_chart,"final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0067,SVE-AUD-04;SVE-AUD-11,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,924,CHART,threshold_chart,threshold_chart,"final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0068,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,940,CHART,stability_chart,stability_chart,"final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0069,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,968,TABLE,sensitivity,sensitivity,"final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0070,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,991,DISCLOSURE,Final model comparison table,comparison,"final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0071,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,993,TABLE,display_table,hide_index,"final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0072,SVE-AUD-04;SVE-AUD-11,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,1002,DISCLOSURE,Threshold table,Threshold table,"final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0073,SVE-AUD-04;SVE-AUD-11,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,1004,TABLE,thresholds,hide_index,"final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0074,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,1012,DISCLOSURE,Stability table,Stability table,"final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0075,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,1014,TABLE,stability,hide_index,"final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0076,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,1022,DISCLOSURE,Manual and AutoML-style benchmark tables,expander,"final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0077,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,1028,TABLE,manual_results,hide_index,"final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0078,SVE-AUD-04,Model Benchmark Selection,app/pages/3_Model_Benchmark_Selection.py,1034,TABLE,automl_results,hide_index,"final model comparison, threshold, stability, sensitivity and benchmark tables","one model, threshold, seed or sensitivity condition",model_name + threshold/seed where applicable,PR-AUC; ROC-AUC; precision; recall; F1; target share; stability fields,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 5,SOURCE_VERIFIED_VISUAL_QA_PENDING
 P03-0079,SVE-AUD-05,Business KPI Forecasting,app/pages/4_Business_KPI_Forecasting.py,764,CHART,combined_chart,"st.plotly_chart(
             combined_chart,
             use_container_width=True,
@@ -723,48 +520,16 @@ P03-0106,SVE-AUD-06;SVE-AUD-14,Anomaly and Outlier,app/pages/5_Anomaly_Outlier.p
             use_container_width=True,
             hide_index=True,
         )","anomaly summary, rule, segment, visitor and method-comparison tables","one metric, rule, segment, visitor or method row",visitorid or source-specific category key,risk score/band; anomaly flag; rule flags; intent segment; summary counts,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0107,SVE-AUD-07,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,840,CHART,bucket_chart,"st.plotly_chart(bucket_chart, use_container_width=True)","prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",ENHANCE,Keep the current snapshot and add comparable historical evidence only when governed history exists.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0108,SVE-AUD-07,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,858,CHART,volume_chart,"st.plotly_chart(volume_chart, use_container_width=True)","prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0109,SVE-AUD-07;SVE-AUD-13,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,871,CHART,forecast_chart,"st.plotly_chart(forecast_chart, use_container_width=True)","prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0110,SVE-AUD-07,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,925,TABLE,checklist,"st.dataframe(
-    checklist,
-    use_container_width=True,
-    hide_index=True,
-)","prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0111,SVE-AUD-07;SVE-AUD-13;SVE-AUD-14,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,938,TAB_SET,"['Live scores', 'Baseline scores', 'Batch logs', 'Anomaly summary', 'Forecast output']","tab_1, tab_2, tab_3, tab_4, tab_5 = st.tabs(
-    [
-        ""Live scores"",
-        ""Baseline scores"",
-        ""Batch logs"",
-        ""Anomaly summary"",
-        ""Forecast output"",
-    ]
-)","prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0112,SVE-AUD-07,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,952,TABLE,live_scores,"st.dataframe(
-            live_scores,
-            use_container_width=True,
-            hide_index=True,
-        )","prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0113,SVE-AUD-07,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,962,TABLE,baseline_scores.head(1000),"st.dataframe(
-            baseline_scores.head(1000),
-            use_container_width=True,
-            hide_index=True,
-        )","prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0114,SVE-AUD-07,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,972,TABLE,batch_log,"st.dataframe(
-            batch_log,
-            use_container_width=True,
-            hide_index=True,
-        )","prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0115,SVE-AUD-07;SVE-AUD-14,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,982,TABLE,anomaly_summary,"st.dataframe(
-            anomaly_summary,
-            use_container_width=True,
-            hide_index=True,
-        )","prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
-P03-0116,SVE-AUD-07;SVE-AUD-13,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,992,TABLE,forecast_future,"st.dataframe(
-            forecast_future,
-            use_container_width=True,
-            hide_index=True,
-        )","prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0107,SVE-AUD-07,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,840,CHART,bucket_chart,plotly_chart,"prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",ENHANCE,Keep the current snapshot and add comparable historical evidence only when governed history exists.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0108,SVE-AUD-07,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,858,CHART,volume_chart,plotly_chart,"prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0109,SVE-AUD-07;SVE-AUD-13,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,871,CHART,forecast_chart,forecast_chart,"prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0110,SVE-AUD-07,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,925,TABLE,checklist,hide_index,"prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0111,SVE-AUD-07;SVE-AUD-13;SVE-AUD-14,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,938,TAB_SET,"['Live scores', 'Baseline scores', 'Batch logs', 'Anomaly summary', 'Forecast output']",Baseline scores,"prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0112,SVE-AUD-07,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,952,TABLE,live_scores,live_scores,"prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0113,SVE-AUD-07,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,962,TABLE,baseline_scores.head(1000),baseline_scores,"prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0114,SVE-AUD-07,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,972,TABLE,batch_log,hide_index,"prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0115,SVE-AUD-07;SVE-AUD-14,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,982,TABLE,anomaly_summary,anomaly_summary,"prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
+P03-0116,SVE-AUD-07;SVE-AUD-13,"Monitoring, Drift and Health",app/pages/6_Monitoring_Drift_Health.py,992,TABLE,forecast_future,forecast_future,"prediction logs, cached scores, anomaly/forecast outputs and artifact checks","one log event, score row, date bucket or artifact status",timestamp/visitorid/artifact path,scores; timestamps; source; counts; forecast values; artifact status,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",KEEP,Preserve the current component and its existing business message as the clean baseline.,Package 7,SOURCE_VERIFIED_VISUAL_QA_PENDING
 P03-0117,SVE-AUD-08,MLOps Architecture,app/pages/7_MLOps_Architecture.py,570,CHART,chart,"st.plotly_chart(chart, use_container_width=True)","repository path checks, output tables and static architecture explanation","one architecture component, area or supporting output",path or architecture area,component label; path; implemented/planned status; row count,"Current source-defined validation, unavailable, empty-table or pre-action state; no value may be invented.",ENHANCE,Keep current implementation evidence and add interactive layers without treating illustrative structure as live operational quantity.,Package 8,SOURCE_VERIFIED_VISUAL_QA_PENDING
 P03-0118,SVE-AUD-08,MLOps Architecture,app/pages/7_MLOps_Architecture.py,629,TAB_SET,"['Implemented product files', 'MLOps target files', 'Supporting outputs']","tab_1, tab_2, tab_3 = st.tabs(
     [

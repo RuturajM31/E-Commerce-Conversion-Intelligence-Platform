@@ -1,0 +1,2 @@
+true_positive,false_positive,false_negative,true_negative,total_rows,positive_rows,negative_rows,predicted_positive_rows,predicted_positive_rate,precision,recall,f1_score
+66,165,252,248156,248639,318,248321,231,0.0009290577906120922,0.2857142857142857,0.20754716981132076,0.24043715846994534

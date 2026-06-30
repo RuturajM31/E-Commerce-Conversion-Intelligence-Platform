@@ -29,17 +29,11 @@ EXPECTED_EXTENSIONS = {
     "app/pages/2_Batch_Scoring.py": (
         "render_batch_campaign_intelligence",
     ),
-    "app/pages/3_Model_Benchmark_Selection.py": (
-        "render_model_decision_intelligence",
-    ),
     "app/pages/4_Business_KPI_Forecasting.py": (
         "render_forecast_decision_intelligence",
     ),
     "app/pages/5_Anomaly_Outlier.py": (
         "render_anomaly_investigation_intelligence",
-    ),
-    "app/pages/6_Monitoring_Drift_Health.py": (
-        "render_monitoring_health_intelligence",
     ),
     "app/pages/7_MLOps_Architecture.py": (
         "render_architecture_governance_intelligence",
@@ -181,3 +175,37 @@ def test_final_review_pack_covers_all_ten_pages() -> None:
 
     for page_name in page_names:
         assert page_name in text
+
+def test_standalone_pages_keep_governed_closure_without_duplicate_renderers() -> None:
+    """Model and monitoring pages now own their governed implementations."""
+
+    checks = {
+        "app/pages/3_Model_Benchmark_Selection.py": (
+            (
+                "build_model_comparison_chart",
+                "build_precision_recall_chart",
+                "build_threshold_chart",
+                "build_stability_chart",
+                "holdout_lift",
+            ),
+            "render_model_decision_intelligence",
+        ),
+        "app/pages/6_Monitoring_Drift_Health.py": (
+            (
+                "MINIMUM_LIVE_SAMPLE = 30",
+                "def calculate_psi(",
+                "Insufficient live data",
+                "One prediction cannot establish production drift.",
+                "def parse_drift_report(",
+            ),
+            "render_monitoring_health_intelligence",
+        ),
+    }
+
+    for relative, (required_tokens, forbidden_token) in checks.items():
+        text = (ROOT / relative).read_text(encoding="utf-8")
+
+        for token in required_tokens:
+            assert token in text, relative
+
+        assert forbidden_token not in text, relative

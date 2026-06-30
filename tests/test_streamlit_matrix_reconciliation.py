@@ -9,7 +9,8 @@ from collections import Counter
 from pathlib import Path
 
 
-DOCS = Path("docs/streamlit")
+ROOT = Path(__file__).resolve().parents[1]
+DOCS = ROOT / "docs" / "streamlit"
 MASTER_CSV = DOCS / "STREAMLIT_VISUAL_ENHANCEMENT_COVERAGE_MATRIX.csv"
 MASTER_MD = DOCS / "STREAMLIT_VISUAL_ENHANCEMENT_COVERAGE_MATRIX.md"
 MANIFEST = DOCS / "STREAMLIT_VISUAL_ENHANCEMENT_MATRIX_MANIFEST.json"

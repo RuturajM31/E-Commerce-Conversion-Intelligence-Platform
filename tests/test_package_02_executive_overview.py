@@ -474,7 +474,7 @@ def test_shared_component_calls_match_package_1_api() -> None:
         assert expected[function_name].issubset(keywords)
 
     assert found["render_source_note"] == 3
-    assert found["render_empty_state"] == 3
+    assert found["render_empty_state"] == 4
     assert found["show_table_with_download"] == 1
 
 

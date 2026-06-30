@@ -1,0 +1,2 @@
+model_name,validation_pr_auc,holdout_pr_auc,pr_auc_delta,is_champion
+Tuned XGBoost,0.06251185478766783,0.15186619185675237,0.08935433706908455,True
