@@ -25,6 +25,7 @@ if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
 
+import pandas as pd
 import streamlit as st
 
 from app.app_utils import escape_text, inject_global_css, render_sidebar_html
@@ -439,6 +440,147 @@ def render_executive_sidebar(
     render_sidebar_html(sidebar_html)
 
 
+
+def operational_score_summary(
+    scores: pd.DataFrame,
+    production_threshold: float,
+) -> dict[str, object]:
+    """Summarise the current scored audience without mixing it with holdout rows.
+
+    The holdout controls model-quality metrics. This helper controls only the
+    current operational audience count and threshold decision.
+    """
+
+    result: dict[str, object] = {
+        "available": False,
+        "rows": 0,
+        "eligible_rows": 0,
+        "message": "Approved cached visitor-score evidence is unavailable.",
+    }
+
+    if scores.empty:
+        return result
+
+    visitor_column = next(
+        (
+            column
+            for column in ("visitorid", "visitor_id", "visitorId")
+            if column in scores.columns
+        ),
+        None,
+    )
+    score_column = next(
+        (
+            column
+            for column in (
+                "purchase_intent_score",
+                "conversion_probability",
+                "score",
+                "probability",
+            )
+            if column in scores.columns
+        ),
+        None,
+    )
+
+    if visitor_column is None or score_column is None:
+        result["message"] = (
+            "Visitor-score evidence exists but required ID or score columns "
+            "are missing."
+        )
+        return result
+
+    current = scores[[visitor_column, score_column]].copy()
+    current[visitor_column] = (
+        current[visitor_column].astype("string").str.strip()
+    )
+    current[score_column] = pd.to_numeric(
+        current[score_column],
+        errors="coerce",
+    )
+    current = (
+        current.dropna(subset=[visitor_column, score_column])
+        .drop_duplicates(subset=[visitor_column], keep="first")
+        .copy()
+    )
+
+    if current.empty:
+        result["message"] = "Visitor-score evidence contains no usable rows."
+        return result
+
+    if "predicted_conversion" in scores.columns:
+        decision_source = scores[
+            [visitor_column, "predicted_conversion"]
+        ].copy()
+        decision_source[visitor_column] = (
+            decision_source[visitor_column]
+            .astype("string")
+            .str.strip()
+        )
+        decision_source["predicted_conversion"] = pd.to_numeric(
+            decision_source["predicted_conversion"],
+            errors="coerce",
+        )
+        decision_source = decision_source.drop_duplicates(
+            subset=[visitor_column],
+            keep="first",
+        )
+        current = current.merge(
+            decision_source,
+            on=visitor_column,
+            how="left",
+            validate="one_to_one",
+        )
+        eligible = (
+            current["predicted_conversion"]
+            .fillna(0)
+            .astype(int)
+            .eq(1)
+        )
+    elif "production_threshold" in scores.columns:
+        threshold_source = scores[
+            [visitor_column, "production_threshold"]
+        ].copy()
+        threshold_source[visitor_column] = (
+            threshold_source[visitor_column]
+            .astype("string")
+            .str.strip()
+        )
+        threshold_source["production_threshold"] = pd.to_numeric(
+            threshold_source["production_threshold"],
+            errors="coerce",
+        )
+        threshold_source = threshold_source.drop_duplicates(
+            subset=[visitor_column],
+            keep="first",
+        )
+        current = current.merge(
+            threshold_source,
+            on=visitor_column,
+            how="left",
+            validate="one_to_one",
+        )
+        threshold_values = current["production_threshold"].fillna(
+            float(production_threshold)
+        )
+        eligible = current[score_column].ge(threshold_values)
+    else:
+        eligible = current[score_column].ge(float(production_threshold))
+
+    result.update(
+        {
+            "available": True,
+            "rows": int(len(current)),
+            "eligible_rows": int(eligible.sum()),
+            "message": (
+                f"{int(eligible.sum()):,} of {len(current):,} currently scored "
+                "visitors pass the production threshold."
+            ),
+        }
+    )
+    return result
+
+
 st.set_page_config(
     page_title="Executive Overview | Conversion Intelligence",
     page_icon="🧠",
@@ -475,14 +617,18 @@ champion_track = (
     else "Evidence unavailable"
 )
 
-source_visitors = source_visitor_count(
-    evidence.manifest,
-    int(holdout["rows"]),
-)
-eligible_visitors = int(holdout["predicted_positive_rows"])
+holdout_rows = int(holdout["rows"])
+holdout_eligible_visitors = int(holdout["predicted_positive_rows"])
 natural_rate = float(holdout["positive_rate"])
 precision = float(holdout["precision"])
 lift = precision / natural_rate if natural_rate > 0 else 0.0
+
+operational_scores = operational_score_summary(
+    evidence.scores,
+    float(holdout["threshold"]),
+)
+source_visitors = int(operational_scores["rows"])
+eligible_visitors = int(operational_scores["eligible_rows"])
 
 render_executive_sidebar(
     model_name=str(holdout["model_name"]),
@@ -525,25 +671,40 @@ render_kpi_grid(
             "Selected-audience quality versus random targeting",
         ),
         (
-            "Threshold-eligible audience",
-            f"{eligible_visitors:,}",
-            f"From {int(holdout['rows']):,} validated holdout visitors",
+            "Current threshold-eligible audience",
+            (
+                f"{eligible_visitors:,}"
+                if operational_scores["available"]
+                else "Unavailable"
+            ),
+            (
+                f"From {source_visitors:,} currently scored visitors"
+                if operational_scores["available"]
+                else str(operational_scores["message"])
+            ),
         ),
     ]
 )
 
+executive_sources = [
+    "reports/tables/final_true_champion_holdout.csv",
+    "reports/tables/ml_validation_projection_sample.csv",
+    "reports/metadata/ml_validation_manifest.json",
+]
+if evidence.score_source:
+    executive_sources.append(evidence.score_source)
+
 render_source_note(
-    source=(
-        "reports/tables/final_true_champion_holdout.csv; "
-        "data/processed/final_champion_visitor_scores.csv; "
-        "reports/metadata/ml_validation_manifest.json"
+    source="; ".join(executive_sources),
+    evidence_type=(
+        "Untouched-holdout model evidence and current cached audience scores"
     ),
-    evidence_type="Validated holdout and generated ML evidence",
     refreshed_at=evidence.source_timestamp,
     extra=(
-        "Holdout metrics measure validated model behaviour. Campaign value "
-        "below is scenario-based because the source data has no reliable "
-        "transaction revenue."
+        "Final model metrics come only from the untouched holdout. Current "
+        "audience counts and composition come only from cached visitor scores. "
+        "Campaign value applies holdout precision as an explicit planning "
+        "assumption because the source data has no reliable transaction revenue."
     ),
 )
 
@@ -551,12 +712,23 @@ render_section_header(
     "Campaign scenario",
     "Choose the audience and test the commercial assumptions",
     (
-        "The model supplies target quality. Contact cost and buyer value are "
-        "explicit assumptions that can be changed and exported."
+        "The current score file supplies the operational audience. Validated "
+        "holdout precision supplies the expected buyer-rate assumption. Contact "
+        "cost and buyer value remain editable scenario assumptions."
     ),
 )
 
-# STREAMLIT CLOUD: safely handle zero or one eligible visitor.
+if not operational_scores["available"]:
+    render_empty_state(
+        title="Current campaign audience is unavailable",
+        message=str(operational_scores["message"]),
+        next_action=(
+            "Publish or regenerate the approved current visitor-score file. "
+            "The page will not reuse holdout-positive rows as a live audience."
+        ),
+    )
+
+# STREAMLIT CLOUD: safely handle zero or one current eligible visitor.
 maximum_target = max(eligible_visitors, 0)
 default_target = (
     min(maximum_target, max(1, round(maximum_target * 0.5)))
@@ -579,7 +751,7 @@ with control_1:
             min_value=1,
             max_value=maximum_target,
             value=default_target,
-            help="Cannot exceed the threshold-eligible holdout audience.",
+            help="Cannot exceed the current threshold-eligible scored audience.",
         )
 
 with control_2:
@@ -614,7 +786,7 @@ render_kpi_grid(
         (
             "Expected buyers",
             f"{scenario['expected_buyers']:.1f}",
-            f"Model precision applied to {target_size:,} selected visitors",
+            f"Holdout precision applied to {target_size:,} current selected visitors",
         ),
         (
             "Campaign cost",
@@ -634,12 +806,14 @@ render_kpi_grid(
     ]
 )
 
-funnel = build_funnel_table(
-    source_visitors=source_visitors,
-    holdout_rows=int(holdout["rows"]),
-    threshold_eligible=eligible_visitors,
-    target_size=target_size,
-    expected_buyers=scenario["expected_buyers"],
+funnel = pd.DataFrame(
+    [
+        ("Current scored visitors", max(source_visitors, 0)),
+        ("Current threshold eligible", max(eligible_visitors, 0)),
+        ("Campaign target", max(target_size, 0)),
+        ("Expected buyers", max(float(scenario["expected_buyers"]), 0.0)),
+    ],
+    columns=["Stage", "Visitors"],
 )
 
 render_section_header(
@@ -649,18 +823,18 @@ render_section_header(
 
 st.plotly_chart(
     build_funnel_figure(funnel),
-    use_container_width=True,
+    width="stretch",
     key="exec_targeting_funnel",
 )
 render_interpretation(
     what_it_shows=(
-        "The complete decision path from source visitors through validated "
-        "holdout evidence, threshold eligibility, campaign selection, and "
-        "expected buyers."
+        "The operational decision path from currently scored visitors to "
+        "threshold eligibility, campaign selection, and expected buyers."
     ),
     how_to_read=(
-        "Each stage narrows the audience. The final stage is an expectation "
-        "calculated from validated precision, not an observed campaign result."
+        "Every population stage uses the current scored audience. The final "
+        "stage is an expectation calculated with untouched-holdout precision, "
+        "not an observed campaign result."
     ),
     actual_finding=(
         f"{target_size:,} selected visitors are expected to contain "
@@ -671,12 +845,13 @@ render_interpretation(
         "buyer concentration than random outreach."
     ),
     recommended_action=(
-        "Use the campaign target as the operational shortlist and preserve "
-        "the excluded population for holdout measurement."
+        "Use the campaign target as the operational shortlist and retain a "
+        "separate control group for real campaign measurement."
     ),
     limitation=(
-        "Source, holdout, and campaign stages represent different evidence "
-        "scopes and must not be interpreted as one production batch."
+        "Audience counts come from current cached scores, while expected "
+        "buyer yield comes from holdout precision and remains an assumption "
+        "until campaign outcomes arrive."
     ),
 )
 
@@ -687,7 +862,7 @@ st.plotly_chart(
         expected_buyers=scenario["expected_buyers"],
         baseline_rate=natural_rate,
     ),
-    use_container_width=True,
+    width="stretch",
     key="exec_efficiency_comparison",
 )
 render_interpretation(
@@ -700,8 +875,8 @@ render_interpretation(
         "efficient prioritisation."
     ),
     actual_finding=(
-        f"The scenario targets {(target_size / source_visitors if source_visitors else 0.0):.2%} of source "
-        f"visitors with an expected {precision:.1%} buyer yield."
+        f"The scenario targets {(target_size / source_visitors if source_visitors else 0.0):.2%} of currently scored "
+        f"visitors with an expected {precision:.1%} buyer yield based on the holdout."
     ),
     conclusion=(
         "Campaign efficiency comes from concentrating spend on the strongest "
@@ -752,7 +927,7 @@ else:
 
     st.plotly_chart(
         composition_figure,
-        use_container_width=True,
+        width="stretch",
         key=f"exec_composition_{composition_view}",
     )
     render_interpretation(
@@ -821,7 +996,7 @@ render_detail_cards(
             "Decision rule",
             f"Score ≥ {float(holdout['threshold']):.2f}",
             (
-                f"{eligible_visitors:,} visitors pass the production threshold"
+                f"{holdout_eligible_visitors:,} holdout visitors pass the production threshold"
             ),
         ),
         (
@@ -855,7 +1030,7 @@ if forecast_figure is None:
 else:
     st.plotly_chart(
         forecast_figure,
-        use_container_width=True,
+        width="stretch",
         key="exec_forward_outlook",
     )
     render_interpretation(
@@ -907,7 +1082,7 @@ if anomaly_figure is None:
 else:
     st.plotly_chart(
         anomaly_figure,
-        use_container_width=True,
+        width="stretch",
         key="exec_anomaly_distribution",
     )
     render_interpretation(
@@ -941,7 +1116,7 @@ readiness = readiness_table()
 
 st.plotly_chart(
     build_readiness_figure(readiness),
-    use_container_width=True,
+    width="stretch",
     key="exec_readiness_strip",
 )
 render_interpretation(
@@ -971,14 +1146,23 @@ render_interpretation(
     ),
 )
 
-summary = decision_summary(
-    target_size=target_size,
-    expected_buyers=scenario["expected_buyers"],
-    incremental_value=scenario["incremental_value"],
-    roi=scenario["roi"],
-    anomaly_rate=anomaly["rate"],
-    forecast_available=forecast_figure is not None,
-)
+summary = {
+    "finding": (
+        f"Targeting {target_size:,} current threshold-eligible visitors is "
+        f"expected to reach {scenario['expected_buyers']:.1f} buyers when "
+        "untouched-holdout precision is used as the planning assumption."
+    ),
+    "action": (
+        f"Prioritise the selected current audience while monitoring a "
+        f"{anomaly['rate']:.1%} validation-sample anomaly rate and an "
+        f"assumption-based ROI of {scenario['roi']:.1%}."
+    ),
+    "limitation": (
+        "Audience membership comes from cached current scores. Buyer yield and "
+        "campaign value remain scenario estimates until observed campaign "
+        "outcomes and real transaction values are available."
+    ),
+}
 
 render_section_header(
     "Executive decision",
