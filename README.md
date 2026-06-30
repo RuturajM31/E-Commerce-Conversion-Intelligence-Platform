@@ -840,3 +840,32 @@ CI/CD validated project
 ```
 
 The strongest value of the project is that it connects machine learning output to a real business decision: identifying which visitors should be prioritized for marketing action.
+
+---
+
+## Streamlit Visual Intelligence Closure
+
+The final Streamlit closure adds:
+
+- campaign-capacity and targeting-scenario intelligence;
+- model decision, threshold, confusion, stability, and economics views;
+- real-visitor similarity and governed explanation evidence;
+- a dedicated Customer Segmentation & Journey page;
+- forecast scenario and residual diagnostics;
+- anomaly investigation and monitoring lineage views;
+- interactive architecture and deployment evidence;
+- a deployment-ready Streamlit Community Cloud configuration.
+
+Persistent deployment coordinates:
+
+```text
+Repository: RuturajM31/E-Commerce-Conversion-Intelligence-Platform
+Branch: main
+Entrypoint: app/Executive_Overview.py
+Python: 3.10
+```
+
+The repository includes `app/requirements.txt` so Streamlit Community Cloud
+installs the validated dashboard runtime from the entrypoint directory. The
+final GitHub authorization and Deploy click are completed by the project owner
+in the Streamlit Community Cloud interface.

@@ -38,9 +38,18 @@ def test_key_streamlit_pages_exist():
         "6_Monitoring_Drift_Health.py",
         "7_MLOps_Architecture.py",
         "8_ML_Validation_Evidence.py",
+        "9_Customer_Segmentation_Journey.py",
     ]
 
     existing_pages = {path.name for path in Path("app/pages").glob("*.py")}
     missing = [page for page in expected_pages if page not in existing_pages]
 
     assert not missing, f"Missing Streamlit pages: {missing}"
+
+
+def test_streamlit_community_cloud_files_exist():
+    """Persistent deployment should have app-local dependencies and config."""
+
+    assert Path("app/requirements.txt").is_file()
+    assert Path(".streamlit/config.toml").is_file()
+    assert Path("docs/streamlit/STREAMLIT_COMMUNITY_CLOUD_DEPLOYMENT.md").is_file()

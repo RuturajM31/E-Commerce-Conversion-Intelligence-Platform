@@ -1034,3 +1034,13 @@ with st.expander("Manual and AutoML-style benchmark tables"):
         st.dataframe(automl_results, use_container_width=True, hide_index=True)
     else:
         st.info("AutoML-style benchmark table not available.")
+
+# --------------------------------------------------
+# FINAL CLOSURE EXTENSION: MODEL DECISION INTELLIGENCE
+# --------------------------------------------------
+
+from app.ui.model_decision_intelligence import (
+    render_model_decision_intelligence,
+)
+
+render_model_decision_intelligence()

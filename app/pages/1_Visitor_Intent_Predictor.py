@@ -990,3 +990,13 @@ else:
         </div>
         """
     )
+
+# --------------------------------------------------
+# FINAL CLOSURE EXTENSION: KNN AND EXPLAINABILITY
+# --------------------------------------------------
+
+from app.ui.visitor_similarity_explainability import (
+    render_visitor_similarity_explainability,
+)
+
+render_visitor_similarity_explainability()

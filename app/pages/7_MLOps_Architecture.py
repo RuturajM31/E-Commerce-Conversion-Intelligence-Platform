@@ -677,3 +677,13 @@ with tab_3:
         use_container_width=True,
         hide_index=True,
     )
+
+# --------------------------------------------------
+# FINAL CLOSURE EXTENSION: ARCHITECTURE GOVERNANCE INTELLIGENCE
+# --------------------------------------------------
+
+from app.ui.architecture_intelligence import (
+    render_architecture_governance_intelligence,
+)
+
+render_architecture_governance_intelligence()

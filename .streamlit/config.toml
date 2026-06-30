@@ -1,23 +1,11 @@
-# config.toml
-# This file controls the global Streamlit theme.
-# It makes the app look like a modern dark executive dashboard.
+[server]
+headless = true
+runOnSave = false
+enableCORS = true
+enableXsrfProtection = true
+
+[browser]
+gatherUsageStats = false
 
 [theme]
-
-# Use dark dashboard style
 base = "dark"
-
-# Main accent color used by buttons, highlights, and selected elements
-primaryColor = "#38BDF8"
-
-# Main page background
-backgroundColor = "#0B1120"
-
-# Card / table / secondary background
-secondaryBackgroundColor = "#111827"
-
-# Main text color
-textColor = "#F9FAFB"
-
-# Font style used in the dashboard
-font = "sans serif"

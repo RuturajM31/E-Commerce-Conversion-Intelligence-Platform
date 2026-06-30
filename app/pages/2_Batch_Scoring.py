@@ -1018,3 +1018,16 @@ else:
         '</div>'
         '</div>'
     )
+
+# --------------------------------------------------
+# FINAL CLOSURE EXTENSION: CAMPAIGN INTELLIGENCE
+# --------------------------------------------------
+
+from app.ui.campaign_intelligence import (
+    render_batch_campaign_intelligence,
+)
+
+render_batch_campaign_intelligence(
+    production_threshold=best_threshold,
+    validated_precision=best_precision,
+)

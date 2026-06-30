@@ -985,3 +985,13 @@ with tab_5:
             use_container_width=True,
             hide_index=True,
         )
+
+# --------------------------------------------------
+# FINAL CLOSURE EXTENSION: ANOMALY INVESTIGATION INTELLIGENCE
+# --------------------------------------------------
+
+from app.ui.operations_intelligence import (
+    render_anomaly_investigation_intelligence,
+)
+
+render_anomaly_investigation_intelligence()

@@ -76,11 +76,11 @@ def test_final_matrix_counts_reconcile() -> None:
     counts = Counter(row["Status"] for row in rows)
 
     assert len(rows) == 204
+    # Package 3 remains closed while the master closure moves every remaining
+    # row to a terminal status.
     assert counts == {
-        "VERIFIED": 44,
-        "IN PROGRESS": 24,
-        "PLANNED": 121,
-        "CONDITIONAL": 13,
+        "VERIFIED": 177,
+        "CONDITIONAL": 25,
         "EXCLUDED": 2,
     }
 
