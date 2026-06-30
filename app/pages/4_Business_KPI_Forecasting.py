@@ -897,3 +897,13 @@ render_html(
     '</div>'
     '</div>'
 )
+
+# --------------------------------------------------
+# FINAL CLOSURE EXTENSION: FORECAST DECISION INTELLIGENCE
+# --------------------------------------------------
+
+from app.ui.operations_intelligence import (
+    render_forecast_decision_intelligence,
+)
+
+render_forecast_decision_intelligence()

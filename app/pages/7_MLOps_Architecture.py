@@ -231,7 +231,7 @@ PROJECT_FILES: Dict[str, Path] = {
     "Champion visitor scores": Path("data/processed/champion_visitor_scores.csv"),
     "Forecast outputs": Path("reports/tables/business_forecast_future.csv"),
     "Anomaly outputs": Path("reports/tables/anomaly_summary.csv"),
-    "MVD coverage matrix": Path("reports/tables/mvd_method_coverage_matrix.csv"),
+    "ML validation coverage matrix": Path("reports/tables/mvd_method_coverage_matrix.csv"),
     "Single prediction log": Path("monitoring/prediction_logs/prediction_log.csv"),
     "Batch scoring log": Path("monitoring/prediction_logs/batch_scoring_log.csv"),
 }
@@ -677,3 +677,13 @@ with tab_3:
         use_container_width=True,
         hide_index=True,
     )
+
+# --------------------------------------------------
+# FINAL CLOSURE EXTENSION: ARCHITECTURE GOVERNANCE INTELLIGENCE
+# --------------------------------------------------
+
+from app.ui.architecture_intelligence import (
+    render_architecture_governance_intelligence,
+)
+
+render_architecture_governance_intelligence()

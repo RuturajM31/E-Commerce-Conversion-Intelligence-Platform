@@ -1,0 +1,74 @@
+{
+  "generated_at_utc": "2026-06-22T12:54:11.496055+00:00",
+  "evidence_type": "offline analytical validation evidence",
+  "source_path": "data/processed/visitor_features.csv",
+  "source_sha256": "5e550bfc4fbfa45b691dc411e5deb046b970b809ab8b191ff143fb07b4ce2e2e",
+  "source_grain": "one row per visitor",
+  "source_key": "visitorid when available",
+  "source_rows": 78998,
+  "sample_rows": 8000,
+  "sample_rule": "deterministic random sample with random_state=42",
+  "random_state": 42,
+  "features": [
+    "Log total events",
+    "Log views",
+    "Log add-to-cart",
+    "Log unique items",
+    "Log activity hours",
+    "View share",
+    "Cart share"
+  ],
+  "parameters": {
+    "kmeans_k": 3,
+    "kmeans_selection_candidates": [
+      3,
+      5,
+      7
+    ],
+    "dbscan_eps": 2.0,
+    "dbscan_min_samples": 5,
+    "dbscan_eps_grid": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "dbscan_min_samples_grid": [
+      3,
+      5,
+      10
+    ],
+    "lof_neighbours": 20,
+    "lof_contamination": 0.04,
+    "lof_score_threshold": 1.409664142339455
+  },
+  "selection_rules": {
+    "kmeans": "highest same-sample silhouette among required k=3,5,7",
+    "dbscan": "valid same-sample silhouette with cluster/noise guardrails",
+    "lof": "existing validated contamination/neighbour settings when available; otherwise documented defaults"
+  },
+  "metric_rules": {
+    "silhouette_sample_rows": 3000,
+    "dbscan_silhouette": "calculated after excluding noise rows",
+    "lof_threshold": "minimum LOF score among algorithm-flagged outliers"
+  },
+  "outputs": {
+    "projection": "reports/tables/ml_validation_projection_sample.csv",
+    "pca_variance": "reports/tables/ml_validation_pca_variance.csv",
+    "pca_loadings": "reports/tables/ml_validation_pca_loadings.csv",
+    "cluster_profile": "reports/tables/ml_validation_cluster_profile.csv",
+    "cluster_business": "reports/tables/ml_validation_cluster_business_summary.csv",
+    "kmeans_grid": "reports/tables/ml_validation_kmeans_grid.csv",
+    "dbscan_grid": "reports/tables/ml_validation_dbscan_grid.csv",
+    "dbscan_k_distance": "reports/tables/ml_validation_dbscan_k_distance.csv",
+    "lof_feature_profile": "reports/tables/ml_validation_lof_feature_profile.csv",
+    "lof_investigation": "reports/tables/ml_validation_lof_investigation.csv",
+    "method_summary": "reports/tables/ml_validation_method_summary.csv"
+  },
+  "limitations": [
+    "The projection uses a deterministic sample for browser performance.",
+    "PCA coordinates are a visual summary and not production predictions.",
+    "K-Means, DBSCAN, and LOF are offline exploratory evidence.",
+    "Silhouette calculations use at most 3,000 deterministic rows.",
+    "Cluster recommendations require business testing before deployment."
+  ]
+}

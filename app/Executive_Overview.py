@@ -1,984 +1,1037 @@
-# Executive_Overview.py
-# Landing page for the E-Commerce Conversion Intelligence Platform.
-#
-# Purpose:
-#   Give an executive-level overview of the project.
-#
-# This page shows:
-#   1. Final champion model impact
-#   2. Random targeting vs model targeting
-#   3. Final champion proof
-#   4. Platform modules
-#   5. Honest project scope
+"""Executive Overview for the E-Commerce Conversion Intelligence Platform.
+
+Package 2 turns the landing page into a decision workspace. Every metric comes
+from approved project evidence or from clearly labelled scenario assumptions.
+"""
 
 from __future__ import annotations
 
-from pathlib import Path
-
-import pandas as pd
 import streamlit as st
 
-try:
-    import plotly.express as px
-    import plotly.graph_objects as go
-    PLOTLY_AVAILABLE = True
-except Exception:
-    PLOTLY_AVAILABLE = False
-
-from app.app_utils import (
-    create_master_model_comparison_table,
-    escape_text,
-    format_lift,
-    format_percent,
-    get_best_threshold,
-    get_champion_metrics,
-    get_champion_model_name,
-    get_champion_track,
-    inject_global_css,
-    load_model_selection_tables,
-    render_html,
+from app.app_utils import escape_text, inject_global_css, render_sidebar_html
+from app.ui.components import (
+    inject_product_css,
+    render_detail_cards,
+    render_empty_state,
+    render_interpretation,
+    render_kpi_grid,
+    render_page_header,
+    render_section_header,
+    render_source_note,
+    show_table_with_download,
+)
+from app.ui.executive_intelligence import (
+    anomaly_summary,
+    available_composition_views,
+    build_anomaly_figure,
+    build_composition_figure,
+    build_efficiency_figure,
+    build_forecast_figure,
+    build_funnel_figure,
+    build_funnel_table,
+    build_readiness_figure,
+    build_selected_campaign_audience,
+    calculate_scenario,
+    controlling_holdout_row,
+    decision_summary,
+    executive_brief_table,
+    load_executive_evidence,
+    readiness_table,
+    source_visitor_count,
 )
 
 
-# --------------------------------------------------
-# 1. PAGE SETUP
-# --------------------------------------------------
+PACKAGE_02_EXEC_REQUIREMENTS = (
+    "SVE-EXEC-01",
+    "SVE-EXEC-02",
+    "SVE-EXEC-03",
+    "SVE-EXEC-04",
+    "SVE-EXEC-05",
+    "SVE-EXEC-06",
+    "SVE-EXEC-07",
+    "SVE-EXEC-08",
+    "SVE-EXEC-09",
+    "SVE-EXEC-10",
+    "SVE-EXEC-11",
+    "SVE-EXEC-12",
+)
+
+
+def render_executive_sidebar(
+    *,
+    model_name: str,
+    threshold: float,
+    champion_track: str,
+    evidence_timestamp: str,
+) -> None:
+    """Render the polished Executive Overview sidebar.
+
+    Inputs come from the same approved holdout and evidence objects used by the
+    main page. Escaping the dynamic text keeps model metadata safe when it is
+    inserted into the custom HTML. The sidebar is presentation-only: it does
+    not change campaign calculations, model selection, or evidence loading.
+    """
+
+    safe_model_name = escape_text(model_name)
+    safe_track = escape_text(champion_track)
+    safe_timestamp = escape_text(evidence_timestamp)
+
+    sidebar_html = f"""
+        <style>
+            [data-testid="stSidebar"] [data-testid="stSidebarContent"] {{
+                padding-top: 0.85rem;
+            }}
+
+            .eci-sidebar-stack {{
+                display: flex;
+                flex-direction: column;
+                gap: 0.82rem;
+                padding: 0 0.34rem 1.35rem;
+            }}
+
+            .eci-sidebar-brand-card,
+            .eci-sidebar-owner-card,
+            .eci-sidebar-snapshot-card,
+            .eci-sidebar-evidence-card {{
+                border: 1px solid rgba(148, 163, 184, 0.15);
+                border-radius: 18px;
+                box-shadow: 0 16px 34px rgba(0, 0, 0, 0.19);
+            }}
+
+            .eci-sidebar-brand-card {{
+                position: relative;
+                overflow: hidden;
+                padding: 1.05rem;
+                background:
+                    radial-gradient(circle at 92% 6%, rgba(56, 189, 248, 0.24), transparent 39%),
+                    radial-gradient(circle at 10% 98%, rgba(52, 211, 153, 0.12), transparent 42%),
+                    linear-gradient(145deg, rgba(20, 37, 62, 0.98), rgba(11, 20, 35, 0.99));
+                border-color: rgba(125, 211, 252, 0.24);
+            }}
+
+            .eci-sidebar-brand-card::after {{
+                content: "";
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+                background: linear-gradient(118deg, rgba(255, 255, 255, 0.035), transparent 43%);
+            }}
+
+            .eci-sidebar-brand-row {{
+                position: relative;
+                z-index: 1;
+                display: flex;
+                align-items: center;
+                gap: 0.82rem;
+            }}
+
+            .eci-sidebar-mark {{
+                display: grid;
+                place-items: center;
+                flex: 0 0 48px;
+                width: 48px;
+                height: 48px;
+                border: 1px solid rgba(125, 211, 252, 0.38);
+                border-radius: 15px;
+                background: linear-gradient(145deg, rgba(56, 189, 248, 0.24), rgba(129, 140, 248, 0.14));
+                color: #F8FAFC;
+                font-size: 0.90rem;
+                font-weight: 900;
+                letter-spacing: 0.08em;
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10);
+            }}
+
+            .eci-sidebar-kicker,
+            .eci-sidebar-section-label {{
+                color: #7DD3FC;
+                font-size: 0.63rem;
+                font-weight: 850;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+            }}
+
+            .eci-sidebar-product-name {{
+                margin-top: 0.20rem;
+                color: #F8FAFC;
+                font-size: 1.05rem;
+                font-weight: 850;
+                line-height: 1.08;
+                letter-spacing: -0.025em;
+            }}
+
+            .eci-sidebar-product-copy {{
+                position: relative;
+                z-index: 1;
+                margin: 0.86rem 0 0;
+                color: #B6C3D5;
+                font-size: 0.78rem;
+                line-height: 1.50;
+            }}
+
+            .eci-sidebar-chip-row {{
+                position: relative;
+                z-index: 1;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.38rem;
+                margin-top: 0.80rem;
+            }}
+
+            .eci-sidebar-chip {{
+                padding: 0.28rem 0.48rem;
+                border: 1px solid rgba(125, 211, 252, 0.18);
+                border-radius: 999px;
+                background: rgba(7, 13, 24, 0.45);
+                color: #D8E7F5;
+                font-size: 0.64rem;
+                font-weight: 700;
+            }}
+
+            .eci-sidebar-owner-card,
+            .eci-sidebar-snapshot-card {{
+                padding: 0.92rem;
+                background: linear-gradient(145deg, rgba(17, 28, 47, 0.94), rgba(13, 22, 38, 0.96));
+            }}
+
+            .eci-sidebar-owner-row {{
+                display: flex;
+                align-items: center;
+                gap: 0.72rem;
+                margin-top: 0.70rem;
+            }}
+
+            .eci-sidebar-avatar {{
+                display: grid;
+                place-items: center;
+                flex: 0 0 42px;
+                width: 42px;
+                height: 42px;
+                border-radius: 50%;
+                background: linear-gradient(145deg, #38BDF8, #818CF8);
+                color: #07111F;
+                font-size: 0.76rem;
+                font-weight: 950;
+                letter-spacing: 0.04em;
+                box-shadow: 0 8px 22px rgba(56, 189, 248, 0.20);
+            }}
+
+            .eci-sidebar-owner-name {{
+                color: #F8FAFC;
+                font-size: 0.89rem;
+                font-weight: 820;
+                line-height: 1.25;
+            }}
+
+            .eci-sidebar-owner-role {{
+                margin-top: 0.14rem;
+                color: #94A3B8;
+                font-size: 0.72rem;
+                font-weight: 650;
+            }}
+
+            .eci-sidebar-owner-note {{
+                margin-top: 0.72rem;
+                padding-top: 0.68rem;
+                border-top: 1px solid rgba(148, 163, 184, 0.12);
+                color: #8FA0B7;
+                font-size: 0.68rem;
+                line-height: 1.48;
+            }}
+
+            .eci-sidebar-snapshot-heading {{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 0.54rem;
+            }}
+
+            .eci-sidebar-live-pill {{
+                display: inline-flex;
+                align-items: center;
+                gap: 0.32rem;
+                padding: 0.23rem 0.42rem;
+                border: 1px solid rgba(52, 211, 153, 0.19);
+                border-radius: 999px;
+                background: rgba(52, 211, 153, 0.08);
+                color: #8AF0C5;
+                font-size: 0.60rem;
+                font-weight: 800;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }}
+
+            .eci-sidebar-live-dot {{
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: #34D399;
+                box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.11);
+            }}
+
+            .eci-sidebar-metric-row {{
+                display: grid;
+                grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+                gap: 0.48rem;
+                align-items: start;
+                padding: 0.57rem 0;
+                border-bottom: 1px solid rgba(148, 163, 184, 0.10);
+            }}
+
+            .eci-sidebar-metric-row:last-child {{
+                padding-bottom: 0;
+                border-bottom: 0;
+            }}
+
+            .eci-sidebar-metric-label {{
+                color: #8494AA;
+                font-size: 0.67rem;
+                font-weight: 650;
+            }}
+
+            .eci-sidebar-metric-value {{
+                color: #E8F2FA;
+                font-size: 0.68rem;
+                font-weight: 760;
+                line-height: 1.36;
+                text-align: right;
+                overflow-wrap: anywhere;
+            }}
+
+            .eci-sidebar-evidence-card {{
+                display: flex;
+                align-items: flex-start;
+                gap: 0.64rem;
+                padding: 0.82rem 0.88rem;
+                background: linear-gradient(145deg, rgba(14, 45, 42, 0.72), rgba(12, 31, 37, 0.86));
+                border-color: rgba(52, 211, 153, 0.20);
+            }}
+
+            .eci-sidebar-evidence-icon {{
+                display: grid;
+                place-items: center;
+                flex: 0 0 26px;
+                width: 26px;
+                height: 26px;
+                border-radius: 9px;
+                background: rgba(52, 211, 153, 0.13);
+                color: #6EE7B7;
+                font-size: 0.75rem;
+                font-weight: 900;
+            }}
+
+            .eci-sidebar-evidence-title {{
+                color: #DDFBF0;
+                font-size: 0.72rem;
+                font-weight: 800;
+            }}
+
+            .eci-sidebar-evidence-time {{
+                margin-top: 0.18rem;
+                color: #8DB6AA;
+                font-size: 0.63rem;
+                line-height: 1.40;
+                overflow-wrap: anywhere;
+            }}
+
+            @media (max-width: 768px) {{
+                .eci-sidebar-stack {{
+                    padding-right: 0.18rem;
+                    padding-left: 0.18rem;
+                }}
+            }}
+        </style>
+
+        <div class="eci-sidebar-stack">
+            <section class="eci-sidebar-brand-card" aria-label="Product identity">
+                <div class="eci-sidebar-brand-row">
+                    <div class="eci-sidebar-mark" aria-hidden="true">CI</div>
+                    <div>
+                        <div class="eci-sidebar-kicker">E-commerce AI</div>
+                        <div class="eci-sidebar-product-name">Conversion Intelligence</div>
+                    </div>
+                </div>
+                <p class="eci-sidebar-product-copy">
+                    Executive decision workspace for targeting, economics,
+                    forecast evidence, and production readiness.
+                </p>
+                <div class="eci-sidebar-chip-row" aria-label="Workspace capabilities">
+                    <span class="eci-sidebar-chip">Audience</span>
+                    <span class="eci-sidebar-chip">Forecast</span>
+                    <span class="eci-sidebar-chip">Monitoring</span>
+                </div>
+            </section>
+
+            <section class="eci-sidebar-owner-card" aria-label="Portfolio owner">
+                <div class="eci-sidebar-section-label">Designed &amp; built by</div>
+                <div class="eci-sidebar-owner-row">
+                    <div class="eci-sidebar-avatar" aria-hidden="true">RM</div>
+                    <div>
+                        <div class="eci-sidebar-owner-name">Ruturaj Mokashi</div>
+                        <div class="eci-sidebar-owner-role">Data Analyst</div>
+                    </div>
+                </div>
+                <div class="eci-sidebar-owner-note">
+                    End-to-end analytics and machine-learning portfolio project,
+                    built around governed evidence and business decisions.
+                </div>
+            </section>
+
+            <section class="eci-sidebar-snapshot-card" aria-label="Model snapshot">
+                <div class="eci-sidebar-snapshot-heading">
+                    <div class="eci-sidebar-section-label">Model snapshot</div>
+                    <span class="eci-sidebar-live-pill">
+                        <span class="eci-sidebar-live-dot" aria-hidden="true"></span>
+                        Validated
+                    </span>
+                </div>
+                <div class="eci-sidebar-metric-row">
+                    <span class="eci-sidebar-metric-label">Champion</span>
+                    <span class="eci-sidebar-metric-value">{safe_model_name}</span>
+                </div>
+                <div class="eci-sidebar-metric-row">
+                    <span class="eci-sidebar-metric-label">Threshold</span>
+                    <span class="eci-sidebar-metric-value">{threshold:.2f}</span>
+                </div>
+                <div class="eci-sidebar-metric-row">
+                    <span class="eci-sidebar-metric-label">Track</span>
+                    <span class="eci-sidebar-metric-value">{safe_track}</span>
+                </div>
+            </section>
+
+            <section class="eci-sidebar-evidence-card" aria-label="Evidence status">
+                <div class="eci-sidebar-evidence-icon" aria-hidden="true">✓</div>
+                <div>
+                    <div class="eci-sidebar-evidence-title">Approved evidence loaded</div>
+                    <div class="eci-sidebar-evidence-time">Refreshed {safe_timestamp}</div>
+                </div>
+            </section>
+        </div>
+        """
+
+    # Streamlit renders custom HTML through a Markdown parser. Blank lines
+    # between indented sibling <section> elements can end the raw HTML block
+    # and make the remaining markup appear as a visible code block. Remove
+    # only those separator lines so the complete sidebar stays one HTML block.
+    sidebar_html = sidebar_html.replace(
+        "\n\n            <section",
+        "\n            <section",
+    )
+
+    render_sidebar_html(sidebar_html)
+
 
 st.set_page_config(
-    page_title="E-Commerce Conversion Intelligence",
+    page_title="Executive Overview | Conversion Intelligence",
     page_icon="🧠",
     layout="wide",
 )
 
 inject_global_css()
+inject_product_css()
 
+evidence = load_executive_evidence()
 
-# --------------------------------------------------
-# 2. PAGE STYLE
-# --------------------------------------------------
-# Keep page-specific CSS here.
-# Full visual polish will be handled at the final dashboard polish stage.
+# The Executive Overview reads validated metrics directly from the final
+# holdout table. It must not load the full production model bundle merely to
+# display model metadata.
+fallback = {
+    "model_name": "Unavailable",
+    "threshold": 0.0,
+    "rows": 0,
+    "positive_rows": 0,
+    "positive_rate": 0.0,
+    "predicted_positive_rows": 0,
+    "predicted_positive_rate": 0.0,
+    "pr_auc": 0.0,
+    "roc_auc": 0.0,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1_score": 0.0,
+}
+holdout = controlling_holdout_row(evidence.holdout, fallback)
 
-render_html(
-    """
-    <style>
-        .block-container {
-            padding-top: 1.35rem;
-            padding-bottom: 2.2rem;
-        }
-
-        .dashboard-hero {
-            padding: 34px 38px;
-            border-radius: 34px;
-            background:
-                radial-gradient(circle at 12% 12%, rgba(56, 189, 248, 0.30), transparent 30%),
-                radial-gradient(circle at 88% 82%, rgba(34, 197, 94, 0.22), transparent 34%),
-                linear-gradient(135deg, #0F172A 0%, #111827 48%, #020617 100%);
-            border: 1px solid rgba(148, 163, 184, 0.24);
-            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.50);
-            margin-bottom: 20px;
-        }
-
-        .hero-grid {
-            display: grid;
-            grid-template-columns: 1.35fr 0.65fr;
-            gap: 22px;
-            align-items: center;
-        }
-
-        .hero-eyebrow {
-            color: #38BDF8;
-            font-size: 0.78rem;
-            font-weight: 900;
-            letter-spacing: 0.18em;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .hero-main-title {
-            color: #F8FAFC;
-            font-size: 2.45rem;
-            line-height: 1.05;
-            font-weight: 950;
-            margin-bottom: 12px;
-        }
-
-        .hero-one-liner {
-            color: #CBD5E1;
-            font-size: 1.02rem;
-            line-height: 1.55;
-            max-width: 980px;
-        }
-
-        .hero-score-box {
-            padding: 24px 24px;
-            border-radius: 28px;
-            background: rgba(2, 6, 23, 0.48);
-            border: 1px solid rgba(125, 211, 252, 0.22);
-            text-align: center;
-        }
-
-        .hero-score-label {
-            color: #94A3B8;
-            font-size: 0.75rem;
-            font-weight: 900;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .hero-score-value {
-            color: #F8FAFC;
-            font-size: 3.25rem;
-            font-weight: 950;
-            line-height: 1;
-            margin-bottom: 8px;
-        }
-
-        .hero-score-help {
-            color: #A7F3D0;
-            font-size: 0.86rem;
-            font-weight: 800;
-        }
-
-        .pill-row {
-            margin-top: 18px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .glass-pill {
-            display: inline-block;
-            padding: 8px 12px;
-            border-radius: 999px;
-            background: rgba(15, 23, 42, 0.72);
-            border: 1px solid rgba(148, 163, 184, 0.22);
-            color: #E2E8F0;
-            font-size: 0.78rem;
-            font-weight: 900;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-        }
-
-        .visual-card {
-            padding: 24px 24px;
-            border-radius: 30px;
-            background:
-                radial-gradient(circle at top right, rgba(56, 189, 248, 0.16), transparent 30%),
-                linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(17, 24, 39, 0.88));
-            border: 1px solid rgba(148, 163, 184, 0.22);
-            box-shadow: 0 22px 62px rgba(0, 0, 0, 0.32);
-            min-height: 176px;
-            margin-bottom: 18px;
-        }
-
-        .visual-label {
-            color: #94A3B8;
-            font-size: 0.78rem;
-            font-weight: 900;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .visual-value {
-            color: #F8FAFC;
-            font-size: 2.35rem;
-            line-height: 1;
-            font-weight: 950;
-            margin-bottom: 10px;
-        }
-
-        .visual-caption {
-            color: #CBD5E1;
-            font-size: 0.88rem;
-            line-height: 1.45;
-        }
-
-        .section-kicker {
-            color: #7DD3FC;
-            font-size: 0.78rem;
-            font-weight: 900;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            margin-top: 18px;
-            margin-bottom: 4px;
-        }
-
-        .section-title {
-            color: #F8FAFC;
-            font-size: 1.55rem;
-            font-weight: 950;
-            margin-bottom: 14px;
-        }
-
-        .story-card {
-            padding: 24px 26px;
-            border-radius: 30px;
-            background:
-                radial-gradient(circle at top left, rgba(34, 197, 94, 0.14), transparent 30%),
-                linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.94));
-            border: 1px solid rgba(148, 163, 184, 0.22);
-            box-shadow: 0 22px 62px rgba(0, 0, 0, 0.32);
-            margin-bottom: 18px;
-        }
-
-        .story-big {
-            color: #F8FAFC;
-            font-size: 1.25rem;
-            font-weight: 950;
-            margin-bottom: 8px;
-        }
-
-        .story-small {
-            color: #CBD5E1;
-            font-size: 0.94rem;
-            line-height: 1.55;
-        }
-
-        .flow-card {
-            padding: 22px 22px;
-            border-radius: 26px;
-            background: rgba(15, 23, 42, 0.88);
-            border: 1px solid rgba(148, 163, 184, 0.20);
-            box-shadow: 0 16px 46px rgba(0, 0, 0, 0.24);
-            min-height: 152px;
-            margin-bottom: 16px;
-        }
-
-        .flow-icon {
-            font-size: 1.58rem;
-            margin-bottom: 8px;
-        }
-
-        .flow-title {
-            color: #F8FAFC;
-            font-size: 1.02rem;
-            font-weight: 900;
-            margin-bottom: 7px;
-        }
-
-        .flow-text {
-            color: #CBD5E1;
-            font-size: 0.85rem;
-            line-height: 1.45;
-        }
-
-        @media (max-width: 980px) {
-            .hero-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .hero-main-title {
-                font-size: 2rem;
-            }
-        }
-    </style>
-    """
+champion_track = (
+    "Final true champion"
+    if not evidence.holdout.empty
+    else "Evidence unavailable"
 )
 
+source_visitors = source_visitor_count(
+    evidence.manifest,
+    int(holdout["rows"]),
+)
+eligible_visitors = int(holdout["predicted_positive_rows"])
+natural_rate = float(holdout["positive_rate"])
+precision = float(holdout["precision"])
+lift = precision / natural_rate if natural_rate > 0 else 0.0
 
-# --------------------------------------------------
-# 3. SMALL HELPER FUNCTIONS
-# --------------------------------------------------
+render_executive_sidebar(
+    model_name=str(holdout["model_name"]),
+    threshold=float(holdout["threshold"]),
+    champion_track=champion_track,
+    evidence_timestamp=evidence.source_timestamp,
+)
 
-def load_optional_csv(path: str) -> pd.DataFrame:
-    """Load a CSV if it exists."""
+render_page_header(
+    eyebrow="E-Commerce Conversion Intelligence Platform",
+    title="Turn visitor intent into a measurable campaign decision.",
+    subtitle=(
+        "A single executive workspace for audience selection, campaign "
+        "economics, model evidence, forecasts, anomaly exposure, and "
+        "production readiness."
+    ),
+    badges=[
+        (f"Champion: {holdout['model_name']}", "positive"),
+        (f"Threshold: {float(holdout['threshold']):.2f}", "info"),
+        (f"Track: {champion_track}", "neutral"),
+        ("Evidence: validated holdout", "positive"),
+    ],
+)
 
-    csv_path = Path(path)
-
-    if csv_path.exists():
-        return pd.read_csv(csv_path)
-
-    return pd.DataFrame()
-
-
-def readable_track_name(track_name: str) -> str:
-    """Convert internal track names into readable labels."""
-
-    track_lower = str(track_name).lower()
-
-    if "final" in track_lower:
-        return "Final True Champion"
-
-    if "manual" in track_lower:
-        return "Manual Track"
-
-    if "automl" in track_lower:
-        return "AutoML-style Track"
-
-    return str(track_name)
-
-
-def get_natural_conversion_rate() -> float:
-    """Return the labeled final-holdout buyer rate used for lift.
-
-    The production visitor table intentionally has no outcome label.
-    Therefore, lift must use the untouched labeled evaluation holdout,
-    not the current production scoring population.
-    """
-
-    holdout = load_optional_csv(
-        "reports/tables/final_true_champion_holdout.csv"
-    )
-
-    if holdout.empty:
-        raise RuntimeError(
-            "Final holdout results are unavailable. "
-            "Run: python3 -m src.models.finalize_true_champion"
-        )
-
-    if "positive_rate" in holdout.columns:
-        rates = pd.to_numeric(
-            holdout["positive_rate"],
-            errors="coerce",
-        ).dropna()
-
-        if not rates.empty and 0 < float(rates.iloc[0]) <= 1:
-            return float(rates.iloc[0])
-
-    required = {"rows", "positive_rows"}
-
-    if required.issubset(holdout.columns):
-        rows = float(holdout.iloc[0]["rows"])
-        positives = float(holdout.iloc[0]["positive_rows"])
-
-        if rows > 0 and 0 <= positives <= rows:
-            return positives / rows
-
-    raise RuntimeError(
-        "Final holdout results do not contain a valid labeled buyer rate."
-    )
-
-def get_final_champion_summary_row() -> pd.Series:
-    """Read final champion summary if available."""
-
-    tables = load_model_selection_tables()
-    final_summary = tables.get("final_true_champion_summary", pd.DataFrame())
-
-    if final_summary.empty:
-        return pd.Series(dtype="object")
-
-    return final_summary.iloc[0]
-
-
-def get_final_threshold_row(model_name: str) -> pd.Series:
-    """Read threshold row for the active final champion."""
-
-    tables = load_model_selection_tables()
-    thresholds = tables.get("final_true_champion_thresholds", pd.DataFrame())
-
-    if thresholds.empty:
-        return pd.Series(dtype="object")
-
-    if "model_name" in thresholds.columns:
-        thresholds = thresholds[thresholds["model_name"] == model_name].copy()
-
-    if thresholds.empty:
-        return pd.Series(dtype="object")
-
-    threshold = get_best_threshold()
-
-    threshold_rows = thresholds[
-        thresholds["threshold"].round(4) == round(threshold, 4)
+render_kpi_grid(
+    [
+        (
+            "Validated target quality",
+            f"{precision:.1%}",
+            "Expected buyers among threshold-selected visitors",
+        ),
+        (
+            "Natural buyer rate",
+            f"{natural_rate:.2%}",
+            "Observed buyer rate in the final holdout",
+        ),
+        (
+            "Targeting lift",
+            f"{lift:.1f}×",
+            "Selected-audience quality versus random targeting",
+        ),
+        (
+            "Threshold-eligible audience",
+            f"{eligible_visitors:,}",
+            f"From {int(holdout['rows']):,} validated holdout visitors",
+        ),
     ]
-
-    if not threshold_rows.empty:
-        return threshold_rows.iloc[0]
-
-    return thresholds.sort_values("f1_score", ascending=False).iloc[0]
-
-
-def metric_value(
-    row: pd.Series,
-    column: str,
-    fallback: float,
-) -> float:
-    """Safely read numeric metric value."""
-
-    if row.empty or column not in row.index:
-        return float(fallback)
-
-    value = row[column]
-
-    if pd.isna(value):
-        return float(fallback)
-
-    return float(value)
-
-
-def get_top_models(limit: int = 8) -> pd.DataFrame:
-    """Return best model rows for benchmark visuals."""
-
-    comparison = create_master_model_comparison_table()
-
-    if comparison.empty:
-        return comparison
-
-    comparison = comparison.copy()
-
-    if "track" not in comparison.columns:
-        comparison["track"] = "final_true_champion"
-
-    comparison["Track Label"] = comparison["track"].apply(readable_track_name)
-
-    top_models = comparison.head(limit).copy()
-
-    top_models["Model Display"] = (
-        top_models["model_name"].astype(str)
-        + " · "
-        + top_models["Track Label"].astype(str)
-    )
-
-    top_models["Champion"] = top_models["is_final_champion"].map(
-        {
-            True: "Final champion",
-            False: "Compared model",
-        }
-    )
-
-    return top_models
-
-
-# --------------------------------------------------
-# 4. CHART FUNCTIONS
-# --------------------------------------------------
-
-def build_bar_chart(
-    random_buyers_per_100: float,
-    model_buyers_per_100: float,
-):
-    """Create random vs model targeting buyer-yield chart."""
-
-    chart_data = pd.DataFrame(
-        {
-            "Targeting Method": [
-                "Random targeting",
-                "Final champion targeting",
-            ],
-            "Expected Buyers per 100 Targeted": [
-                random_buyers_per_100,
-                model_buyers_per_100,
-            ],
-        }
-    )
-
-    fig = px.bar(
-        chart_data,
-        x="Targeting Method",
-        y="Expected Buyers per 100 Targeted",
-        text="Expected Buyers per 100 Targeted",
-        title="Buyer yield: random targeting vs final champion targeting",
-    )
-
-    fig.update_traces(
-        texttemplate="%{text:.1f}",
-        textposition="outside",
-        marker_line_width=0,
-    )
-
-    fig.update_layout(
-        template="plotly_dark",
-        height=360,
-        margin=dict(l=20, r=20, t=58, b=20),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        title_font=dict(size=20),
-        xaxis_title="",
-        yaxis_title="Expected buyers",
-        showlegend=False,
-    )
-
-    return fig
-
-
-def build_threshold_gauge(best_threshold: float):
-    """Create production threshold gauge."""
-
-    fig = go.Figure(
-        go.Indicator(
-            mode="gauge+number",
-            value=best_threshold * 100,
-            number={"suffix": "%", "font": {"size": 42}},
-            title={"text": "Final production score gate", "font": {"size": 18}},
-            gauge={
-                "axis": {"range": [0, 100]},
-                "bar": {"thickness": 0.24},
-                "threshold": {
-                    "line": {"width": 4},
-                    "thickness": 0.85,
-                    "value": best_threshold * 100,
-                },
-                "steps": [
-                    {"range": [0, 50], "color": "rgba(30, 41, 59, 0.75)"},
-                    {"range": [50, 80], "color": "rgba(14, 165, 233, 0.18)"},
-                    {"range": [80, 95], "color": "rgba(245, 158, 11, 0.22)"},
-                    {"range": [95, 100], "color": "rgba(34, 197, 94, 0.25)"},
-                ],
-            },
-        )
-    )
-
-    fig.update_layout(
-        template="plotly_dark",
-        height=360,
-        margin=dict(l=20, r=20, t=58, b=20),
-        paper_bgcolor="rgba(0,0,0,0)",
-    )
-
-    return fig
-
-
-def build_model_benchmark_chart(top_models: pd.DataFrame):
-    """Create model benchmark PR-AUC chart."""
-
-    if top_models.empty:
-        return None
-
-    chart_data = top_models.sort_values("pr_auc", ascending=True).copy()
-
-    fig = px.bar(
-        chart_data,
-        x="pr_auc",
-        y="Model Display",
-        color="Champion",
-        orientation="h",
-        hover_data={
-            "best_f1_score": ":.3f",
-            "best_precision": ":.3f",
-            "best_recall": ":.3f",
-            "business_score": ":.3f" if "business_score" in chart_data.columns else False,
-            "Model Display": False,
-        },
-        title="Final champion benchmark: rare-buyer ranking strength",
-    )
-
-    fig.update_layout(
-        template="plotly_dark",
-        height=430,
-        margin=dict(l=20, r=20, t=60, b=20),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        xaxis_title="PR-AUC",
-        yaxis_title="",
-        legend_title="",
-        title_font=dict(size=20),
-    )
-
-    return fig
-
-
-def build_precision_recall_chart(top_models: pd.DataFrame):
-    """Create precision vs recall chart for campaign trade-off."""
-
-    if top_models.empty:
-        return None
-
-    size_column = "business_score" if "business_score" in top_models.columns else "best_f1_score"
-
-    fig = px.scatter(
-        top_models,
-        x="best_recall",
-        y="best_precision",
-        size=size_column,
-        color="Champion",
-        hover_name="Model Display",
-        hover_data={
-            "pr_auc": ":.3f",
-            "best_f1_score": ":.3f",
-            "best_threshold": ":.2f",
-        },
-        title="Campaign trade-off: buyer capture vs target quality",
-    )
-
-    fig.update_traces(
-        marker=dict(
-            opacity=0.88,
-            line=dict(width=1),
-        )
-    )
-
-    fig.update_layout(
-        template="plotly_dark",
-        height=430,
-        margin=dict(l=20, r=20, t=60, b=20),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        xaxis_title="Recall: buyers captured",
-        yaxis_title="Precision: target quality",
-        legend_title="",
-        title_font=dict(size=20),
-    )
-
-    return fig
-
-
-# --------------------------------------------------
-# 5. LOAD PROJECT METRICS
-# --------------------------------------------------
-
-metadata_metrics = get_champion_metrics()
-final_summary_row = get_final_champion_summary_row()
-
-champion_model_name = get_champion_model_name()
-champion_track = get_champion_track()
-best_threshold = get_best_threshold()
-
-natural_conversion_rate = get_natural_conversion_rate()
-
-pr_auc = metric_value(final_summary_row, "pr_auc", float(metadata_metrics.get("pr_auc", 0)))
-roc_auc = metric_value(final_summary_row, "roc_auc", float(metadata_metrics.get("roc_auc", 0)))
-best_precision = metric_value(final_summary_row, "best_precision", float(metadata_metrics.get("best_precision", 0)))
-best_recall = metric_value(final_summary_row, "best_recall", float(metadata_metrics.get("best_recall", 0)))
-best_f1 = metric_value(final_summary_row, "best_f1_score", float(metadata_metrics.get("best_f1_score", 0)))
-
-threshold_row = get_final_threshold_row(champion_model_name)
-
-targeted_share = metric_value(
-    threshold_row,
-    "predicted_positive_rate",
-    0.0176,
 )
 
-random_buyers_per_100 = natural_conversion_rate * 100
-model_buyers_per_100_targeted = best_precision * 100
-best_lift = best_precision / natural_conversion_rate if natural_conversion_rate > 0 else 0
-
-targeted_visitors_per_10000 = targeted_share * 10_000
-captured_buyers_per_10000 = targeted_visitors_per_10000 * best_precision
-
-top_models = get_top_models(limit=8)
-
-
-# --------------------------------------------------
-# 6. SIDEBAR
-# --------------------------------------------------
-
-st.sidebar.markdown("## 🧠 Conversion Intelligence")
-st.sidebar.caption("Executive dashboard")
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("**Owner:** Ruturaj Mokashi")
-st.sidebar.markdown(f"**Final champion:** {champion_model_name}")
-st.sidebar.markdown(f"**Threshold:** {best_threshold:.2f}")
-st.sidebar.markdown(f"**Lift:** {format_lift(best_lift)}")
-st.sidebar.markdown("---")
-st.sidebar.caption("Powered by final champion model metadata.")
-
-
-# --------------------------------------------------
-# 7. HERO SECTION
-# --------------------------------------------------
-
-render_html(
-    '<div class="dashboard-hero">'
-    '<div class="hero-grid">'
-    '<div>'
-    '<div class="hero-eyebrow">E-Commerce Conversion Intelligence Platform</div>'
-    '<div class="hero-main-title">Find the buyers before marketing money is wasted.</div>'
-    '<div class="hero-one-liner">'
-    'A production-style ML + BI + MLOps platform for ranking visitors, scoring campaign audiences, '
-    'forecasting demand, detecting anomalies, and monitoring prediction health.'
-    '</div>'
-    '<div class="pill-row">'
-    f'<span class="glass-pill">Final champion: {escape_text(champion_model_name)}</span>'
-    f'<span class="glass-pill">Threshold: {best_threshold:.2f}</span>'
-    f'<span class="glass-pill">Lift: {format_lift(best_lift)} vs random</span>'
-    f'<span class="glass-pill">Track: {escape_text(readable_track_name(champion_track))}</span>'
-    '</div>'
-    '</div>'
-    '<div class="hero-score-box">'
-    '<div class="hero-score-label">Model-targeted buyers</div>'
-    f'<div class="hero-score-value">{model_buyers_per_100_targeted:.1f}</div>'
-    '<div class="hero-score-help">buyers per 100 targeted visitors</div>'
-    '</div>'
-    '</div>'
-    '</div>'
+render_source_note(
+    source=(
+        "reports/tables/final_true_champion_holdout.csv; "
+        "data/processed/final_champion_visitor_scores.csv; "
+        "reports/metadata/ml_validation_manifest.json"
+    ),
+    evidence_type="Validated holdout and generated ML evidence",
+    refreshed_at=evidence.source_timestamp,
+    extra=(
+        "Holdout metrics measure validated model behaviour. Campaign value "
+        "below is scenario-based because the source data has no reliable "
+        "transaction revenue."
+    ),
 )
 
+render_section_header(
+    "Campaign scenario",
+    "Choose the audience and test the commercial assumptions",
+    (
+        "The model supplies target quality. Contact cost and buyer value are "
+        "explicit assumptions that can be changed and exported."
+    ),
+)
 
-# --------------------------------------------------
-# 8. IMPACT KPI CARDS
-# --------------------------------------------------
+maximum_target = max(eligible_visitors, 1)
+default_target = min(maximum_target, max(1, round(maximum_target * 0.5)))
 
-impact_1, impact_2, impact_3, impact_4 = st.columns(4)
+control_1, control_2, control_3 = st.columns(3)
 
-with impact_1:
-    render_html(
-        '<div class="visual-card">'
-        '<div class="visual-label">Random targeting</div>'
-        f'<div class="visual-value">{random_buyers_per_100:.1f}</div>'
-        '<div class="visual-caption">buyers per 100 random visitors</div>'
-        '</div>'
+with control_1:
+    target_size = st.slider(
+        "Campaign target size",
+        min_value=1,
+        max_value=maximum_target,
+        value=default_target,
+        help="Cannot exceed the threshold-eligible holdout audience.",
     )
 
-with impact_2:
-    render_html(
-        '<div class="visual-card">'
-        '<div class="visual-label">Final champion targeting</div>'
-        f'<div class="visual-value">{model_buyers_per_100_targeted:.1f}</div>'
-        '<div class="visual-caption">buyers per 100 model-targeted visitors</div>'
-        '</div>'
+with control_2:
+    contact_cost = st.number_input(
+        "Contact cost per visitor",
+        min_value=0.0,
+        value=1.00,
+        step=0.10,
+        format="%.2f",
     )
 
-with impact_3:
-    render_html(
-        '<div class="visual-card">'
-        '<div class="visual-label">Audience shortlist</div>'
-        f'<div class="visual-value">{targeted_share * 100:.1f}%</div>'
-        '<div class="visual-caption">visitors pass the final threshold</div>'
-        '</div>'
+with control_3:
+    buyer_value = st.number_input(
+        "Assumed value per buyer",
+        min_value=0.0,
+        value=50.00,
+        step=5.00,
+        format="%.2f",
     )
 
-with impact_4:
-    render_html(
-        '<div class="visual-card">'
-        '<div class="visual-label">Business lift</div>'
-        f'<div class="visual-value">{format_lift(best_lift)}</div>'
-        '<div class="visual-caption">target quality versus random marketing</div>'
-        '</div>'
+scenario = calculate_scenario(
+    available_targets=eligible_visitors,
+    target_size=target_size,
+    precision=precision,
+    baseline_rate=natural_rate,
+    contact_cost=contact_cost,
+    buyer_value=buyer_value,
+)
+
+render_kpi_grid(
+    [
+        (
+            "Expected buyers",
+            f"{scenario['expected_buyers']:.1f}",
+            f"Model precision applied to {target_size:,} selected visitors",
+        ),
+        (
+            "Campaign cost",
+            f"{scenario['campaign_cost']:,.2f}",
+            "Target size × contact cost",
+        ),
+        (
+            "Net expected value",
+            f"{scenario['net_value']:,.2f}",
+            "Expected buyer value minus campaign cost",
+        ),
+        (
+            "Scenario ROI",
+            f"{scenario['roi']:.1%}",
+            "Assumption-based return before operational overhead",
+        ),
+    ]
+)
+
+funnel = build_funnel_table(
+    source_visitors=source_visitors,
+    holdout_rows=int(holdout["rows"]),
+    threshold_eligible=eligible_visitors,
+    target_size=target_size,
+    expected_buyers=scenario["expected_buyers"],
+)
+
+render_section_header(
+    "Audience decision",
+    "From broad traffic to a measurable buyer opportunity",
+)
+
+st.plotly_chart(
+    build_funnel_figure(funnel),
+    use_container_width=True,
+    key="exec_targeting_funnel",
+)
+render_interpretation(
+    what_it_shows=(
+        "The complete decision path from source visitors through validated "
+        "holdout evidence, threshold eligibility, campaign selection, and "
+        "expected buyers."
+    ),
+    how_to_read=(
+        "Each stage narrows the audience. The final stage is an expectation "
+        "calculated from validated precision, not an observed campaign result."
+    ),
+    actual_finding=(
+        f"{target_size:,} selected visitors are expected to contain "
+        f"{scenario['expected_buyers']:.1f} buyers."
+    ),
+    conclusion=(
+        "The model supports a deliberately narrow audience with much higher "
+        "buyer concentration than random outreach."
+    ),
+    recommended_action=(
+        "Use the campaign target as the operational shortlist and preserve "
+        "the excluded population for holdout measurement."
+    ),
+    limitation=(
+        "Source, holdout, and campaign stages represent different evidence "
+        "scopes and must not be interpreted as one production batch."
+    ),
+)
+
+st.plotly_chart(
+    build_efficiency_figure(
+        source_visitors=source_visitors,
+        target_size=target_size,
+        expected_buyers=scenario["expected_buyers"],
+        baseline_rate=natural_rate,
+    ),
+    use_container_width=True,
+    key="exec_efficiency_comparison",
+)
+render_interpretation(
+    what_it_shows=(
+        "Selected-audience share, expected buyer yield, and natural random "
+        "buyer yield in one comparable view."
+    ),
+    how_to_read=(
+        "A small audience share with a much larger buyer yield represents "
+        "efficient prioritisation."
+    ),
+    actual_finding=(
+        f"The scenario targets {(target_size / source_visitors if source_visitors else 0.0):.2%} of source "
+        f"visitors with an expected {precision:.1%} buyer yield."
+    ),
+    conclusion=(
+        "Campaign efficiency comes from concentrating spend on the strongest "
+        "validated intent signals."
+    ),
+    recommended_action=(
+        "Start with the highest-ranked eligible visitors and increase target "
+        "size only when incremental economics remain positive."
+    ),
+    limitation=(
+        "Precision may change when audience size, channel, season, or live "
+        "visitor behaviour differs from the holdout."
+    ),
+)
+
+render_section_header(
+    "Audience composition",
+    "Understand who is inside the selected campaign audience",
+)
+
+selected_audience, composition_message = build_selected_campaign_audience(
+    evidence.projection,
+    evidence.scores,
+    target_size,
+)
+composition_views = available_composition_views(selected_audience)
+
+if not composition_views:
+    render_empty_state(
+        title="Selected-audience composition is unavailable",
+        message=composition_message,
+        next_action=(
+            "Regenerate the approved final visitor-score file before using "
+            "composition evidence for campaign activation."
+        ),
+    )
+else:
+    composition_view = st.radio(
+        "Composition view",
+        composition_views,
+        horizontal=True,
     )
 
+    composition_figure, composition_table = build_composition_figure(
+        selected_audience,
+        composition_view,
+    )
 
-# --------------------------------------------------
-# 9. VISUAL IMPACT CHARTS
-# --------------------------------------------------
+    st.plotly_chart(
+        composition_figure,
+        use_container_width=True,
+        key=f"exec_composition_{composition_view}",
+    )
+    render_interpretation(
+        what_it_shows=(
+            f"Distribution of the current threshold-selected campaign "
+            f"audience by {composition_view.lower()}."
+        ),
+        how_to_read=(
+            "Longer bars represent more selected visitors in that category. "
+            "The category totals reconcile with the selected score rows, not "
+            "with the complete validation projection."
+        ),
+        actual_finding=(
+            f"{int(composition_table['Visitors'].sum()):,} selected visitors "
+            f"are represented across {len(composition_table):,} categories. "
+            f"{composition_message}"
+        ),
+        conclusion=(
+            "Audience composition should influence campaign treatment rather "
+            "than using one message for every selected visitor."
+        ),
+        recommended_action=(
+            "Investigate the largest and highest-value groups on the "
+            "segmentation and batch-scoring pages before activation."
+        ),
+        limitation=(
+            "Intent tier comes from approved purchase-intent scores. Segment "
+            "and anomaly attributes are available only where selected visitor "
+            "IDs also appear in the governed projection sample; uncovered "
+            "visitors remain visibly labelled rather than being replaced by "
+            "the full sample."
+        ),
+    )
 
-render_html('<div class="section-kicker">Visual impact story</div><div class="section-title">From random traffic to high-intent audience</div>')
+render_section_header(
+    "Champion evidence",
+    "Model quality, threshold behaviour, and reliability",
+)
 
-chart_col_1, chart_col_2 = st.columns([1.1, 0.9])
+render_kpi_grid(
+    [
+        ("PR-AUC", f"{float(holdout['pr_auc']):.3f}", "Rare-buyer ranking"),
+        ("ROC-AUC", f"{float(holdout['roc_auc']):.3f}", "Overall discrimination"),
+        ("Precision", f"{precision:.1%}", "Target quality"),
+        ("Recall", f"{float(holdout['recall']):.1%}", "Buyer capture"),
+        ("F1 score", f"{float(holdout['f1_score']):.3f}", "Precision-recall balance"),
+        (
+            "Predicted-positive rate",
+            f"{float(holdout['predicted_positive_rate']):.3%}",
+            "Share passing the threshold",
+        ),
+    ]
+)
 
-if PLOTLY_AVAILABLE:
-    with chart_col_1:
-        st.plotly_chart(
-            build_bar_chart(
-                random_buyers_per_100=random_buyers_per_100,
-                model_buyers_per_100=model_buyers_per_100_targeted,
+render_detail_cards(
+    [
+        (
+            "Evidence type",
+            "Final untouched holdout",
+            (
+                f"{int(holdout['rows']):,} rows, "
+                f"{int(holdout['positive_rows']):,} observed buyers"
             ),
-            use_container_width=True,
-        )
+        ),
+        (
+            "Decision rule",
+            f"Score ≥ {float(holdout['threshold']):.2f}",
+            (
+                f"{eligible_visitors:,} visitors pass the production threshold"
+            ),
+        ),
+        (
+            "Reliability",
+            "Probability caution",
+            (
+                "Ranking quality is validated; business use should focus on "
+                "threshold decisions rather than treating scores as guaranteed "
+                "purchase probabilities."
+            ),
+        ),
+    ]
+)
 
-    with chart_col_2:
-        st.plotly_chart(
-            build_threshold_gauge(best_threshold=best_threshold),
-            use_container_width=True,
-        )
+render_section_header(
+    "Forward outlook",
+    "Compact KPI forecast with uncertainty when available",
+)
+
+forecast_figure, forecast_message = build_forecast_figure(evidence.forecast)
+
+if forecast_figure is None:
+    render_empty_state(
+        title="Forecast evidence is not available",
+        message=forecast_message,
+        next_action=(
+            "Generate the approved KPI forecast summary before treating "
+            "forward demand as production evidence."
+        ),
+    )
 else:
-    with chart_col_1:
-        st.info("Plotly is not installed. Install plotly to show executive charts.")
-    with chart_col_2:
-        st.metric("Production threshold", f"{best_threshold:.2f}")
-
-
-# --------------------------------------------------
-# 10. BUSINESS INTERPRETATION
-# --------------------------------------------------
-
-story_left, story_right = st.columns([0.58, 0.42])
-
-with story_left:
-    render_html(
-        '<div class="story-card">'
-        '<div class="story-big">Decision rule: target only the strongest intent signals.</div>'
-        '<div class="story-small">'
-        f'At a <b>{best_threshold:.2f}</b> threshold, the platform selects about '
-        f'<b>{targeted_visitors_per_10000:.0f}</b> visitors from every 10,000 visitors. '
-        f'That selected group contains about <b>{captured_buyers_per_10000:.0f}</b> expected buyers. '
-        'This turns noisy traffic into a focused campaign audience.'
-        '</div>'
-        '</div>'
+    st.plotly_chart(
+        forecast_figure,
+        use_container_width=True,
+        key="exec_forward_outlook",
+    )
+    render_interpretation(
+        what_it_shows="The approved forward KPI forecast and its uncertainty.",
+        how_to_read=(
+            "The central line is the expected path. The shaded interval is the "
+            "range of plausible outcomes when interval data is available."
+        ),
+        actual_finding=forecast_message,
+        conclusion=(
+            "Forward planning should use the central estimate together with "
+            "uncertainty, not the point forecast alone."
+        ),
+        recommended_action=(
+            "Use the forecast for capacity and campaign timing, then review "
+            "actual-versus-forecast error after each period."
+        ),
+        limitation=(
+            "Forecast quality depends on the historical horizon, event "
+            "coverage, and stability of future visitor behaviour."
+        ),
     )
 
-with story_right:
-    render_html(
-        '<div class="story-card">'
-        '<div class="story-big">Why the final champion won</div>'
-        '<div class="story-small">'
-        f'<b>PR-AUC {pr_auc:.3f}</b> · <b>F1 {best_f1:.3f}</b> · '
-        f'<b>Precision {format_percent(best_precision)}</b> · '
-        f'<b>Recall {format_percent(best_recall)}</b>. '
-        'Best deployable balance after tuning, boosting comparison, ensemble check, and stability testing.'
-        '</div>'
-        '</div>'
+render_source_note(
+    source=evidence.forecast_source or "No approved forecast source",
+    evidence_type=(
+        "Approved forecast evidence"
+        if forecast_figure is not None
+        else "Forecast availability check"
+    ),
+    refreshed_at=evidence.source_timestamp,
+    extra=forecast_message,
+)
+
+render_section_header(
+    "Risk and operations",
+    "Anomaly exposure and production-readiness evidence",
+)
+
+anomaly = anomaly_summary(evidence.projection)
+anomaly_figure = build_anomaly_figure(evidence.projection)
+
+if anomaly_figure is None:
+    render_empty_state(
+        title="Anomaly evidence is unavailable",
+        message="No LOF score evidence was found in the validation projection.",
+        next_action="Regenerate Package 1 ML validation evidence.",
     )
-
-
-# --------------------------------------------------
-# 11. FINAL MODEL PROOF
-# --------------------------------------------------
-
-render_html('<div class="section-kicker">Final champion proof</div><div class="section-title">Tuning and stability moved the model from current champion to true champion</div>')
-
-proof_1, proof_2, proof_3 = st.columns(3)
-
-with proof_1:
-    render_html(
-        '<div class="flow-card">'
-        '<div class="flow-icon">🧪</div>'
-        '<div class="flow-title">Model hardening</div>'
-        '<div class="flow-text">Checked class weights, threshold optimisation, tuned Random Forest, XGBoost, SMOTE option, and ensemble comparison.</div>'
-        '</div>'
-    )
-
-with proof_2:
-    render_html(
-        '<div class="flow-card">'
-        '<div class="flow-icon">📈</div>'
-        '<div class="flow-title">Stability check</div>'
-        '<div class="flow-text">Repeated split testing confirmed the tuned Random Forest stayed the strongest deployable model.</div>'
-        '</div>'
-    )
-
-with proof_3:
-    render_html(
-        '<div class="flow-card">'
-        '<div class="flow-icon">🚨</div>'
-        '<div class="flow-title">Outlier sensitivity</div>'
-        '<div class="flow-text">Anomaly checks show extreme visitors carry useful conversion signal, so anomalies are reviewed instead of blindly removed.</div>'
-        '</div>'
-    )
-
-if PLOTLY_AVAILABLE and not top_models.empty:
-    benchmark_col_1, benchmark_col_2 = st.columns(2)
-
-    with benchmark_col_1:
-        st.plotly_chart(
-            build_model_benchmark_chart(top_models),
-            use_container_width=True,
-        )
-
-    with benchmark_col_2:
-        st.plotly_chart(
-            build_precision_recall_chart(top_models),
-            use_container_width=True,
-        )
 else:
-    st.caption("Model benchmark charts appear after final champion outputs exist and Plotly is available.")
-
-with st.expander("Show final champion comparison table"):
-    if not top_models.empty:
-        display_columns = [
-            "model_name",
-            "model_family",
-            "deployable",
-            "pr_auc",
-            "roc_auc",
-            "best_threshold",
-            "best_precision",
-            "best_recall",
-            "best_f1_score",
-            "business_score",
-            "Champion",
-        ]
-
-        existing_columns = [
-            column for column in display_columns
-            if column in top_models.columns
-        ]
-
-        st.dataframe(
-            top_models[existing_columns],
-            use_container_width=True,
-            hide_index=True,
-        )
-    else:
-        st.info("Run final champion script first to generate final comparison tables.")
-
-
-# --------------------------------------------------
-# 12. PLATFORM CAPABILITY MAP
-# --------------------------------------------------
-
-render_html('<div class="section-kicker">Platform modules</div><div class="section-title">Full project story in one product</div>')
-
-module_1, module_2, module_3, module_4 = st.columns(4)
-
-with module_1:
-    render_html(
-        '<div class="flow-card">'
-        '<div class="flow-icon">🎯</div>'
-        '<div class="flow-title">Visitor scoring</div>'
-        '<div class="flow-text">Score one visitor, assign intent segment, recommend action, log prediction.</div>'
-        '</div>'
+    st.plotly_chart(
+        anomaly_figure,
+        use_container_width=True,
+        key="exec_anomaly_distribution",
+    )
+    render_interpretation(
+        what_it_shows=(
+            "Current LOF anomaly-score distribution for the governed "
+            "validation sample."
+        ),
+        how_to_read=(
+            "Higher scores indicate stronger local deviation. Flagged visitors "
+            "require investigation, not automatic removal."
+        ),
+        actual_finding=(
+            f"{anomaly['count']:,} visitors are flagged "
+            f"({anomaly['rate']:.1%}); the most affected segment is "
+            f"{anomaly['key_segment']}."
+        ),
+        conclusion=(
+            "Anomalies represent a small but important operational review queue."
+        ),
+        recommended_action=(
+            "Review severe cases before campaign activation and compare them "
+            "with conversion outcomes when labels arrive."
+        ),
+        limitation=(
+            "LOF is sample-relative and does not prove fraud, data error, or "
+            "business harm."
+        ),
     )
 
-with module_2:
-    render_html(
-        '<div class="flow-card">'
-        '<div class="flow-icon">📦</div>'
-        '<div class="flow-title">Batch campaign scoring</div>'
-        '<div class="flow-text">Upload CSV, score many visitors, rank campaign priority, download results.</div>'
-        '</div>'
+readiness = readiness_table()
+
+st.plotly_chart(
+    build_readiness_figure(readiness),
+    use_container_width=True,
+    key="exec_readiness_strip",
+)
+render_interpretation(
+    what_it_shows=(
+        "Application, scoring, drift, alerting, and delayed-label readiness "
+        "based on current project artifacts."
+    ),
+    how_to_read=(
+        "Ready means supporting repository evidence exists. Unavailable means "
+        "no matching artifact was found."
+    ),
+    actual_finding=(
+        f"{int(readiness['Status'].eq('Ready').sum())} of "
+        f"{len(readiness)} readiness areas currently have evidence."
+    ),
+    conclusion=(
+        "Model quality and operational readiness must be reviewed together "
+        "before production activation."
+    ),
+    recommended_action=(
+        "Open the Monitoring and MLOps Architecture pages for detailed checks "
+        "and closure actions."
+    ),
+    limitation=(
+        "Artifact presence proves implementation evidence, not live service "
+        "availability."
+    ),
+)
+
+summary = decision_summary(
+    target_size=target_size,
+    expected_buyers=scenario["expected_buyers"],
+    incremental_value=scenario["incremental_value"],
+    roi=scenario["roi"],
+    anomaly_rate=anomaly["rate"],
+    forecast_available=forecast_figure is not None,
+)
+
+render_section_header(
+    "Executive decision",
+    "Finding, action, and honest limitation",
+)
+
+render_detail_cards(
+    [
+        ("Finding", "Current scenario", summary["finding"]),
+        ("Action", "Recommended next move", summary["action"]),
+        ("Limitation", "What this does not prove", summary["limitation"]),
+    ]
+)
+
+render_section_header(
+    "Investigate further",
+    "Move from executive signal to detailed evidence",
+)
+
+link_1, link_2, link_3, link_4, link_5 = st.columns(5)
+
+with link_1:
+    st.page_link(
+        "pages/3_Model_Benchmark_Selection.py",
+        label="Model evidence",
+        icon="🏁",
+    )
+with link_2:
+    st.page_link(
+        "pages/2_Batch_Scoring.py",
+        label="Audience scoring",
+        icon="📦",
+    )
+with link_3:
+    st.page_link(
+        "pages/4_Business_KPI_Forecasting.py",
+        label="Forecasts",
+        icon="📈",
+    )
+with link_4:
+    st.page_link(
+        "pages/5_Anomaly_Outlier.py",
+        label="Anomalies",
+        icon="🚨",
+    )
+with link_5:
+    st.page_link(
+        "pages/6_Monitoring_Drift_Health.py",
+        label="Monitoring",
+        icon="🩺",
     )
 
-with module_3:
-    render_html(
-        '<div class="flow-card">'
-        '<div class="flow-icon">📈</div>'
-        '<div class="flow-title">KPI forecasting</div>'
-        '<div class="flow-text">Forecast traffic, event volume, conversions, and high-intent visitor demand.</div>'
-        '</div>'
-    )
+brief = executive_brief_table(
+    holdout=holdout,
+    scenario=scenario,
+    anomaly=anomaly,
+    readiness=readiness,
+    source_timestamp=evidence.source_timestamp,
+)
 
-with module_4:
-    render_html(
-        '<div class="flow-card">'
-        '<div class="flow-icon">🚨</div>'
-        '<div class="flow-title">Monitoring + anomalies</div>'
-        '<div class="flow-text">Track prediction logs, drift, abnormal behaviour, alert rules, and Grafana path.</div>'
-        '</div>'
-    )
+show_table_with_download(
+    label="Filtered executive brief",
+    data=brief,
+    file_name="executive_decision_brief.csv",
+    metadata={
+        "evidence_timestamp": evidence.source_timestamp,
+        "champion_model": str(holdout["model_name"]),
+        "threshold": f"{float(holdout['threshold']):.4f}",
+    },
+    description=(
+        "Download the current decision scenario with its evidence labels "
+        "and provenance metadata."
+    ),
+)
 
-module_5, module_6, module_7, module_8 = st.columns(4)
-
-with module_5:
-    render_html(
-        '<div class="flow-card">'
-        '<div class="flow-icon">🏁</div>'
-        '<div class="flow-title">Model benchmark</div>'
-        '<div class="flow-text">Manual, AutoML-style, and final hardening comparison with proof tables.</div>'
-        '</div>'
-    )
-
-with module_6:
-    render_html(
-        '<div class="flow-card">'
-        '<div class="flow-icon">🧩</div>'
-        '<div class="flow-title">MVD coverage proof</div>'
-        '<div class="flow-text">PCA, K-Means, DBSCAN, LOF, imbalance, tuning, boosting, and full Day 1–15 matrix.</div>'
-        '</div>'
-    )
-
-with module_7:
-    render_html(
-        '<div class="flow-card">'
-        '<div class="flow-icon">🐳</div>'
-        '<div class="flow-title">MLOps stack</div>'
-        '<div class="flow-text">Docker, tests, CI/CD, Prometheus, Grafana, alerts, and deployment path.</div>'
-        '</div>'
-    )
-
-with module_8:
-    render_html(
-        '<div class="flow-card">'
-        '<div class="flow-icon">☸️</div>'
-        '<div class="flow-title">Kubernetes path</div>'
-        '<div class="flow-text">Local app first, then Kubernetes + Helm architecture for production story.</div>'
-        '</div>'
-    )
-
-
-# --------------------------------------------------
-# 13. HONEST SCOPE NOTE
-# --------------------------------------------------
-
-render_html(
-    '<div class="story-card">'
-    '<div class="story-big">Honest scope note</div>'
-    '<div class="story-small">'
-    'The platform predicts conversion intent and forecasts operational demand. '
-    'It does not claim direct revenue forecasting because the RetailRocket dataset contains behaviour events but no reliable transaction value.'
-    '</div>'
-    '</div>'
+render_source_note(
+    source=(
+        "Final holdout, ML validation evidence, available forecast summary, "
+        "and repository operational artifacts"
+    ),
+    evidence_type="Validated evidence plus labelled scenario assumptions",
+    refreshed_at=evidence.source_timestamp,
+    extra=(
+        "The brief combines validated model evidence with user-controlled "
+        "campaign assumptions. Assumption rows are labelled as Scenario."
+    ),
 )

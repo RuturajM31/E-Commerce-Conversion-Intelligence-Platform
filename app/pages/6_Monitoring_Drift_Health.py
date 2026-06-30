@@ -994,3 +994,13 @@ with tab_5:
             use_container_width=True,
             hide_index=True,
         )
+
+# --------------------------------------------------
+# FINAL CLOSURE EXTENSION: MONITORING HEALTH INTELLIGENCE
+# --------------------------------------------------
+
+from app.ui.operations_intelligence import (
+    render_monitoring_health_intelligence,
+)
+
+render_monitoring_health_intelligence()

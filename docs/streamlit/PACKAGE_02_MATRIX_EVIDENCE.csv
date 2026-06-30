@@ -1,0 +1,13 @@
+ID,Package,Area,Implementation,Evidence,Status
+SVE-EXEC-01,Package 2,EXEC,Context-rich KPI cards from controlling holdout evidence,31 focused tests; user visual QA accepted 2026-06-30,VERIFIED
+SVE-EXEC-02,Package 2,EXEC,Five-stage visitor-to-buyer funnel,Formula reconciliation tests; user visual QA accepted 2026-06-30,VERIFIED
+SVE-EXEC-03,Package 2,EXEC,Campaign economics simulator with labelled assumptions,Scenario formula tests and rendered review,VERIFIED
+SVE-EXEC-04,Package 2,EXEC,Audience reduction and efficiency comparison,"Source, threshold, and selected-audience evidence visible",VERIFIED
+SVE-EXEC-05,Package 2,EXEC,Selected campaign audience composition,Threshold-selected visitor scores; totals reconcile; unsupported views cannot produce zero-row charts,VERIFIED
+SVE-EXEC-06,Package 2,EXEC,"Champion, threshold, holdout evidence, and probability caution",Controlling holdout source and evidence date displayed,VERIFIED
+SVE-EXEC-07,Package 2,EXEC,Forward KPI outlook from approved business forecast evidence,business_forecast_future.csv; approved best conversion model; schema regression test,VERIFIED
+SVE-EXEC-08,Package 2,EXEC,"LOF anomaly volume, rate, severity, and affected segment",Counts reconcile with approved projection evidence,VERIFIED
+SVE-EXEC-09,Package 2,EXEC,"Application, scoring, drift, alerts, and delayed-label readiness",Real implementation/report artifacts recognised; status logic test,VERIFIED
+SVE-EXEC-10,Package 2,EXEC,"Filter-aware finding, action, and limitation",Decision-summary completeness test and rendered review,VERIFIED
+SVE-EXEC-11,Package 2,EXEC,Deferred visible cross-page investigation links,User-accepted omission: five investigation links were not visibly available in rendered review,EXCLUDED
+SVE-EXEC-12,Package 2,EXEC,Deferred visible executive brief download,User-accepted omission: executive brief CSV download was not visibly available in rendered review,EXCLUDED

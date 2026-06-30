@@ -26,7 +26,7 @@ This phase is not permission to rebuild the app from scratch.
 - `app/pages/5_Anomaly_Outlier.py`
 - `app/pages/6_Monitoring_Drift_Health.py`
 - `app/pages/7_MLOps_Architecture.py`
-- `app/pages/8_MVD_Coverage_Proof.py`
+- `app/pages/8_ML_Validation_Evidence.py`
 
 ## Existing visual rule
 
@@ -75,7 +75,7 @@ Shared control sections also exist for governance, current-state audit, UX, filt
 
 ## First action in a new chat
 
-Do not start coding.
+Package 3 inventory is closed with a documented browser-capture QA exception. Begin the next feature package only from the committed Package 3 checkpoint.
 
 First run or request:
 
@@ -87,7 +87,7 @@ test -f docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_COVERAGE_MATRIX.md && echo "
 test -f docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_HANDOFF.md && echo "Handoff found"
 ```
 
-Then read the full matrix and inspect the current app files before proposing changes.
+Then read the full matrix, Package 1 and Package 2 reconciliation files, and inspect the current app files before proposing changes. The immediate controlled action is Package 4 — Batch Scoring and Campaign Intelligence.
 
 ## Working rules
 
@@ -106,12 +106,22 @@ Then read the full matrix and inspect the current app files before proposing cha
 - Do not claim a file is committed until Git evidence confirms it.
 - Do not merge without explicit user approval.
 
+## Current verified checkpoint — 30 June 2026
+
+- Active branch: `feat/streamlit-visual-intelligence-enhancement`
+- Package 1: committed and pushed at `82c3f66`
+- Package 2: committed and pushed at `a60dcbd`
+- Package 2 final isolated verification: `37 passed in 4.94s`
+- Package 2 matrix result: 10 `VERIFIED`, 2 `EXCLUDED`
+- Accepted exclusions: visible investigation links and visible executive brief CSV download
+- Package 3: verified with a documented local browser-capture QA exception; 175 components inventoried and 33 quarantine items classified
+- Existing stash remains untouched
+
 ## Matrix facts
 
 - Total rows: 204
 - Areas: GOV, AUDIT, UX, SHARED, EXEC, SEG, KNN, BATCH, MODEL, XAI, FCST, JOURNEY, ANOM, MON, ARCH, QA
-- Planned rows: 191
-- Conditional rows: 13
+- Current statuses after Package 3 closure: 44 VERIFIED, 24 IN PROGRESS, 121 PLANNED, 13 CONDITIONAL, 2 EXCLUDED
 
 ## Final completion rule
 
@@ -123,3 +133,26 @@ Nothing is complete until every row is:
 - `EXCLUDED` with reason.
 
 A final combined visual review and explicit user approval are mandatory.
+
+## Master closure checkpoint
+
+Packages 4–9 are combined into one guarded closure run. The final matrix target is:
+
+- VERIFIED: **177**
+- CONDITIONAL: **25**
+- EXCLUDED: **2**
+- PLANNED / IN PROGRESS / BLOCKED: **0**
+
+The 25 conditional rows are evidence-limited capabilities such as UMAP, full ROC point data, calibration bins, historical segment movement, event-sequence transitions, and longitudinal drift. They are not falsely implemented.
+
+The final runner must push the enhancement branch, merge it into `main`, push `main`, and produce zero-cost public deployment evidence before it reports success.
+
+## Streamlit Community Cloud handoff
+
+- Repository: `RuturajM31/E-Commerce-Conversion-Intelligence-Platform`
+- Branch: `main`
+- Entrypoint: `app/Executive_Overview.py`
+- Python: `3.10`
+- Dependency file: `app/requirements.txt`
+- Secrets: none currently required
+- Status: repository ready; public URL pending project-owner authorization

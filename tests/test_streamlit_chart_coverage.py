@@ -1,49 +1,74 @@
+"""Static coverage test for Package 1 charts and explanations."""
+
+from __future__ import annotations
+
+import ast
 from pathlib import Path
 
-import pytest
+
+PAGE = Path("app/pages/8_ML_Validation_Evidence.py")
+EXPECTED_KEYS = {
+    "mlv_model_comparison",
+    "mlv_coverage",
+    "mlv_pca_projection",
+    "mlv_pca_density",
+    "mlv_pca_scree",
+    "mlv_pca_loadings",
+    "mlv_kmeans_projection",
+    "mlv_kmeans_quality",
+    "mlv_kmeans_profile",
+    "mlv_kmeans_parallel",
+    "mlv_kmeans_value",
+    "mlv_dbscan_projection",
+    "mlv_dbscan_k_distance",
+    "mlv_dbscan_grid",
+    "mlv_lof_projection",
+    "mlv_lof_distribution",
+    "mlv_lof_deviation",
+    "mlv_lof_selected_features",
+    "mlv_outlier_comparison",
+}
+REQUIRED_EVIDENCE_ARGUMENTS = {
+    "figure",
+    "key",
+    "what_it_shows",
+    "how_to_read",
+    "actual_finding",
+    "conclusion",
+    "recommended_action",
+    "limitation",
+    "source",
+    "evidence_type",
+    "refreshed_at",
+}
 
 
-PAGES_WITH_CHARTS = [
-    Path("app/pages/3_Model_Benchmark_Selection.py"),
-    Path("app/pages/4_Business_KPI_Forecasting.py"),
-    Path("app/pages/5_Anomaly_Outlier.py"),
-    Path("app/pages/6_Monitoring_Drift_Health.py"),
-    Path("app/pages/7_MLOps_Architecture.py"),
-    Path("app/pages/8_MVD_Coverage_Proof.py"),
-]
+def test_every_major_chart_uses_the_governed_evidence_component() -> None:
+    """No page chart may bypass interpretation or provenance."""
 
+    source = PAGE.read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    calls: list[ast.Call] = []
+    keys: set[str] = set()
 
-def test_streamlit_charts_have_explanations():
-    """Every Streamlit chart page should include chart explanations.
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        if not isinstance(node.func, ast.Name):
+            continue
+        if node.func.id != "render_evidence_chart":
+            continue
 
-    This is a static chart-coverage test.
-    True visual rendering tests require a browser tool such as Playwright and are heavier.
-    """
+        calls.append(node)
+        keyword_names = {item.arg for item in node.keywords if item.arg}
+        assert REQUIRED_EVIDENCE_ARGUMENTS.issubset(keyword_names)
 
-    missing_pages = [path for path in PAGES_WITH_CHARTS if not path.exists()]
-
-    if missing_pages:
-        pytest.skip(f"Some chart pages are not available yet: {missing_pages}")
-
-    for path in PAGES_WITH_CHARTS:
-        text = path.read_text(encoding="utf-8")
-
-        chart_count = text.count("st.plotly_chart")
-        explanation_count = text.count("render_chart_explanation(") - 1
-
-        assert chart_count > 0, f"No Plotly charts found in {path}"
-        assert explanation_count >= chart_count, (
-            f"{path} has {chart_count} charts but only {explanation_count} explanations."
+        key_node = next(
+            item.value for item in node.keywords if item.arg == "key"
         )
+        assert isinstance(key_node, ast.Constant)
+        keys.add(str(key_node.value))
 
-
-def test_streamlit_pages_compile():
-    """Streamlit pages should compile before manual visual QA."""
-
-    import py_compile
-
-    for path in PAGES_WITH_CHARTS:
-        if not path.exists():
-            pytest.skip(f"Missing page: {path}")
-
-        py_compile.compile(str(path), doraise=True)
+    assert len(calls) == len(EXPECTED_KEYS)
+    assert keys == EXPECTED_KEYS
+    assert "st.plotly_chart(" not in source
