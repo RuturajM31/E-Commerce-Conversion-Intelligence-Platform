@@ -6,6 +6,25 @@ from approved project evidence or from clearly labelled scenario assumptions.
 
 from __future__ import annotations
 
+# STREAMLIT CLOUD PATH BOOTSTRAP
+# Streamlit executes page files from inside the app folder.
+# Add the repository root so imports such as `app.*` and `src.*`
+# work consistently locally and on Streamlit Community Cloud.
+import sys
+from pathlib import Path
+
+_PROJECT_ROOT = Path(__file__).resolve().parent
+
+while (
+    _PROJECT_ROOT != _PROJECT_ROOT.parent
+    and not (_PROJECT_ROOT / "src").is_dir()
+):
+    _PROJECT_ROOT = _PROJECT_ROOT.parent
+
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
+
+
 import streamlit as st
 
 from app.app_utils import escape_text, inject_global_css, render_sidebar_html
