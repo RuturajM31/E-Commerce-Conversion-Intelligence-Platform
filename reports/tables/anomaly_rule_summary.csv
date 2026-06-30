@@ -1,0 +1,7 @@
+rule_name,flagged_count,flagged_rate
+rule_extreme_total_events,783,0.0099116433327426
+rule_extreme_cart_activity,871,0.011025595584698346
+rule_extreme_product_browsing,763,0.009658472366389023
+rule_extreme_session_span,790,0.010000253170966353
+rule_high_intent_extreme_activity,165,0.002088660472417023
+rule_unusual_cart_to_view_ratio,788,0.009974936074330996

@@ -1,0 +1,7 @@
+metric,value,description
+total_visitors,78998.0,Total visitors analysed.
+final_anomalies,2878.0,Visitors flagged by final anomaly logic.
+final_anomaly_rate,0.036431302058279956,Share of visitors flagged as anomalous.
+isolation_forest_anomalies,1580.0,Visitors flagged by Isolation Forest.
+rule_based_anomalies,2683.0,Visitors flagged by interpretable business rules.
+high_intent_anomalies,174.0,High-intent visitors that also look unusual.
