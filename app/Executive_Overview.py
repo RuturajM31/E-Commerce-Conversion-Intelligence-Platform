@@ -556,19 +556,31 @@ render_section_header(
     ),
 )
 
-maximum_target = max(eligible_visitors, 1)
-default_target = min(maximum_target, max(1, round(maximum_target * 0.5)))
+# STREAMLIT CLOUD: safely handle zero or one eligible visitor.
+maximum_target = max(eligible_visitors, 0)
+default_target = (
+    min(maximum_target, max(1, round(maximum_target * 0.5)))
+    if maximum_target > 0
+    else 0
+)
 
 control_1, control_2, control_3 = st.columns(3)
 
 with control_1:
-    target_size = st.slider(
-        "Campaign target size",
-        min_value=1,
-        max_value=maximum_target,
-        value=default_target,
-        help="Cannot exceed the threshold-eligible holdout audience.",
-    )
+    if maximum_target <= 1:
+        target_size = maximum_target
+        st.metric("Campaign target size", f"{target_size:,}")
+        st.caption(
+            "The available evidence currently has no adjustable target range."
+        )
+    else:
+        target_size = st.slider(
+            "Campaign target size",
+            min_value=1,
+            max_value=maximum_target,
+            value=default_target,
+            help="Cannot exceed the threshold-eligible holdout audience.",
+        )
 
 with control_2:
     contact_cost = st.number_input(

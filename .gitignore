@@ -210,3 +210,7 @@ monitoring/snapshots/evidently_monitoring_summary.json
 
 # Local runtime secrets and wrapper logs
 .runtime/
+
+# Production model required by the public Streamlit demo
+!models/trained/
+!models/trained/final_champion_model.joblib
