@@ -116,7 +116,7 @@ The final output is not simply a probability. It is a decision system:
 > **Decision flow:** raw behaviour becomes an actionable audience, then measured outcomes become new monitoring evidence.
 
 ```mermaid
-%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","secondaryColor":"#201A33","tertiaryColor":"#10261D","clusterBkg":"#0B1220","clusterBorder":"#334155","edgeLabelBackground":"#0F172A"}}}%%
 flowchart TB
     subgraph SIGNAL["1 · Build the signal"]
         direction LR
@@ -139,14 +139,14 @@ flowchart TB
     C --> D
     F --> G
 
-classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
-    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
-    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
-    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
-    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
-    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
-    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
-    linkStyle default stroke:#64748B,stroke-width:1.5px;
+classDef data fill:#12263A,stroke:#4DA3D9,color:#D6ECFF,stroke-width:1.5px;
+    classDef ml fill:#221C38,stroke:#9A7BFF,color:#EEE6FF,stroke-width:1.5px;
+    classDef business fill:#142A1D,stroke:#34D399,color:#DCFCE7,stroke-width:1.5px;
+    classDef ops fill:#332012,stroke:#FB923C,color:#FFEDD5,stroke-width:1.5px;
+    classDef monitor fill:#341424,stroke:#FB7185,color:#FFE4E6,stroke-width:1.5px;
+    classDef platform fill:#1A2435,stroke:#94A3B8,color:#E2E8F0,stroke-width:1.5px;
+    classDef decision fill:#3A2D12,stroke:#FBBF24,color:#FEF3C7,stroke-width:1.5px;
+    linkStyle default stroke:#71859C,stroke-width:1.5px,color:#E2E8F0;
 ```
 
 ---
@@ -171,7 +171,7 @@ The platform supports six connected decision areas:
 Six connected layers move the project from raw events to a governed business application.
 
 ```mermaid
-%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","secondaryColor":"#201A33","tertiaryColor":"#10261D","clusterBkg":"#0B1220","clusterBorder":"#334155","edgeLabelBackground":"#0F172A"}}}%%
 flowchart TB
     CI["GitHub Actions<br/>quality · security · delivery"]:::platform
 
@@ -230,14 +230,14 @@ flowchart TB
     P3 --> X2
     X2 --> X3
 
-classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
-    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
-    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
-    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
-    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
-    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
-    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
-    linkStyle default stroke:#64748B,stroke-width:1.5px;
+classDef data fill:#12263A,stroke:#4DA3D9,color:#D6ECFF,stroke-width:1.5px;
+    classDef ml fill:#221C38,stroke:#9A7BFF,color:#EEE6FF,stroke-width:1.5px;
+    classDef business fill:#142A1D,stroke:#34D399,color:#DCFCE7,stroke-width:1.5px;
+    classDef ops fill:#332012,stroke:#FB923C,color:#FFEDD5,stroke-width:1.5px;
+    classDef monitor fill:#341424,stroke:#FB7185,color:#FFE4E6,stroke-width:1.5px;
+    classDef platform fill:#1A2435,stroke:#94A3B8,color:#E2E8F0,stroke-width:1.5px;
+    classDef decision fill:#3A2D12,stroke:#FBBF24,color:#FEF3C7,stroke-width:1.5px;
+    linkStyle default stroke:#71859C,stroke-width:1.5px,color:#E2E8F0;
 ```
 
 ---
@@ -247,7 +247,7 @@ classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
 The RetailRocket dataset is event-level: one row represents one visitor action such as a product view, add-to-cart event, or transaction. The business decision is visitor-level, so the project changes the data grain.
 
 ```mermaid
-%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","secondaryColor":"#201A33","tertiaryColor":"#10261D","clusterBkg":"#0B1220","clusterBorder":"#334155","edgeLabelBackground":"#0F172A"}}}%%
 flowchart TB
     subgraph INGEST["1 · Ingest and verify"]
         direction LR
@@ -269,14 +269,14 @@ flowchart TB
     C --> D
     F --> G
 
-classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
-    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
-    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
-    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
-    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
-    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
-    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
-    linkStyle default stroke:#64748B,stroke-width:1.5px;
+classDef data fill:#12263A,stroke:#4DA3D9,color:#D6ECFF,stroke-width:1.5px;
+    classDef ml fill:#221C38,stroke:#9A7BFF,color:#EEE6FF,stroke-width:1.5px;
+    classDef business fill:#142A1D,stroke:#34D399,color:#DCFCE7,stroke-width:1.5px;
+    classDef ops fill:#332012,stroke:#FB923C,color:#FFEDD5,stroke-width:1.5px;
+    classDef monitor fill:#341424,stroke:#FB7185,color:#FFE4E6,stroke-width:1.5px;
+    classDef platform fill:#1A2435,stroke:#94A3B8,color:#E2E8F0,stroke-width:1.5px;
+    classDef decision fill:#3A2D12,stroke:#FBBF24,color:#FEF3C7,stroke-width:1.5px;
+    linkStyle default stroke:#71859C,stroke-width:1.5px,color:#E2E8F0;
 ```
 
 ### Core visitor features
@@ -319,7 +319,7 @@ The project therefore emphasizes:
 ### Model lifecycle
 
 ```mermaid
-%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","secondaryColor":"#201A33","tertiaryColor":"#10261D","clusterBkg":"#0B1220","clusterBorder":"#334155","edgeLabelBackground":"#0F172A"}}}%%
 flowchart TB
     subgraph DEVELOP["1 · Develop"]
         direction LR
@@ -345,14 +345,14 @@ flowchart TB
     D --> E
     H --> I
 
-classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
-    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
-    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
-    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
-    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
-    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
-    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
-    linkStyle default stroke:#64748B,stroke-width:1.5px;
+classDef data fill:#12263A,stroke:#4DA3D9,color:#D6ECFF,stroke-width:1.5px;
+    classDef ml fill:#221C38,stroke:#9A7BFF,color:#EEE6FF,stroke-width:1.5px;
+    classDef business fill:#142A1D,stroke:#34D399,color:#DCFCE7,stroke-width:1.5px;
+    classDef ops fill:#332012,stroke:#FB923C,color:#FFEDD5,stroke-width:1.5px;
+    classDef monitor fill:#341424,stroke:#FB7185,color:#FFE4E6,stroke-width:1.5px;
+    classDef platform fill:#1A2435,stroke:#94A3B8,color:#E2E8F0,stroke-width:1.5px;
+    classDef decision fill:#3A2D12,stroke:#FBBF24,color:#FEF3C7,stroke-width:1.5px;
+    linkStyle default stroke:#71859C,stroke-width:1.5px,color:#E2E8F0;
 ```
 
 ### Champion decision
@@ -377,7 +377,7 @@ The Streamlit application is the business-facing layer of the platform.
 > **Navigation model:** one executive command centre connects decision, understanding, and governance workflows.
 
 ```mermaid
-%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","secondaryColor":"#201A33","tertiaryColor":"#10261D","clusterBkg":"#0B1220","clusterBorder":"#334155","edgeLabelBackground":"#0F172A"}}}%%
 flowchart TB
     HOME["Executive Overview<br/>portfolio command centre"]:::business
 
@@ -406,14 +406,14 @@ flowchart TB
     HOME --> UNDERSTAND
     HOME --> GOVERN
 
-classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
-    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
-    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
-    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
-    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
-    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
-    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
-    linkStyle default stroke:#64748B,stroke-width:1.5px;
+classDef data fill:#12263A,stroke:#4DA3D9,color:#D6ECFF,stroke-width:1.5px;
+    classDef ml fill:#221C38,stroke:#9A7BFF,color:#EEE6FF,stroke-width:1.5px;
+    classDef business fill:#142A1D,stroke:#34D399,color:#DCFCE7,stroke-width:1.5px;
+    classDef ops fill:#332012,stroke:#FB923C,color:#FFEDD5,stroke-width:1.5px;
+    classDef monitor fill:#341424,stroke:#FB7185,color:#FFE4E6,stroke-width:1.5px;
+    classDef platform fill:#1A2435,stroke:#94A3B8,color:#E2E8F0,stroke-width:1.5px;
+    classDef decision fill:#3A2D12,stroke:#FBBF24,color:#FEF3C7,stroke-width:1.5px;
+    linkStyle default stroke:#71859C,stroke-width:1.5px,color:#E2E8F0;
 ```
 
 ### Application pages
@@ -438,7 +438,7 @@ classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
 Batch scoring is designed as a business workflow, not only a technical inference step.
 
 ```mermaid
-%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","secondaryColor":"#201A33","tertiaryColor":"#10261D","clusterBkg":"#0B1220","clusterBorder":"#334155","edgeLabelBackground":"#0F172A"}}}%%
 flowchart TB
     subgraph INPUT["1 · Prepare the audience"]
         direction LR
@@ -461,14 +461,14 @@ flowchart TB
     C --> D
     F --> G
 
-classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
-    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
-    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
-    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
-    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
-    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
-    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
-    linkStyle default stroke:#64748B,stroke-width:1.5px;
+classDef data fill:#12263A,stroke:#4DA3D9,color:#D6ECFF,stroke-width:1.5px;
+    classDef ml fill:#221C38,stroke:#9A7BFF,color:#EEE6FF,stroke-width:1.5px;
+    classDef business fill:#142A1D,stroke:#34D399,color:#DCFCE7,stroke-width:1.5px;
+    classDef ops fill:#332012,stroke:#FB923C,color:#FFEDD5,stroke-width:1.5px;
+    classDef monitor fill:#341424,stroke:#FB7185,color:#FFE4E6,stroke-width:1.5px;
+    classDef platform fill:#1A2435,stroke:#94A3B8,color:#E2E8F0,stroke-width:1.5px;
+    classDef decision fill:#3A2D12,stroke:#FBBF24,color:#FEF3C7,stroke-width:1.5px;
+    linkStyle default stroke:#71859C,stroke-width:1.5px,color:#E2E8F0;
 ```
 
 The app supports:
@@ -489,7 +489,7 @@ The app supports:
 The platform combines global model evidence with local visitor-level context.
 
 ```mermaid
-%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","secondaryColor":"#201A33","tertiaryColor":"#10261D","clusterBkg":"#0B1220","clusterBorder":"#334155","edgeLabelBackground":"#0F172A"}}}%%
 flowchart TB
     A["Scored visitor"]:::business
 
@@ -516,14 +516,14 @@ flowchart TB
     H --> J
     I --> J
 
-classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
-    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
-    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
-    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
-    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
-    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
-    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
-    linkStyle default stroke:#64748B,stroke-width:1.5px;
+classDef data fill:#12263A,stroke:#4DA3D9,color:#D6ECFF,stroke-width:1.5px;
+    classDef ml fill:#221C38,stroke:#9A7BFF,color:#EEE6FF,stroke-width:1.5px;
+    classDef business fill:#142A1D,stroke:#34D399,color:#DCFCE7,stroke-width:1.5px;
+    classDef ops fill:#332012,stroke:#FB923C,color:#FFEDD5,stroke-width:1.5px;
+    classDef monitor fill:#341424,stroke:#FB7185,color:#FFE4E6,stroke-width:1.5px;
+    classDef platform fill:#1A2435,stroke:#94A3B8,color:#E2E8F0,stroke-width:1.5px;
+    classDef decision fill:#3A2D12,stroke:#FBBF24,color:#FEF3C7,stroke-width:1.5px;
+    linkStyle default stroke:#71859C,stroke-width:1.5px,color:#E2E8F0;
 ```
 
 This supports more responsible business use by showing:
@@ -541,7 +541,7 @@ This supports more responsible business use by showing:
 MLflow is isolated from the lightweight app runtime and uses its own pinned environment.
 
 ```mermaid
-%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","secondaryColor":"#201A33","tertiaryColor":"#10261D","clusterBkg":"#0B1220","clusterBorder":"#334155","edgeLabelBackground":"#0F172A"}}}%%
 flowchart TB
     A["Training and<br/>benchmark scripts"]:::data --> B["MLflow bridge"]:::ml
 
@@ -572,14 +572,14 @@ flowchart TB
     H --> J
     I --> J
 
-classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
-    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
-    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
-    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
-    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
-    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
-    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
-    linkStyle default stroke:#64748B,stroke-width:1.5px;
+classDef data fill:#12263A,stroke:#4DA3D9,color:#D6ECFF,stroke-width:1.5px;
+    classDef ml fill:#221C38,stroke:#9A7BFF,color:#EEE6FF,stroke-width:1.5px;
+    classDef business fill:#142A1D,stroke:#34D399,color:#DCFCE7,stroke-width:1.5px;
+    classDef ops fill:#332012,stroke:#FB923C,color:#FFEDD5,stroke-width:1.5px;
+    classDef monitor fill:#341424,stroke:#FB7185,color:#FFE4E6,stroke-width:1.5px;
+    classDef platform fill:#1A2435,stroke:#94A3B8,color:#E2E8F0,stroke-width:1.5px;
+    classDef decision fill:#3A2D12,stroke:#FBBF24,color:#FEF3C7,stroke-width:1.5px;
+    linkStyle default stroke:#71859C,stroke-width:1.5px,color:#E2E8F0;
 ```
 
 ### MLflow responsibilities
@@ -601,7 +601,7 @@ classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
 Evidently is used in an isolated monitoring environment to avoid dependency conflicts with the application runtime.
 
 ```mermaid
-%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","secondaryColor":"#201A33","tertiaryColor":"#10261D","clusterBkg":"#0B1220","clusterBorder":"#334155","edgeLabelBackground":"#0F172A"}}}%%
 flowchart TB
     subgraph INPUTS["1 · Compare two populations"]
         direction LR
@@ -635,14 +635,14 @@ flowchart TB
     H --> J
     J --> K
 
-classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
-    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
-    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
-    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
-    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
-    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
-    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
-    linkStyle default stroke:#64748B,stroke-width:1.5px;
+classDef data fill:#12263A,stroke:#4DA3D9,color:#D6ECFF,stroke-width:1.5px;
+    classDef ml fill:#221C38,stroke:#9A7BFF,color:#EEE6FF,stroke-width:1.5px;
+    classDef business fill:#142A1D,stroke:#34D399,color:#DCFCE7,stroke-width:1.5px;
+    classDef ops fill:#332012,stroke:#FB923C,color:#FFEDD5,stroke-width:1.5px;
+    classDef monitor fill:#341424,stroke:#FB7185,color:#FFE4E6,stroke-width:1.5px;
+    classDef platform fill:#1A2435,stroke:#94A3B8,color:#E2E8F0,stroke-width:1.5px;
+    classDef decision fill:#3A2D12,stroke:#FBBF24,color:#FEF3C7,stroke-width:1.5px;
+    linkStyle default stroke:#71859C,stroke-width:1.5px,color:#E2E8F0;
 ```
 
 ### Evidently responsibilities
@@ -664,7 +664,7 @@ classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
 Purchase outcomes may arrive after predictions are made. The project therefore separates prediction-time evidence from later outcome evaluation.
 
 ```mermaid
-%%{init: {"theme":"base","sequence":{"useMaxWidth":true,"wrap":true,"diagramMarginX":30,"diagramMarginY":20,"actorMargin":45,"messageMargin":35},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","actorBkg":"#E0F2FE","actorBorder":"#0284C7","actorTextColor":"#0F172A","signalColor":"#475569","signalTextColor":"#0F172A","noteBkgColor":"#FEF3C7","noteBorderColor":"#D97706","noteTextColor":"#78350F"}}}%%
+%%{init: {"theme":"base","sequence":{"useMaxWidth":true,"wrap":true,"diagramMarginX":30,"diagramMarginY":20,"actorMargin":45,"messageMargin":35},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","actorBkg":"#162033","actorBorder":"#5DADE2","actorTextColor":"#E5EEF8","signalColor":"#9FB3C8","signalTextColor":"#E5EEF8","noteBkgColor":"#3B2F12","noteBorderColor":"#D4A93A","noteTextColor":"#FDE68A"}}}%%
 sequenceDiagram
     autonumber
     participant App as Scoring App
@@ -691,7 +691,7 @@ This prevents a common MLOps mistake: evaluating only training metrics while ign
 The full local monitoring stack includes application, model, and infrastructure signals.
 
 ```mermaid
-%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","secondaryColor":"#201A33","tertiaryColor":"#10261D","clusterBkg":"#0B1220","clusterBorder":"#334155","edgeLabelBackground":"#0F172A"}}}%%
 flowchart TB
     subgraph SIGNALS["1 · Operational signals"]
         direction LR
@@ -726,14 +726,14 @@ flowchart TB
     PROM --> ALERT
     ALERT --> WEBHOOK
 
-classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
-    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
-    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
-    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
-    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
-    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
-    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
-    linkStyle default stroke:#64748B,stroke-width:1.5px;
+classDef data fill:#12263A,stroke:#4DA3D9,color:#D6ECFF,stroke-width:1.5px;
+    classDef ml fill:#221C38,stroke:#9A7BFF,color:#EEE6FF,stroke-width:1.5px;
+    classDef business fill:#142A1D,stroke:#34D399,color:#DCFCE7,stroke-width:1.5px;
+    classDef ops fill:#332012,stroke:#FB923C,color:#FFEDD5,stroke-width:1.5px;
+    classDef monitor fill:#341424,stroke:#FB7185,color:#FFE4E6,stroke-width:1.5px;
+    classDef platform fill:#1A2435,stroke:#94A3B8,color:#E2E8F0,stroke-width:1.5px;
+    classDef decision fill:#3A2D12,stroke:#FBBF24,color:#FEF3C7,stroke-width:1.5px;
+    linkStyle default stroke:#71859C,stroke-width:1.5px,color:#E2E8F0;
 ```
 
 ### Monitored areas
@@ -753,7 +753,7 @@ classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
 Prometheus should scrape lightweight metrics, not repeatedly scan large analytical files. The project therefore uses a cached snapshot:
 
 ```mermaid
-%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","secondaryColor":"#201A33","tertiaryColor":"#10261D","clusterBkg":"#0B1220","clusterBorder":"#334155","edgeLabelBackground":"#0F172A"}}}%%
 flowchart TB
     A["Large analytical<br/>CSV and JSON outputs"]:::data --> B["Snapshot<br/>builder"]:::ml
     B --> C["ecommerce_metrics_<br/>snapshot.json"]:::ops
@@ -769,14 +769,14 @@ flowchart TB
     E --> F
     E --> G
 
-classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
-    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
-    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
-    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
-    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
-    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
-    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
-    linkStyle default stroke:#64748B,stroke-width:1.5px;
+classDef data fill:#12263A,stroke:#4DA3D9,color:#D6ECFF,stroke-width:1.5px;
+    classDef ml fill:#221C38,stroke:#9A7BFF,color:#EEE6FF,stroke-width:1.5px;
+    classDef business fill:#142A1D,stroke:#34D399,color:#DCFCE7,stroke-width:1.5px;
+    classDef ops fill:#332012,stroke:#FB923C,color:#FFEDD5,stroke-width:1.5px;
+    classDef monitor fill:#341424,stroke:#FB7185,color:#FFE4E6,stroke-width:1.5px;
+    classDef platform fill:#1A2435,stroke:#94A3B8,color:#E2E8F0,stroke-width:1.5px;
+    classDef decision fill:#3A2D12,stroke:#FBBF24,color:#FEF3C7,stroke-width:1.5px;
+    linkStyle default stroke:#71859C,stroke-width:1.5px,color:#E2E8F0;
 ```
 
 ---
@@ -786,7 +786,7 @@ classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
 The local platform runs as a multi-service Docker Compose stack.
 
 ```mermaid
-%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","secondaryColor":"#201A33","tertiaryColor":"#10261D","clusterBkg":"#0B1220","clusterBorder":"#334155","edgeLabelBackground":"#0F172A"}}}%%
 flowchart TB
     USER["Business user"]:::business --> APP["streamlit-app<br/>:8501"]:::business
 
@@ -821,14 +821,14 @@ flowchart TB
     PROM --> ALERTMANAGER
     ALERTMANAGER --> WEBHOOK
 
-classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
-    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
-    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
-    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
-    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
-    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
-    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
-    linkStyle default stroke:#64748B,stroke-width:1.5px;
+classDef data fill:#12263A,stroke:#4DA3D9,color:#D6ECFF,stroke-width:1.5px;
+    classDef ml fill:#221C38,stroke:#9A7BFF,color:#EEE6FF,stroke-width:1.5px;
+    classDef business fill:#142A1D,stroke:#34D399,color:#DCFCE7,stroke-width:1.5px;
+    classDef ops fill:#332012,stroke:#FB923C,color:#FFEDD5,stroke-width:1.5px;
+    classDef monitor fill:#341424,stroke:#FB7185,color:#FFE4E6,stroke-width:1.5px;
+    classDef platform fill:#1A2435,stroke:#94A3B8,color:#E2E8F0,stroke-width:1.5px;
+    classDef decision fill:#3A2D12,stroke:#FBBF24,color:#FEF3C7,stroke-width:1.5px;
+    linkStyle default stroke:#71859C,stroke-width:1.5px,color:#E2E8F0;
 ```
 
 ### Docker services
@@ -852,7 +852,7 @@ The GitHub Actions workflow validates code, security, machine learning integrati
 > **Pipeline design:** quality and security gates run before ML validation and deployment-asset checks.
 
 ```mermaid
-%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","secondaryColor":"#201A33","tertiaryColor":"#10261D","clusterBkg":"#0B1220","clusterBorder":"#334155","edgeLabelBackground":"#0F172A"}}}%%
 flowchart TB
     A["Push · pull request<br/>manual · weekly"]:::platform --> B["GitHub Actions"]:::platform
 
@@ -885,14 +885,14 @@ flowchart TB
     M4 --> D1
     D4 --> U
 
-classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
-    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
-    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
-    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
-    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
-    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
-    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
-    linkStyle default stroke:#64748B,stroke-width:1.5px;
+classDef data fill:#12263A,stroke:#4DA3D9,color:#D6ECFF,stroke-width:1.5px;
+    classDef ml fill:#221C38,stroke:#9A7BFF,color:#EEE6FF,stroke-width:1.5px;
+    classDef business fill:#142A1D,stroke:#34D399,color:#DCFCE7,stroke-width:1.5px;
+    classDef ops fill:#332012,stroke:#FB923C,color:#FFEDD5,stroke-width:1.5px;
+    classDef monitor fill:#341424,stroke:#FB7185,color:#FFE4E6,stroke-width:1.5px;
+    classDef platform fill:#1A2435,stroke:#94A3B8,color:#E2E8F0,stroke-width:1.5px;
+    classDef decision fill:#3A2D12,stroke:#FBBF24,color:#FEF3C7,stroke-width:1.5px;
+    linkStyle default stroke:#71859C,stroke-width:1.5px,color:#E2E8F0;
 ```
 
 ### CI controls
@@ -922,7 +922,7 @@ classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
 The repository supports three delivery modes.
 
 ```mermaid
-%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"background":"transparent","fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#162033","primaryTextColor":"#E5EEF8","primaryBorderColor":"#5DADE2","lineColor":"#7F8EA3","secondaryColor":"#201A33","tertiaryColor":"#10261D","clusterBkg":"#0B1220","clusterBorder":"#334155","edgeLabelBackground":"#0F172A"}}}%%
 flowchart TB
     GIT["GitHub<br/>main branch"]:::platform --> CI["GitHub Actions<br/>validation"]:::platform
 
@@ -948,14 +948,14 @@ flowchart TB
     CI --> L1
     CI --> K1
 
-classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
-    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
-    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
-    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
-    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
-    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
-    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
-    linkStyle default stroke:#64748B,stroke-width:1.5px;
+classDef data fill:#12263A,stroke:#4DA3D9,color:#D6ECFF,stroke-width:1.5px;
+    classDef ml fill:#221C38,stroke:#9A7BFF,color:#EEE6FF,stroke-width:1.5px;
+    classDef business fill:#142A1D,stroke:#34D399,color:#DCFCE7,stroke-width:1.5px;
+    classDef ops fill:#332012,stroke:#FB923C,color:#FFEDD5,stroke-width:1.5px;
+    classDef monitor fill:#341424,stroke:#FB7185,color:#FFE4E6,stroke-width:1.5px;
+    classDef platform fill:#1A2435,stroke:#94A3B8,color:#E2E8F0,stroke-width:1.5px;
+    classDef decision fill:#3A2D12,stroke:#FBBF24,color:#FEF3C7,stroke-width:1.5px;
+    linkStyle default stroke:#71859C,stroke-width:1.5px,color:#E2E8F0;
 ```
 
 ### Streamlit Community Cloud
