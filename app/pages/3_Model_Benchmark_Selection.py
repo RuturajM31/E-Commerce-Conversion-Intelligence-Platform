@@ -441,64 +441,126 @@ def build_threshold_chart(
 def build_stability_chart(
     stability: pd.DataFrame,
 ) -> object | None:
+    """Build repeated-split stability from raw seed rows or summary rows.
+
+    The saved evidence currently contains one row per model and random seed:
+    model_name, seed, pr_auc, and roc_auc. The chart therefore calculates the
+    model-level mean and standard deviation before drawing the bars.
+
+    If a future pipeline saves pre-aggregated mean/std columns, those columns
+    are also supported.
+    """
+
     if stability.empty or "model_name" not in stability.columns:
         return None
 
-    mean_column = None
-    std_column = None
+    data = stability.copy()
 
-    for candidate in (
-        "mean_pr_auc",
-        "pr_auc_mean",
-        "average_pr_auc",
-    ):
-        if candidate in stability.columns:
-            mean_column = candidate
-            break
-
-    for candidate in (
-        "std_pr_auc",
-        "pr_auc_std",
-        "stdev_pr_auc",
-    ):
-        if candidate in stability.columns:
-            std_column = candidate
-            break
-
-    if mean_column is None:
-        return None
-
-    chart_data = stability.copy()
-    chart_data["Mean PR-AUC"] = pd.to_numeric(
-        chart_data[mean_column],
-        errors="coerce",
+    summary_mean_column = next(
+        (
+            column
+            for column in (
+                "mean_pr_auc",
+                "pr_auc_mean",
+                "average_pr_auc",
+            )
+            if column in data.columns
+        ),
+        None,
     )
 
-    error_column = None
+    summary_std_column = next(
+        (
+            column
+            for column in (
+                "std_pr_auc",
+                "pr_auc_std",
+                "stdev_pr_auc",
+            )
+            if column in data.columns
+        ),
+        None,
+    )
 
-    if std_column is not None:
-        chart_data["PR-AUC standard deviation"] = pd.to_numeric(
-            chart_data[std_column],
+    if summary_mean_column is not None:
+        summary = pd.DataFrame(
+            {
+                "model_name": data["model_name"].astype(str),
+                "mean_pr_auc": pd.to_numeric(
+                    data[summary_mean_column],
+                    errors="coerce",
+                ),
+            }
+        )
+
+        if summary_std_column is not None:
+            summary["std_pr_auc"] = pd.to_numeric(
+                data[summary_std_column],
+                errors="coerce",
+            )
+        else:
+            summary["std_pr_auc"] = 0.0
+
+    elif "pr_auc" in data.columns:
+        # Raw repeated-split evidence: aggregate one row per model.
+        data["pr_auc"] = pd.to_numeric(
+            data["pr_auc"],
             errors="coerce",
         )
-        error_column = "PR-AUC standard deviation"
+        data = data.dropna(
+            subset=["model_name", "pr_auc"],
+        )
 
-    chart_data = chart_data.dropna(subset=["Mean PR-AUC"])
-    chart_data = chart_data.sort_values(
-        "Mean PR-AUC",
+        if data.empty:
+            return None
+
+        summary = (
+            data.groupby(
+                "model_name",
+                as_index=False,
+                dropna=False,
+            )
+            .agg(
+                mean_pr_auc=("pr_auc", "mean"),
+                std_pr_auc=("pr_auc", "std"),
+                repeated_splits=("pr_auc", "count"),
+            )
+        )
+        summary["std_pr_auc"] = (
+            summary["std_pr_auc"].fillna(0.0)
+        )
+
+    else:
+        return None
+
+    summary = summary.dropna(
+        subset=["model_name", "mean_pr_auc"],
+    )
+
+    if summary.empty:
+        return None
+
+    summary = summary.sort_values(
+        "mean_pr_auc",
         ascending=True,
     )
 
-    if chart_data.empty:
-        return None
+    hover_data = {
+        "mean_pr_auc": ":.3f",
+        "std_pr_auc": ":.3f",
+    }
+
+    if "repeated_splits" in summary.columns:
+        hover_data["repeated_splits"] = True
 
     figure = px.bar(
-        chart_data,
-        x="Mean PR-AUC",
+        summary,
+        x="mean_pr_auc",
         y="model_name",
         orientation="h",
-        error_x=error_column,
-        title="Repeated-split stability evidence",
+        error_x="std_pr_auc",
+        hover_data=hover_data,
+        title="Repeated-split stability: mean PR-AUC by model",
     )
     figure.update_layout(
         height=430,
