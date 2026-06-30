@@ -71,22 +71,122 @@ REGISTRY_PATH = Path(
 )
 
 
+def _normalise_forecast_frame(
+    frame: pd.DataFrame,
+    *,
+    default_target: str = "forecast",
+) -> pd.DataFrame:
+    """Return a forecast frame with one stable canonical schema.
+
+    Historical project artifacts used several names for observed and predicted
+    values. This normaliser preserves genuine data, maps recognised aliases,
+    and creates optional columns as missing values instead of raising a
+    KeyError.
+    """
+
+    output = frame.copy()
+
+    aliases = {
+        "date": (
+            "timestamp",
+            "ds",
+            "forecast_date",
+        ),
+        "target_name": (
+            "target",
+            "metric",
+            "kpi_name",
+        ),
+        "actual_value": (
+            "actual",
+            "observed_value",
+            "y",
+        ),
+        "predicted_value": (
+            "prediction",
+            "forecast_value",
+            "yhat",
+        ),
+        "model_name": (
+            "model",
+            "forecast_model",
+        ),
+    }
+
+    for canonical, candidates in aliases.items():
+        if canonical in output.columns:
+            continue
+
+        for candidate in candidates:
+            if candidate in output.columns:
+                output[canonical] = output[candidate]
+                break
+
+    if "date" not in output.columns:
+        output["date"] = pd.NaT
+
+    if "target_name" not in output.columns:
+        output["target_name"] = default_target
+
+    if "actual_value" not in output.columns:
+        output["actual_value"] = np.nan
+
+    if "predicted_value" not in output.columns:
+        output["predicted_value"] = np.nan
+
+    if "model_name" not in output.columns:
+        output["model_name"] = "Saved forecast model"
+
+    if "is_best_model" not in output.columns:
+        output["is_best_model"] = True
+
+    output["date"] = pd.to_datetime(
+        output["date"],
+        errors="coerce",
+    )
+    output["actual_value"] = pd.to_numeric(
+        output["actual_value"],
+        errors="coerce",
+    )
+    output["predicted_value"] = pd.to_numeric(
+        output["predicted_value"],
+        errors="coerce",
+    )
+
+    return output
+
 def prepare_forecast_target(
     history: pd.DataFrame,
     future: pd.DataFrame,
     target: str,
     horizon: int,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Filter one supported KPI and requested future horizon."""
+    """Filter one KPI and horizon after normalising forecast schemas."""
 
-    history_target = history.loc[history["target_name"].eq(target)].copy()
-    future_target = future.loc[future["target_name"].eq(target)].copy()
+    history_normalised = _normalise_forecast_frame(
+        history,
+        default_target=target,
+    )
+    future_normalised = _normalise_forecast_frame(
+        future,
+        default_target=target,
+    )
 
-    # Forecast artifacts may contain several candidate models. The interactive
-    # outlook uses only rows explicitly marked as the saved best model.
-    for frame_name, frame in (("history", history_target), ("future", future_target)):
-        if "is_best_model" not in frame.columns:
-            continue
+    history_target = history_normalised.loc[
+        history_normalised["target_name"]
+        .astype(str)
+        .eq(str(target))
+    ].copy()
+    future_target = future_normalised.loc[
+        future_normalised["target_name"]
+        .astype(str)
+        .eq(str(target))
+    ].copy()
+
+    for frame_name, frame in (
+        ("history", history_target),
+        ("future", future_target),
+    ):
         best_mask = (
             frame["is_best_model"]
             .astype(str)
@@ -94,31 +194,48 @@ def prepare_forecast_target(
             .str.lower()
             .isin({"true", "1", "yes"})
         )
-        if best_mask.any():
-            if frame_name == "history":
-                history_target = frame.loc[best_mask].copy()
-            else:
-                future_target = frame.loc[best_mask].copy()
 
-    for frame in (history_target, future_target):
-        frame["date"] = pd.to_datetime(frame["date"], errors="coerce")
-        frame["actual_value"] = pd.to_numeric(frame["actual_value"], errors="coerce")
-        frame["predicted_value"] = pd.to_numeric(frame["predicted_value"], errors="coerce")
+        if not best_mask.any():
+            continue
 
-    history_target = history_target.dropna(subset=["date"]).sort_values("date")
-    future_target = future_target.dropna(subset=["date"]).sort_values("date").head(horizon)
+        if frame_name == "history":
+            history_target = frame.loc[best_mask].copy()
+        else:
+            future_target = frame.loc[best_mask].copy()
+
+    history_target = (
+        history_target
+        .dropna(subset=["date"])
+        .sort_values("date")
+    )
+    future_target = (
+        future_target
+        .dropna(subset=["date"])
+        .sort_values("date")
+        .head(max(int(horizon), 0))
+    )
+
     return history_target, future_target
-
 
 def empirical_forecast_band(history: pd.DataFrame) -> float:
     """Return a transparent empirical absolute-error band."""
 
-    valid = history.dropna(subset=["actual_value", "predicted_value"])
+    frame = _normalise_forecast_frame(history)
+    valid = frame.dropna(
+        subset=["actual_value", "predicted_value"]
+    )
+
     if valid.empty:
         return 0.0
-    residual = valid["actual_value"] - valid["predicted_value"]
-    return float(residual.abs().quantile(0.80))
 
+    residual = (
+        valid["actual_value"]
+        - valid["predicted_value"]
+    )
+
+    return float(
+        residual.abs().quantile(0.80)
+    )
 
 def build_forecast_outlook_figure(
     history: pd.DataFrame,
@@ -127,18 +244,41 @@ def build_forecast_outlook_figure(
     target: str,
     scenario_factor: float,
 ) -> go.Figure:
-    """Build historical actuals, backtest predictions, and scenario forecast."""
+    """Build actual, backtest, and future traces from canonical columns."""
+
+    history_frame = _normalise_forecast_frame(
+        history,
+        default_target=target,
+    )
+    future_frame = _normalise_forecast_frame(
+        future,
+        default_target=target,
+    )
 
     figure = go.Figure()
 
-    history_actual = history.dropna(subset=["actual_value"])
-    history_predicted = history.dropna(subset=["predicted_value"])
-    future_valid = future.dropna(subset=["predicted_value"]).copy()
-    future_valid["scenario_value"] = future_valid["predicted_value"] * scenario_factor
+    history_actual = history_frame.dropna(
+        subset=["actual_value"]
+    )
+    history_predicted = history_frame.dropna(
+        subset=["predicted_value"]
+    )
+    future_valid = future_frame.dropna(
+        subset=["predicted_value"]
+    ).copy()
 
-    band = empirical_forecast_band(history)
-    future_valid["lower"] = (future_valid["scenario_value"] - band).clip(lower=0)
-    future_valid["upper"] = future_valid["scenario_value"] + band
+    future_valid["scenario_value"] = (
+        future_valid["predicted_value"]
+        * float(scenario_factor)
+    )
+
+    band = empirical_forecast_band(history_frame)
+    future_valid["lower"] = (
+        future_valid["scenario_value"] - band
+    ).clip(lower=0)
+    future_valid["upper"] = (
+        future_valid["scenario_value"] + band
+    )
 
     figure.add_trace(
         go.Scatter(
@@ -164,11 +304,18 @@ def build_forecast_outlook_figure(
             name="Future scenario",
         )
     )
+
     if not future_valid.empty:
         figure.add_trace(
             go.Scatter(
-                x=list(future_valid["date"]) + list(future_valid["date"][::-1]),
-                y=list(future_valid["upper"]) + list(future_valid["lower"][::-1]),
+                x=(
+                    list(future_valid["date"])
+                    + list(future_valid["date"][::-1])
+                ),
+                y=(
+                    list(future_valid["upper"])
+                    + list(future_valid["lower"][::-1])
+                ),
                 fill="toself",
                 fillcolor="rgba(56,189,248,0.14)",
                 line={"color": "rgba(255,255,255,0)"},
@@ -178,61 +325,109 @@ def build_forecast_outlook_figure(
         )
 
     figure.update_xaxes(title="Date")
-    figure.update_yaxes(title=target.replace("_", " ").title())
+    figure.update_yaxes(
+        title=target.replace("_", " ").title()
+    )
+
     return finish_figure(
         figure,
         title=f"{target.replace('_', ' ').title()} outlook",
-        subtitle="Historical actuals, backtest predictions, future scenario, and empirical error band are separated.",
+        subtitle=(
+            "Historical actuals, backtest predictions, future scenario, "
+            "and empirical error band are separated."
+        ),
         height=570,
         legend_title="Evidence",
     )
 
-
 def build_residual_figure(history: pd.DataFrame) -> go.Figure:
-    """Show historical forecast residuals over time."""
+    """Show historical forecast residuals without assuming optional columns."""
 
-    frame = history.dropna(subset=["actual_value", "predicted_value"]).copy()
-    frame["Residual"] = frame["actual_value"] - frame["predicted_value"]
+    frame = _normalise_forecast_frame(history)
+    frame = frame.dropna(
+        subset=["actual_value", "predicted_value"]
+    ).copy()
+    frame["Residual"] = (
+        frame["actual_value"]
+        - frame["predicted_value"]
+    )
+
     figure = px.scatter(
         frame,
         x="date",
         y="Residual",
-        color="model_name" if "model_name" in frame.columns else None,
-        hover_data={"actual_value": True, "predicted_value": True},
+        color=(
+            "model_name"
+            if "model_name" in frame.columns
+            else None
+        ),
+        hover_data={
+            "actual_value": True,
+            "predicted_value": True,
+        },
     )
     figure.add_hline(y=0, line_dash="dash")
     figure.update_xaxes(title="Date")
-    figure.update_yaxes(title="Actual minus predicted")
+    figure.update_yaxes(
+        title="Actual minus predicted"
+    )
+
     return finish_figure(
         figure,
         title="Backtest residuals over time",
-        subtitle="Large positive values are under-forecasts and large negative values are over-forecasts.",
+        subtitle=(
+            "Large positive values are under-forecasts and large "
+            "negative values are over-forecasts."
+        ),
         height=470,
         legend_title="Model",
     )
 
+def forecast_error_metrics(
+    history: pd.DataFrame,
+) -> dict[str, float]:
+    """Calculate error metrics after canonical forecast normalisation."""
 
-def forecast_error_metrics(history: pd.DataFrame) -> dict[str, float]:
-    """Calculate transparent error metrics from saved backtest rows."""
+    frame = _normalise_forecast_frame(history)
+    frame = frame.dropna(
+        subset=["actual_value", "predicted_value"]
+    ).copy()
 
-    frame = history.dropna(subset=["actual_value", "predicted_value"]).copy()
     if frame.empty:
-        return {"mae": 0.0, "rmse": 0.0, "mape": 0.0, "rows": 0}
+        return {
+            "mae": 0.0,
+            "rmse": 0.0,
+            "mape": 0.0,
+            "rows": 0,
+        }
 
-    residual = frame["actual_value"] - frame["predicted_value"]
-    non_zero = frame["actual_value"].abs() > 1e-12
+    residual = (
+        frame["actual_value"]
+        - frame["predicted_value"]
+    )
+    non_zero = (
+        frame["actual_value"].abs() > 1e-12
+    )
     mape = (
-        (residual[non_zero].abs() / frame.loc[non_zero, "actual_value"].abs()).mean()
+        (
+            residual[non_zero].abs()
+            / frame.loc[
+                non_zero,
+                "actual_value",
+            ].abs()
+        ).mean()
         if non_zero.any()
         else 0.0
     )
+
     return {
         "mae": float(residual.abs().mean()),
-        "rmse": float(np.sqrt((residual ** 2).mean())),
+        "rmse": float(
+            np.sqrt((residual ** 2).mean())
+        ),
         "mape": float(mape),
         "rows": int(len(frame)),
     }
-
 
 def render_forecast_decision_intelligence() -> None:
     """Render the final forecast scenario and diagnostics layer."""

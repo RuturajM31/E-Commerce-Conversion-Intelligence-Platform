@@ -67,39 +67,129 @@ def selected_holdout_row(holdout: pd.DataFrame) -> pd.Series | None:
 
 
 def build_model_comparison_figure(comparison: pd.DataFrame) -> go.Figure:
-    """Compare candidate models using PR-AUC, ROC-AUC, and business score."""
+    """Compare candidate models without assuming every optional metric exists.
+
+    PR-AUC remains the required rare-buyer ranking measure. ROC-AUC is used on
+    the horizontal axis when it is available. If an older evidence table lacks
+    ROC-AUC, the saved business score is used instead and the chart labels that
+    fallback honestly.
+    """
 
     frame = comparison.copy()
-    for column in ("pr_auc", "roc_auc", "business_score"):
-        frame[column] = pd.to_numeric(frame[column], errors="coerce")
 
-    frame["Deployable"] = frame.get("deployable", False).astype(str)
+    if "pr_auc" not in frame.columns:
+        for alias in ("average_precision", "prAUC", "pr_auc_score"):
+            if alias in frame.columns:
+                frame["pr_auc"] = frame[alias]
+                break
+
+    if "pr_auc" not in frame.columns:
+        frame["pr_auc"] = np.nan
+
+    if "roc_auc" not in frame.columns:
+        for alias in ("rocauc", "auc_roc", "roc_auc_score"):
+            if alias in frame.columns:
+                frame["roc_auc"] = frame[alias]
+                break
+
+    if "business_score" not in frame.columns:
+        frame["business_score"] = np.nan
+
+    for column in ("pr_auc", "roc_auc", "business_score"):
+        if column in frame.columns:
+            frame[column] = pd.to_numeric(
+                frame[column],
+                errors="coerce",
+            )
+
+    if "model_name" not in frame.columns:
+        frame["model_name"] = [
+            f"Candidate {number}"
+            for number in range(1, len(frame) + 1)
+        ]
+
+    if "deployable" in frame.columns:
+        frame["Deployable"] = (
+            frame["deployable"]
+            .astype(str)
+        )
+    else:
+        frame["Deployable"] = "Unavailable"
+
+    roc_available = (
+        "roc_auc" in frame.columns
+        and frame["roc_auc"].notna().any()
+    )
+    business_available = frame["business_score"].notna().any()
+
+    if roc_available:
+        x_column = "roc_auc"
+        x_title = "ROC-AUC"
+        subtitle = (
+            "PR-AUC, ROC-AUC, deployability, and business score are "
+            "compared without mixing evidence splits."
+        )
+    elif business_available:
+        x_column = "business_score"
+        x_title = "Business score"
+        subtitle = (
+            "ROC-AUC is unavailable in this evidence table, so the chart "
+            "uses the saved business score against PR-AUC."
+        )
+    else:
+        x_column = "Evidence order"
+        x_title = "Evidence row"
+        frame[x_column] = np.arange(1, len(frame) + 1)
+        subtitle = (
+            "Only PR-AUC and candidate identity are available in this "
+            "evidence table."
+        )
+
+    hover_data: dict[str, object] = {}
+
+    for column, display_format in (
+        ("model_family", True),
+        ("best_threshold", ":.3f"),
+        ("best_precision", ":.2%"),
+        ("best_recall", ":.2%"),
+        ("business_score", ":.3f"),
+        ("roc_auc", ":.3f"),
+    ):
+        if column in frame.columns:
+            hover_data[column] = display_format
+
+    size_column = (
+        "business_score"
+        if business_available
+        and (frame["business_score"].fillna(0) >= 0).all()
+        else None
+    )
+    color_column = (
+        "evaluation_split"
+        if "evaluation_split" in frame.columns
+        else None
+    )
+
     figure = px.scatter(
         frame,
-        x="roc_auc",
+        x=x_column,
         y="pr_auc",
-        size="business_score",
-        color="evaluation_split",
+        size=size_column,
+        color=color_column,
         symbol="Deployable",
         hover_name="model_name",
-        hover_data={
-            "model_family": True,
-            "best_threshold": ":.3f",
-            "best_precision": ":.2%",
-            "best_recall": ":.2%",
-            "business_score": ":.3f",
-        },
+        hover_data=hover_data,
     )
-    figure.update_xaxes(title="ROC-AUC")
+    figure.update_xaxes(title=x_title)
     figure.update_yaxes(title="PR-AUC")
+
     return finish_figure(
         figure,
         title="Candidate model evidence map",
-        subtitle="PR-AUC, ROC-AUC, deployability, and business score are compared without mixing evidence splits.",
+        subtitle=subtitle,
         height=560,
         legend_title="Evaluation split",
     )
-
 
 def build_precision_recall_frontier(thresholds: pd.DataFrame) -> go.Figure:
     """Build the genuine saved precision-recall frontier across thresholds."""
@@ -240,19 +330,81 @@ def build_generalisation_figure(generalisation: pd.DataFrame) -> go.Figure:
 
 
 def build_stability_figure(stability: pd.DataFrame) -> go.Figure:
-    """Show PR-AUC across available random seeds."""
+    """Show every available repeated-seed ranking metric safely.
+
+    Some historical stability tables contain PR-AUC only, while newer tables
+    contain both PR-AUC and ROC-AUC. The chart uses the metrics that genuinely
+    exist instead of failing when one optional column is absent.
+    """
 
     frame = stability.copy()
-    frame["seed"] = pd.to_numeric(frame["seed"], errors="coerce")
-    frame["pr_auc"] = pd.to_numeric(frame["pr_auc"], errors="coerce")
-    frame["roc_auc"] = pd.to_numeric(frame["roc_auc"], errors="coerce")
+
+    if "model_name" not in frame.columns:
+        frame["model_name"] = "Saved model"
+
+    if "seed" not in frame.columns:
+        frame["seed"] = np.arange(1, len(frame) + 1)
+
+    frame["seed"] = pd.to_numeric(
+        frame["seed"],
+        errors="coerce",
+    )
+
+    metric_aliases = {
+        "pr_auc": (
+            "average_precision",
+            "prAUC",
+            "pr_auc_score",
+        ),
+        "roc_auc": (
+            "rocauc",
+            "auc_roc",
+            "roc_auc_score",
+        ),
+    }
+
+    for canonical, aliases in metric_aliases.items():
+        if canonical not in frame.columns:
+            for alias in aliases:
+                if alias in frame.columns:
+                    frame[canonical] = frame[alias]
+                    break
+
+    available_metrics: list[str] = []
+
+    for column in ("pr_auc", "roc_auc"):
+        if column not in frame.columns:
+            continue
+
+        frame[column] = pd.to_numeric(
+            frame[column],
+            errors="coerce",
+        )
+
+        if frame[column].notna().any():
+            available_metrics.append(column)
+
+    if not available_metrics:
+        frame["pr_auc"] = np.nan
+        available_metrics = ["pr_auc"]
 
     melted = frame.melt(
         id_vars=["model_name", "seed"],
-        value_vars=["pr_auc", "roc_auc"],
+        value_vars=available_metrics,
         var_name="Metric",
         value_name="Score",
-    )
+    ).dropna(subset=["seed", "Score"])
+
+    if melted.empty:
+        melted = pd.DataFrame(
+            {
+                "model_name": ["No usable stability evidence"],
+                "seed": [0],
+                "Metric": ["pr_auc"],
+                "Score": [0.0],
+            }
+        )
+
     figure = px.line(
         melted,
         x="seed",
@@ -261,14 +413,24 @@ def build_stability_figure(stability: pd.DataFrame) -> go.Figure:
         line_dash="Metric",
         markers=True,
     )
+
+    metric_label = (
+        " and ".join(
+            metric.replace("_", "-").upper()
+            for metric in available_metrics
+        )
+    )
+
     return finish_figure(
         figure,
         title="Seed-stability evidence",
-        subtitle="Available repeated evaluations show whether rankings depend on one random split seed.",
+        subtitle=(
+            f"Available repeated evaluations show {metric_label} across "
+            "saved random seeds."
+        ),
         height=500,
         legend_title="Model and metric",
     )
-
 
 def build_business_scenarios(
     thresholds: pd.DataFrame,
