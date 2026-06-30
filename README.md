@@ -6,28 +6,28 @@
 
 Transforming raw e-commerce behaviour into visitor-level intelligence, campaign-ready audiences, explainable model decisions, monitored production signals, and deployable business applications.
 
-[![Live App](https://img.shields.io/badge/Live%20App-Streamlit%20Cloud-FF4B4B?logo=streamlit&logoColor=white)](https://ecommerce-conversion-intelligence.streamlit.app)
-[![CI](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/actions/workflows/ci.yml)
-[![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![License](https://img.shields.io/github/license/RuturajM31/E-Commerce-Conversion-Intelligence-Platform)](LICENSE)
-[![Last Commit](https://img.shields.io/github/last-commit/RuturajM31/E-Commerce-Conversion-Intelligence-Platform)](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/commits/main)
+[![Live App](https://img.shields.io/badge/Live%20App-Streamlit%20Cloud-FF4B4B?logo=streamlit&logoColor=white&style=flat-square)](https://ecommerce-conversion-intelligence.streamlit.app)
+[![CI/CD](https://img.shields.io/github/actions/workflow/status/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/ci.yml?branch=main&label=CI%2FCD&logo=githubactions&logoColor=white&style=flat-square)](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white&style=flat-square)](https://www.python.org/)
+[![License](https://img.shields.io/github/license/RuturajM31/E-Commerce-Conversion-Intelligence-Platform?style=flat-square)](LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/RuturajM31/E-Commerce-Conversion-Intelligence-Platform?style=flat-square)](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/commits/main)
 [![Stars](https://img.shields.io/github/stars/RuturajM31/E-Commerce-Conversion-Intelligence-Platform?style=flat)](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/stargazers)
 
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.54.0-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.5.0-F7931E?logo=scikitlearn&logoColor=white)](https://scikit-learn.org/)
-[![XGBoost](https://img.shields.io/badge/XGBoost-3.2.0-189AB4)](https://xgboost.ai/)
-[![MLflow](https://img.shields.io/badge/MLflow-3.14.0-0194E2?logo=mlflow&logoColor=white)](https://mlflow.org/)
-[![Evidently](https://img.shields.io/badge/Evidently-0.7.21-6C63FF)](https://www.evidentlyai.com/)
-[![Plotly](https://img.shields.io/badge/Plotly-5.24.1-3F4F75?logo=plotly&logoColor=white)](https://plotly.com/python/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.54.0-FF4B4B?logo=streamlit&logoColor=white&style=flat-square)](https://streamlit.io/)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.5.0-F7931E?logo=scikitlearn&logoColor=white&style=flat-square)](https://scikit-learn.org/)
+[![XGBoost](https://img.shields.io/badge/XGBoost-3.2.0-189AB4?style=flat-square)](https://xgboost.ai/)
+[![MLflow](https://img.shields.io/badge/MLflow-3.14.0-0194E2?logo=mlflow&logoColor=white&style=flat-square)](https://mlflow.org/)
+[![Evidently](https://img.shields.io/badge/Evidently-0.7.21-6C63FF?style=flat-square)](https://www.evidentlyai.com/)
+[![Plotly](https://img.shields.io/badge/Plotly-5.24.1-3F4F75?logo=plotly&logoColor=white&style=flat-square)](https://plotly.com/python/)
 
-[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-Validated-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io/)
-[![Helm](https://img.shields.io/badge/Helm-Chart-0F1689?logo=helm&logoColor=white)](https://helm.sh/)
-[![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-E6522C?logo=prometheus&logoColor=white)](https://prometheus.io/)
-[![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?logo=grafana&logoColor=white)](https://grafana.com/)
-[![pytest](https://img.shields.io/badge/pytest-Automated%20QA-0A9EDC?logo=pytest&logoColor=white)](https://pytest.org/)
-[![Ruff](https://img.shields.io/badge/Ruff-Lint%20%26%20Format-D7FF64?logo=ruff&logoColor=black)](https://docs.astral.sh/ruff/)
-[![pip-audit](https://img.shields.io/badge/pip--audit-Dependency%20Security-2E8B57)](https://pypi.org/project/pip-audit/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white&style=flat-square)](https://www.docker.com/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Validated-326CE5?logo=kubernetes&logoColor=white&style=flat-square)](https://kubernetes.io/)
+[![Helm](https://img.shields.io/badge/Helm-Chart-0F1689?logo=helm&logoColor=white&style=flat-square)](https://helm.sh/)
+[![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-E6522C?logo=prometheus&logoColor=white&style=flat-square)](https://prometheus.io/)
+[![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?logo=grafana&logoColor=white&style=flat-square)](https://grafana.com/)
+[![pytest](https://img.shields.io/badge/pytest-Automated%20QA-0A9EDC?logo=pytest&logoColor=white&style=flat-square)](https://pytest.org/)
+[![Ruff](https://img.shields.io/badge/Ruff-Lint%20%26%20Format-D7FF64?logo=ruff&logoColor=black&style=flat-square)](https://docs.astral.sh/ruff/)
+[![pip-audit](https://img.shields.io/badge/pip--audit-Dependency%20Security-2E8B57?style=flat-square)](https://pypi.org/project/pip-audit/)
 
 <br/>
 
@@ -36,6 +36,14 @@ Transforming raw e-commerce behaviour into visitor-level intelligence, campaign-
 [**View CI/CD**](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/actions/workflows/ci.yml)
 ·
 [**Explore the source**](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform)
+
+</div>
+
+---
+
+<div align="center">
+
+**Navigate:** [Overview](#executive-summary) · [Architecture](#end-to-end-platform-architecture) · [Application](#streamlit-business-application) · [MLOps](#mlflow-experiment-tracking-architecture) · [Monitoring](#monitoring-and-observability-stack) · [CI/CD](#cicd-and-quality-gates) · [Run Locally](#quick-start)
 
 </div>
 
@@ -105,16 +113,40 @@ This platform changes the decision process from:
 
 The final output is not simply a probability. It is a decision system:
 
+> **Decision flow:** raw behaviour becomes an actionable audience, then measured outcomes become new monitoring evidence.
+
 ```mermaid
-flowchart LR
-    A["Raw visitor events"] --> B["Visitor-level features"]
-    B --> C["Purchase-intent model"]
-    C --> D["Calibrated intent score"]
-    D --> E["Business threshold"]
-    E --> F["High-intent audience"]
-    F --> G["Campaign prioritization"]
-    G --> H["Measured outcomes"]
-    H --> I["Monitoring and retraining evidence"]
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+flowchart TB
+    subgraph SIGNAL["1 · Build the signal"]
+        direction LR
+        A["Raw visitor<br/>events"]:::data --> B["Visitor-level<br/>features"]:::data
+        B --> C["Purchase-intent<br/>model"]:::ml
+    end
+
+    subgraph DECIDE["2 · Make the decision"]
+        direction LR
+        D["Calibrated<br/>intent score"]:::ml --> E{"Business<br/>threshold"}:::decision
+        E --> F["High-intent<br/>audience"]:::business
+    end
+
+    subgraph LEARN["3 · Measure and improve"]
+        direction LR
+        G["Campaign<br/>prioritization"]:::business --> H["Measured<br/>outcomes"]:::ops
+        H --> I["Monitoring and<br/>retraining evidence"]:::monitor
+    end
+
+    C --> D
+    F --> G
+
+classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
+    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
+    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
+    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
+    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
+    linkStyle default stroke:#64748B,stroke-width:1.5px;
 ```
 
 ---
@@ -136,86 +168,76 @@ The platform supports six connected decision areas:
 
 ## End-to-End Platform Architecture
 
+Six connected layers move the project from raw events to a governed business application.
+
 ```mermaid
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
 flowchart TB
-    subgraph DATA["1. Data Layer"]
-        D1["RetailRocket events"]
-        D2["Cleaning and validation"]
-        D3["Visitor-level aggregation"]
-        D4["Feature table"]
+    CI["GitHub Actions<br/>quality · security · delivery"]:::platform
+
+    subgraph DATA["1 · Data foundation"]
+        direction LR
+        D1["RetailRocket<br/>events"]:::data --> D2["Clean and<br/>validate"]:::data
+        D2 --> D3["Visitor-level<br/>feature table"]:::data
     end
 
-    subgraph ML["2. Machine Learning Layer"]
-        M1["Baseline logistic regression"]
-        M2["Champion/challenger benchmark"]
-        M3["Tuned Random Forest"]
-        M4["Threshold optimization"]
-        M5["Batch scoring"]
+    subgraph ML["2 · Machine-learning decision engine"]
+        direction LR
+        M1["Benchmark<br/>candidates"]:::ml --> M2["Tuned Random<br/>Forest"]:::ml
+        M2 --> M3["Threshold and<br/>batch scores"]:::decision
     end
 
-    subgraph INTEL["3. Business Intelligence Layer"]
-        B1["Executive overview"]
-        B2["Visitor predictor"]
-        B3["Campaign intelligence"]
-        B4["Model decision intelligence"]
-        B5["Segmentation and journey"]
-        B6["Forecast and anomaly intelligence"]
+    subgraph INTEL["3 · Business intelligence"]
+        direction LR
+        B1["Executive and<br/>visitor intelligence"]:::business
+        B2["Campaign and<br/>model intelligence"]:::business
+        B3["Forecast, anomaly<br/>and journey"]:::business
     end
 
-    subgraph MLOPS["4. MLOps and Governance Layer"]
-        O1["MLflow experiment tracking"]
-        O2["Model metadata and registry evidence"]
-        O3["Prediction ledger"]
-        O4["Delayed-label evaluation"]
-        O5["Evidently drift analysis"]
+    subgraph GOVERN["4 · MLOps and governance"]
+        direction LR
+        O1["MLflow<br/>experiments"]:::ops
+        O2["Model metadata<br/>and provenance"]:::ops
+        O3["Prediction ledger<br/>and delayed labels"]:::ops
+        O4["Evidently<br/>drift analysis"]:::ops
     end
 
-    subgraph OBS["5. Observability Layer"]
-        P1["Monitoring snapshot"]
-        P2["Metrics exporter"]
-        P3["Prometheus"]
-        P4["Grafana"]
-        P5["Alertmanager"]
-        P6["Blackbox exporter"]
+    subgraph OBS["5 · Observability"]
+        direction LR
+        P1["Monitoring<br/>snapshot"]:::monitor --> P2["Prometheus and<br/>health probes"]:::monitor
+        P2 --> P3["Grafana and<br/>Alertmanager"]:::monitor
     end
 
-    subgraph DELIVERY["6. Delivery Layer"]
-        X1["Streamlit Community Cloud"]
-        X2["Docker Compose"]
-        X3["Kubernetes manifests"]
-        X4["Helm chart"]
-        X5["GitHub Actions CI/CD"]
+    subgraph DELIVERY["6 · Delivery"]
+        direction LR
+        X1["Streamlit<br/>Community Cloud"]:::platform
+        X2["Docker<br/>Compose"]:::platform
+        X3["Kubernetes<br/>and Helm"]:::platform
     end
 
-    D1 --> D2 --> D3 --> D4
-    D4 --> M1
-    D4 --> M2 --> M3 --> M4 --> M5
-    M1 --> O1
+    CI -. validates .-> DATA
+    D3 --> M1
+    M3 --> B1
+    M3 --> B2
+    M3 --> B3
     M2 --> O1
-    M3 --> O1
     M3 --> O2
-    M5 --> B1
-    M5 --> B2
-    M5 --> B3
-    M3 --> B4
-    D4 --> B5
-    D4 --> B6
-    M5 --> O3 --> O4
-    D4 --> O5
-    M5 --> O5
+    M3 --> O3
+    D3 --> O4
+    O3 --> P1
     O4 --> P1
-    O5 --> P1
-    P1 --> P2 --> P3
-    P6 --> P3
-    P3 --> P4
-    P3 --> P5
     B1 --> X1
-    B1 --> X2
-    X2 --> X3 --> X4
-    X5 --> DATA
-    X5 --> ML
-    X5 --> OBS
-    X5 --> DELIVERY
+    P3 --> X2
+    X2 --> X3
+
+classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
+    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
+    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
+    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
+    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
+    linkStyle default stroke:#64748B,stroke-width:1.5px;
 ```
 
 ---
@@ -225,14 +247,36 @@ flowchart TB
 The RetailRocket dataset is event-level: one row represents one visitor action such as a product view, add-to-cart event, or transaction. The business decision is visitor-level, so the project changes the data grain.
 
 ```mermaid
-flowchart LR
-    A["events.csv<br/>One row per action"] --> B["Schema and quality checks"]
-    B --> C["Event cleaning"]
-    C --> D["Visitor aggregation"]
-    D --> E["Behavioural features"]
-    E --> F["One row per visitor"]
-    F --> G["Training / scoring split"]
-    G --> H["Model-ready dataset"]
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+flowchart TB
+    subgraph INGEST["1 · Ingest and verify"]
+        direction LR
+        A["events.csv<br/>one action per row"]:::data --> B["Schema and<br/>quality checks"]:::data
+        B --> C["Clean event<br/>records"]:::data
+    end
+
+    subgraph AGG["2 · Change the grain"]
+        direction LR
+        D["Group by<br/>visitor"]:::ml --> E["Create behavioural<br/>features"]:::ml
+        E --> F["One row<br/>per visitor"]:::ml
+    end
+
+    subgraph READY["3 · Prepare for modelling"]
+        direction LR
+        G["Training and<br/>scoring split"]:::decision --> H["Model-ready<br/>dataset"]:::business
+    end
+
+    C --> D
+    F --> G
+
+classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
+    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
+    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
+    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
+    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
+    linkStyle default stroke:#64748B,stroke-width:1.5px;
 ```
 
 ### Core visitor features
@@ -275,18 +319,40 @@ The project therefore emphasizes:
 ### Model lifecycle
 
 ```mermaid
-flowchart TD
-    A["Visitor feature table"] --> B["Baseline model"]
-    A --> C["Candidate model benchmark"]
-    C --> D["Hyperparameter tuning"]
-    D --> E["Tuned Random Forest champion"]
-    E --> F["Threshold analysis"]
-    F --> G["Stability and sensitivity checks"]
-    G --> H["Champion metadata"]
-    H --> I["Batch visitor scoring"]
-    I --> J["Campaign audience"]
-    J --> K["Prediction ledger"]
-    K --> L["Delayed outcome evaluation"]
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+flowchart TB
+    subgraph DEVELOP["1 · Develop"]
+        direction LR
+        A["Visitor feature<br/>table"]:::data --> B["Baseline<br/>model"]:::ml
+        A --> C["Candidate<br/>benchmark"]:::ml
+        C --> D["Hyperparameter<br/>tuning"]:::ml
+    end
+
+    subgraph SELECT["2 · Select and govern"]
+        direction LR
+        E["Tuned Random<br/>Forest champion"]:::ml --> F["Threshold<br/>analysis"]:::decision
+        F --> G["Stability and<br/>sensitivity checks"]:::decision
+        G --> H["Champion<br/>metadata"]:::ops
+    end
+
+    subgraph OPERATE["3 · Score and learn"]
+        direction LR
+        I["Batch visitor<br/>scoring"]:::business --> J["Campaign<br/>audience"]:::business
+        J --> K["Prediction<br/>ledger"]:::ops
+        K --> L["Delayed outcome<br/>evaluation"]:::monitor
+    end
+
+    D --> E
+    H --> I
+
+classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
+    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
+    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
+    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
+    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
+    linkStyle default stroke:#64748B,stroke-width:1.5px;
 ```
 
 ### Champion decision
@@ -308,29 +374,46 @@ The Streamlit application is the business-facing layer of the platform.
 
 **Entrypoint:** `app/Executive_Overview.py`
 
+> **Navigation model:** one executive command centre connects decision, understanding, and governance workflows.
+
 ```mermaid
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
 flowchart TB
-    HOME["Executive Overview"]
+    HOME["Executive Overview<br/>portfolio command centre"]:::business
 
-    HOME --> P1["Visitor Intent Predictor"]
-    HOME --> P2["Batch Scoring"]
-    HOME --> P3["Model Benchmark Selection"]
-    HOME --> P4["Business KPI Forecasting"]
-    HOME --> P5["Anomaly and Outlier"]
-    HOME --> P6["Monitoring, Drift and Health"]
-    HOME --> P7["MLOps Architecture"]
-    HOME --> P8["ML Validation and Evidence"]
-    HOME --> P9["Customer Segmentation and Journey"]
+    subgraph DECIDE["Decide"]
+        direction LR
+        P1["Visitor Intent Predictor<br/>single-visitor support"]:::business
+        P2["Batch Scoring<br/>audience and capacity"]:::business
+        P3["Model Benchmark Selection<br/>champion and economics"]:::business
+    end
 
-    P1 --> U1["Single-visitor decision support"]
-    P2 --> U2["Campaign capacity and audience export"]
-    P3 --> U3["Champion, threshold, confusion and economics"]
-    P4 --> U4["Forecast scenarios and residual diagnostics"]
-    P5 --> U5["Anomaly triage and investigation"]
-    P6 --> U6["Drift, lineage, delayed labels and service health"]
-    P7 --> U7["Deployment and architecture evidence"]
-    P8 --> U8["Reproducibility and validation proof"]
-    P9 --> U9["Segments, nearest neighbours and journey patterns"]
+    subgraph UNDERSTAND["Understand"]
+        direction LR
+        P4["Business KPI Forecasting<br/>scenarios and residuals"]:::ml
+        P5["Anomaly and Outlier<br/>triage and investigation"]:::ml
+        P9["Customer Segmentation<br/>segments and journeys"]:::ml
+    end
+
+    subgraph GOVERN["Govern"]
+        direction LR
+        P6["Monitoring, Drift and Health<br/>data, outcomes and services"]:::monitor
+        P7["MLOps Architecture<br/>components and deployment"]:::ops
+        P8["ML Validation and Evidence<br/>tests and provenance"]:::ops
+    end
+
+    HOME --> DECIDE
+    HOME --> UNDERSTAND
+    HOME --> GOVERN
+
+classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
+    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
+    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
+    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
+    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
+    linkStyle default stroke:#64748B,stroke-width:1.5px;
 ```
 
 ### Application pages
@@ -355,15 +438,37 @@ flowchart TB
 Batch scoring is designed as a business workflow, not only a technical inference step.
 
 ```mermaid
-flowchart LR
-    A["Visitor batch"] --> B["Feature validation"]
-    B --> C["Champion scoring"]
-    C --> D["Intent probability"]
-    D --> E["Threshold classification"]
-    E --> F["Capacity-aware ranking"]
-    F --> G["Campaign audience"]
-    G --> H["Recommended action"]
-    H --> I["Export and activation"]
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+flowchart TB
+    subgraph INPUT["1 · Prepare the audience"]
+        direction LR
+        A["Visitor<br/>batch"]:::data --> B["Feature<br/>validation"]:::data
+        B --> C["Champion<br/>scoring"]:::ml
+    end
+
+    subgraph PRIORITIZE["2 · Prioritize"]
+        direction LR
+        D["Intent<br/>probability"]:::ml --> E{"Threshold<br/>decision"}:::decision
+        E --> F["Capacity-aware<br/>ranking"]:::decision
+    end
+
+    subgraph ACTIVATE["3 · Activate"]
+        direction LR
+        G["Campaign<br/>audience"]:::business --> H["Recommended<br/>action"]:::business
+        H --> I["Export and<br/>activation"]:::ops
+    end
+
+    C --> D
+    F --> G
+
+classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
+    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
+    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
+    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
+    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
+    linkStyle default stroke:#64748B,stroke-width:1.5px;
 ```
 
 The app supports:
@@ -384,21 +489,41 @@ The app supports:
 The platform combines global model evidence with local visitor-level context.
 
 ```mermaid
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
 flowchart TB
-    A["Scored visitor"] --> B["Feature values"]
-    A --> C["Nearest real visitors"]
-    A --> D["Segment membership"]
-    A --> E["Anomaly context"]
+    A["Scored visitor"]:::business
 
-    B --> F["Feature contribution explanation"]
-    C --> G["Similarity and difference breakdown"]
-    D --> H["Segment profile"]
-    E --> I["Risk flags"]
+    subgraph MODEL["Model evidence"]
+        direction LR
+        B["Feature<br/>values"]:::data --> F["Feature contribution<br/>explanation"]:::ml
+        C["Nearest real<br/>visitors"]:::data --> G["Similarity and<br/>difference breakdown"]:::ml
+    end
 
-    F --> J["Governed visitor explanation"]
+    subgraph CONTEXT["Business context"]
+        direction LR
+        D["Segment<br/>membership"]:::business --> H["Segment<br/>profile"]:::business
+        E["Anomaly<br/>context"]:::monitor --> I["Risk<br/>flags"]:::monitor
+    end
+
+    J["Governed visitor explanation<br/>score · evidence · context · caution"]:::decision
+
+    A --> B
+    A --> C
+    A --> D
+    A --> E
+    F --> J
     G --> J
     H --> J
     I --> J
+
+classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
+    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
+    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
+    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
+    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
+    linkStyle default stroke:#64748B,stroke-width:1.5px;
 ```
 
 This supports more responsible business use by showing:
@@ -416,23 +541,45 @@ This supports more responsible business use by showing:
 MLflow is isolated from the lightweight app runtime and uses its own pinned environment.
 
 ```mermaid
-flowchart LR
-    A["Training and benchmark scripts"] --> B["MLflow bridge"]
-    B --> C["Run parameters"]
-    B --> D["Evaluation metrics"]
-    B --> E["Model artifacts"]
-    B --> F["Environment provenance"]
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+flowchart TB
+    A["Training and<br/>benchmark scripts"]:::data --> B["MLflow bridge"]:::ml
 
-    C --> G["MLflow tracking server"]
+    subgraph LOG["1 · Log the experiment"]
+        direction LR
+        C["Run<br/>parameters"]:::ml
+        D["Evaluation<br/>metrics"]:::ml
+        E["Model<br/>artifacts"]:::ml
+        F["Environment<br/>provenance"]:::ml
+    end
+
+    subgraph STORE["2 · Store the evidence"]
+        direction LR
+        G["MLflow tracking<br/>server"]:::ops --> H["SQLite tracking<br/>backend"]:::ops
+        G --> I["Artifact<br/>store"]:::ops
+    end
+
+    J["Experiment<br/>comparison"]:::decision --> K["Champion decision<br/>evidence"]:::business
+
+    B --> C
+    B --> D
+    B --> E
+    B --> F
+    C --> G
     D --> G
     E --> G
     F --> G
-
-    G --> H["SQLite tracking backend"]
-    G --> I["Artifact store"]
-    H --> J["Experiment comparison"]
+    H --> J
     I --> J
-    J --> K["Champion decision evidence"]
+
+classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
+    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
+    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
+    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
+    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
+    linkStyle default stroke:#64748B,stroke-width:1.5px;
 ```
 
 ### MLflow responsibilities
@@ -454,31 +601,48 @@ flowchart LR
 Evidently is used in an isolated monitoring environment to avoid dependency conflicts with the application runtime.
 
 ```mermaid
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
 flowchart TB
-    subgraph REFERENCE["Reference population"]
-        R1["Reference visitor features"]
-        R2["Reference predictions"]
+    subgraph INPUTS["1 · Compare two populations"]
+        direction LR
+        R["Reference<br/>features + predictions"]:::data
+        C["Current<br/>features + predictions"]:::data
     end
 
-    subgraph CURRENT["Current population"]
-        C1["Current visitor features"]
-        C2["Current predictions"]
+    E["Evidently<br/>analysis bridge"]:::ml
+
+    subgraph REPORTS["2 · Produce drift evidence"]
+        direction LR
+        F["Feature drift<br/>report"]:::monitor
+        G["Prediction drift<br/>report"]:::monitor
+        H["Drift summary<br/>and provenance"]:::monitor
     end
 
-    R1 --> E["Evidently bridge"]
-    R2 --> E
-    C1 --> E
-    C2 --> E
+    subgraph ACTIONS["3 · Publish and act"]
+        direction LR
+        I["Streamlit<br/>monitoring page"]:::business
+        J["Monitoring<br/>snapshot"]:::ops
+        K["Prometheus, Grafana<br/>and alerts"]:::monitor
+    end
 
-    E --> F["Feature drift report"]
-    E --> G["Prediction drift report"]
-    F --> H["Drift summary"]
+    R --> E
+    C --> E
+    E --> F
+    E --> G
+    F --> H
     G --> H
-    H --> I["Monitoring provenance"]
-    I --> J["Streamlit monitoring page"]
-    I --> K["Monitoring snapshot"]
-    K --> L["Prometheus metrics"]
-    L --> M["Grafana and alerts"]
+    H --> I
+    H --> J
+    J --> K
+
+classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
+    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
+    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
+    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
+    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
+    linkStyle default stroke:#64748B,stroke-width:1.5px;
 ```
 
 ### Evidently responsibilities
@@ -500,19 +664,22 @@ flowchart TB
 Purchase outcomes may arrive after predictions are made. The project therefore separates prediction-time evidence from later outcome evaluation.
 
 ```mermaid
+%%{init: {"theme":"base","sequence":{"useMaxWidth":true,"wrap":true,"diagramMarginX":30,"diagramMarginY":20,"actorMargin":45,"messageMargin":35},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","actorBkg":"#E0F2FE","actorBorder":"#0284C7","actorTextColor":"#0F172A","signalColor":"#475569","signalTextColor":"#0F172A","noteBkgColor":"#FEF3C7","noteBorderColor":"#D97706","noteTextColor":"#78350F"}}}%%
 sequenceDiagram
-    participant App as Streamlit / Batch Scoring
+    autonumber
+    participant App as Scoring App
     participant Ledger as Prediction Ledger
-    participant Outcome as Delayed Outcomes
+    participant Outcome as Delayed Outcome
     participant Eval as Production Evaluation
-    participant Monitor as Monitoring Layer
+    participant Monitor as Monitoring
 
-    App->>Ledger: Store visitor ID, score, threshold, model version
-    Outcome->>Ledger: Attach later purchase outcome
-    Ledger->>Eval: Build matched prediction/outcome sample
-    Eval->>Eval: Calculate precision, recall, conversion, calibration evidence
+    App->>Ledger: Store visitor, score, threshold and model version
+    Note over Ledger: Prediction-time evidence is preserved
+    Outcome->>Ledger: Attach the later purchase outcome
+    Ledger->>Eval: Build the matched evaluation sample
+    Eval->>Eval: Calculate precision, recall and conversion evidence
     Eval->>Monitor: Publish production-performance summary
-    Monitor->>App: Display health and performance evidence
+    Monitor-->>App: Display health and performance evidence
 ```
 
 This prevents a common MLOps mistake: evaluating only training metrics while ignoring real post-deployment outcomes.
@@ -524,19 +691,49 @@ This prevents a common MLOps mistake: evaluating only training metrics while ign
 The full local monitoring stack includes application, model, and infrastructure signals.
 
 ```mermaid
-flowchart LR
-    APP["Streamlit app"] --> BLACKBOX["Blackbox Exporter<br/>:9115"]
-    SNAPSHOT["Monitoring snapshot"] --> EXPORTER["Metrics Exporter<br/>:8000"]
-    LEDGER["Prediction and delayed-label outputs"] --> SNAPSHOT
-    DRIFT["Evidently drift summaries"] --> SNAPSHOT
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+flowchart TB
+    subgraph SIGNALS["1 · Operational signals"]
+        direction LR
+        APP["Streamlit<br/>application"]:::business
+        LEDGER["Prediction and<br/>delayed-label outputs"]:::data
+        DRIFT["Evidently drift<br/>summaries"]:::data
+    end
 
-    BLACKBOX --> PROM["Prometheus<br/>:9090"]
+    subgraph COLLECT["2 · Collect and expose"]
+        direction LR
+        BLACKBOX["Blackbox Exporter<br/>:9115"]:::ops
+        SNAPSHOT["Monitoring<br/>snapshot"]:::ops
+        EXPORTER["Metrics Exporter<br/>:8000"]:::ops
+    end
+
+    PROM["Prometheus<br/>:9090"]:::monitor
+
+    subgraph ACT["3 · Visualize and respond"]
+        direction LR
+        GRAFANA["Grafana<br/>:3000"]:::monitor
+        ALERT["Alertmanager<br/>:9093"]:::monitor
+        WEBHOOK["Alert Webhook<br/>:5001"]:::monitor
+    end
+
+    APP --> BLACKBOX
+    LEDGER --> SNAPSHOT
+    DRIFT --> SNAPSHOT
+    SNAPSHOT --> EXPORTER
+    BLACKBOX --> PROM
     EXPORTER --> PROM
+    PROM --> GRAFANA
+    PROM --> ALERT
+    ALERT --> WEBHOOK
 
-    PROM --> GRAFANA["Grafana<br/>:3000"]
-    PROM --> ALERT["Alertmanager<br/>:9093"]
-    ALERT --> WEBHOOK["Alert Webhook<br/>:5001"]
-    WEBHOOK --> NOTIFY["Local alert evidence"]
+classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
+    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
+    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
+    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
+    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
+    linkStyle default stroke:#64748B,stroke-width:1.5px;
 ```
 
 ### Monitored areas
@@ -556,13 +753,30 @@ flowchart LR
 Prometheus should scrape lightweight metrics, not repeatedly scan large analytical files. The project therefore uses a cached snapshot:
 
 ```mermaid
-flowchart LR
-    A["Large CSV and JSON outputs"] --> B["Snapshot builder"]
-    B --> C["ecommerce_metrics_snapshot.json"]
-    C --> D["Metrics exporter"]
-    D --> E["Prometheus"]
-    E --> F["Grafana"]
-    E --> G["Alertmanager"]
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
+flowchart TB
+    A["Large analytical<br/>CSV and JSON outputs"]:::data --> B["Snapshot<br/>builder"]:::ml
+    B --> C["ecommerce_metrics_<br/>snapshot.json"]:::ops
+    C --> D["Lightweight metrics<br/>exporter"]:::ops
+    D --> E["Prometheus"]:::monitor
+
+    subgraph CONSUMERS["Fast monitoring consumers"]
+        direction LR
+        F["Grafana<br/>dashboards"]:::monitor
+        G["Alertmanager<br/>rules"]:::monitor
+    end
+
+    E --> F
+    E --> G
+
+classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
+    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
+    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
+    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
+    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
+    linkStyle default stroke:#64748B,stroke-width:1.5px;
 ```
 
 ---
@@ -572,21 +786,49 @@ flowchart LR
 The local platform runs as a multi-service Docker Compose stack.
 
 ```mermaid
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
 flowchart TB
-    USER["Business user"] --> APP["streamlit-app<br/>8501"]
-    APP --> EXPORTER["metrics-exporter<br/>8000"]
+    USER["Business user"]:::business --> APP["streamlit-app<br/>:8501"]:::business
 
-    PROM["Prometheus<br/>9090"] --> EXPORTER
-    PROM --> BLACKBOX["blackbox-exporter<br/>9115"]
-    BLACKBOX --> APP
+    subgraph DATA["Read-only analytical assets"]
+        direction LR
+        D1["Data"]:::data
+        D2["Reports"]:::data
+        D3["Models"]:::data
+    end
 
-    PROM --> GRAFANA["Grafana<br/>3000"]
-    PROM --> ALERTMANAGER["Alertmanager<br/>9093"]
-    ALERTMANAGER --> WEBHOOK["alert-webhook<br/>5001"]
+    subgraph METRICS["Monitoring services"]
+        direction LR
+        CACHE["Metrics<br/>cache"]:::ops --> EXPORTER["metrics-exporter<br/>:8000"]:::ops
+        BLACKBOX["blackbox-exporter<br/>:9115"]:::ops
+        PROM["Prometheus<br/>:9090"]:::monitor
+    end
 
-    DATA["Read-only data, reports and models"] --> APP
-    CACHE["Monitoring metric cache"] --> EXPORTER
-    NOTIFICATIONS["Alert notification evidence"] --> WEBHOOK
+    subgraph RESPONSE["Dashboards and alerts"]
+        direction LR
+        GRAFANA["Grafana<br/>:3000"]:::monitor
+        ALERTMANAGER["Alertmanager<br/>:9093"]:::monitor
+        WEBHOOK["alert-webhook<br/>:5001"]:::monitor
+    end
+
+    D1 --> APP
+    D2 --> APP
+    D3 --> APP
+    APP --> BLACKBOX
+    BLACKBOX --> PROM
+    EXPORTER --> PROM
+    PROM --> GRAFANA
+    PROM --> ALERTMANAGER
+    ALERTMANAGER --> WEBHOOK
+
+classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
+    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
+    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
+    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
+    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
+    linkStyle default stroke:#64748B,stroke-width:1.5px;
 ```
 
 ### Docker services
@@ -607,36 +849,50 @@ flowchart TB
 
 The GitHub Actions workflow validates code, security, machine learning integrations, containers, orchestration files, and monitoring configuration.
 
+> **Pipeline design:** quality and security gates run before ML validation and deployment-asset checks.
+
 ```mermaid
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
 flowchart TB
-    A["Push / Pull Request / Manual / Weekly"] --> B["GitHub Actions"]
+    A["Push · pull request<br/>manual · weekly"]:::platform --> B["GitHub Actions"]:::platform
 
-    B --> C["Python 3.10 and dependency validation"]
-    C --> D["Import, structure and syntax checks"]
-    D --> E["Ruff lint and format checks"]
-    E --> F["pip-audit dependency scan"]
-    F --> G["Repository secret scan"]
-    G --> H["Sample-data smoke training"]
-    H --> I["pytest suite"]
+    subgraph QUALITY["1 · Code quality and security"]
+        direction LR
+        Q1["Python 3.10<br/>dependencies"]:::data --> Q2["Imports, structure<br/>and syntax"]:::data
+        Q2 --> Q3["Ruff lint<br/>and format"]:::data
+        Q3 --> Q4["pip-audit and<br/>secret scan"]:::data
+    end
 
-    I --> J{"Manual or weekly run?"}
-    J -- Yes --> K["MLflow integration tests"]
-    J -- Yes --> L["Evidently drift tests"]
-    J -- No --> M["Continue"]
+    subgraph MLTEST["2 · Machine-learning validation"]
+        direction LR
+        M1["Sample-data<br/>smoke training"]:::ml --> M2["pytest<br/>suite"]:::ml
+        M2 --> M3["MLflow<br/>integration"]:::ml
+        M2 --> M4["Evidently<br/>integration"]:::ml
+    end
 
-    K --> M
-    L --> M
+    subgraph DELIVERY["3 · Delivery validation"]
+        direction LR
+        D1["Docker image and<br/>Compose"]:::ops --> D2["Helm and<br/>Kubernetes"]:::ops
+        D2 --> D3["Prometheus and<br/>Alertmanager"]:::monitor
+        D3 --> D4["Grafana JSON<br/>validation"]:::monitor
+    end
 
-    M --> N["Docker image build"]
-    N --> O["Docker Compose validation"]
-    O --> P["Helm lint and render"]
-    P --> Q["Kubernetes YAML validation"]
-    Q --> R["Prometheus config and rule checks"]
-    R --> S["Alertmanager config check"]
-    S --> T["Grafana JSON validation"]
-    T --> U["Green pipeline"]
+    U["Green pipeline<br/>or compact failure evidence"]:::business
 
-    B --> V["Compact failure artifacts"]
+    B --> Q1
+    Q4 --> M1
+    M3 --> D1
+    M4 --> D1
+    D4 --> U
+
+classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
+    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
+    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
+    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
+    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
+    linkStyle default stroke:#64748B,stroke-width:1.5px;
 ```
 
 ### CI controls
@@ -666,23 +922,40 @@ flowchart TB
 The repository supports three delivery modes.
 
 ```mermaid
+%%{init: {"theme":"base","flowchart":{"curve":"basis","htmlLabels":true,"nodeSpacing":32,"rankSpacing":48},"themeVariables":{"fontFamily":"Inter,Segoe UI,Arial,sans-serif","fontSize":"16px","primaryColor":"#E0F2FE","primaryTextColor":"#0F172A","primaryBorderColor":"#0284C7","lineColor":"#64748B","secondaryColor":"#EDE9FE","tertiaryColor":"#DCFCE7","clusterBkg":"#F8FAFC","clusterBorder":"#94A3B8","edgeLabelBackground":"#FFFFFF"}}}%%
 flowchart TB
-    GIT["GitHub main branch"] --> CLOUD["Streamlit Community Cloud"]
-    CLOUD --> PUBLIC["Public portfolio application"]
+    GIT["GitHub<br/>main branch"]:::platform --> CI["GitHub Actions<br/>validation"]:::platform
 
-    GIT --> IMAGE["Docker image"]
-    IMAGE --> COMPOSE["Docker Compose"]
-    COMPOSE --> LOCAL["Local full MLOps stack"]
+    subgraph PATHS["Three supported delivery paths"]
+        direction LR
 
-    IMAGE --> K8S["Kubernetes manifests"]
-    K8S --> HELM["Helm chart"]
-    HELM --> CLUSTER["Kubernetes demo release"]
+        subgraph CLOUDPATH["Portfolio cloud"]
+            C1["Streamlit<br/>Community Cloud"]:::business --> C2["Public portfolio<br/>application"]:::business
+        end
 
-    GIT --> CI["GitHub Actions"]
-    CI --> CLOUD
-    CI --> IMAGE
-    CI --> K8S
-    CI --> HELM
+        subgraph LOCALPATH["Local MLOps stack"]
+            L1["Docker<br/>image"]:::ops --> L2["Docker<br/>Compose"]:::ops
+            L2 --> L3["App + monitoring<br/>services"]:::ops
+        end
+
+        subgraph K8SPATH["Orchestrated demo"]
+            K1["Kubernetes<br/>manifests"]:::monitor --> K2["Helm<br/>chart"]:::monitor
+            K2 --> K3["Kubernetes<br/>demo release"]:::monitor
+        end
+    end
+
+    CI --> C1
+    CI --> L1
+    CI --> K1
+
+classDef data fill:#E0F2FE,stroke:#0284C7,color:#0C4A6E,stroke-width:1.5px;
+    classDef ml fill:#EDE9FE,stroke:#7C3AED,color:#4C1D95,stroke-width:1.5px;
+    classDef business fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:1.5px;
+    classDef ops fill:#FFEDD5,stroke:#EA580C,color:#7C2D12,stroke-width:1.5px;
+    classDef monitor fill:#FFE4E6,stroke:#E11D48,color:#881337,stroke-width:1.5px;
+    classDef platform fill:#F1F5F9,stroke:#64748B,color:#1E293B,stroke-width:1.5px;
+    classDef decision fill:#FEF3C7,stroke:#D97706,color:#78350F,stroke-width:1.5px;
+    linkStyle default stroke:#64748B,stroke-width:1.5px;
 ```
 
 ### Streamlit Community Cloud
@@ -1023,8 +1296,8 @@ The original event grain is transformed into a visitor-level decision table suit
 
 Data Analyst & BI Specialist focused on transforming complex data into clear, measurable business decisions.
 
-[![GitHub](https://img.shields.io/badge/GitHub-RuturajM31-181717?logo=github&logoColor=white)](https://github.com/RuturajM31)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Ruturaj%20Mokashi-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ruturaj-mokashi-09627588)
+[![GitHub](https://img.shields.io/badge/GitHub-RuturajM31-181717?logo=github&logoColor=white&style=flat-square)](https://github.com/RuturajM31)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Ruturaj%20Mokashi-0A66C2?logo=linkedin&logoColor=white&style=flat-square)](https://www.linkedin.com/in/ruturaj-mokashi-09627588)
 
 ---
 
