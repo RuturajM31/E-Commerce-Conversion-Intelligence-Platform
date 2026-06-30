@@ -1,0 +1,225 @@
+date,target_name,model_name,actual_value,predicted_value,data_split,is_best_model
+2015-09-19,unique_visitors,Rolling Average Baseline,,8699.714285714286,future,False
+2015-09-20,unique_visitors,Rolling Average Baseline,,8521.95918367347,future,False
+2015-09-21,unique_visitors,Rolling Average Baseline,,8201.096209912537,future,False
+2015-09-22,unique_visitors,Rolling Average Baseline,,7459.9670970429,future,False
+2015-09-23,unique_visitors,Rolling Average Baseline,,6713.248110906171,future,False
+2015-09-24,unique_visitors,Rolling Average Baseline,,6697.426412464195,future,False
+2015-09-25,unique_visitors,Rolling Average Baseline,,6758.487328530508,future,False
+2015-09-26,unique_visitors,Rolling Average Baseline,,7578.842661177724,future,False
+2015-09-27,unique_visitors,Rolling Average Baseline,,7418.718143386786,future,False
+2015-09-28,unique_visitors,Rolling Average Baseline,,7261.11228048869,future,False
+2015-09-29,unique_visitors,Rolling Average Baseline,,7126.828861999567,future,False
+2015-09-30,unique_visitors,Rolling Average Baseline,,7079.237685564805,future,False
+2015-10-01,unique_visitors,Rolling Average Baseline,,7131.521910516039,future,False
+2015-10-02,unique_visitors,Rolling Average Baseline,,7193.535553094874,future,False
+2015-09-19,unique_visitors,ARIMA,,0.0,future,False
+2015-09-20,unique_visitors,ARIMA,,0.0,future,False
+2015-09-21,unique_visitors,ARIMA,,0.0,future,False
+2015-09-22,unique_visitors,ARIMA,,0.0,future,False
+2015-09-23,unique_visitors,ARIMA,,0.0,future,False
+2015-09-24,unique_visitors,ARIMA,,0.0,future,False
+2015-09-25,unique_visitors,ARIMA,,0.0,future,False
+2015-09-26,unique_visitors,ARIMA,,0.0,future,False
+2015-09-27,unique_visitors,ARIMA,,0.0,future,False
+2015-09-28,unique_visitors,ARIMA,,0.0,future,False
+2015-09-29,unique_visitors,ARIMA,,0.0,future,False
+2015-09-30,unique_visitors,ARIMA,,0.0,future,False
+2015-10-01,unique_visitors,ARIMA,,0.0,future,False
+2015-10-02,unique_visitors,ARIMA,,0.0,future,False
+2015-09-19,unique_visitors,Prophet,,8282.892430034984,future,True
+2015-09-20,unique_visitors,Prophet,,8580.955291078883,future,True
+2015-09-21,unique_visitors,Prophet,,11456.211603855765,future,True
+2015-09-22,unique_visitors,Prophet,,11584.149298659375,future,True
+2015-09-23,unique_visitors,Prophet,,11106.352787903996,future,True
+2015-09-24,unique_visitors,Prophet,,10751.808228209888,future,True
+2015-09-25,unique_visitors,Prophet,,9711.87689155858,future,True
+2015-09-26,unique_visitors,Prophet,,8023.935654802184,future,True
+2015-09-27,unique_visitors,Prophet,,8321.998515846655,future,True
+2015-09-28,unique_visitors,Prophet,,11197.254828618834,future,True
+2015-09-29,unique_visitors,Prophet,,11325.192523425221,future,True
+2015-09-30,unique_visitors,Prophet,,10847.396012670175,future,True
+2015-10-01,unique_visitors,Prophet,,10492.851452975694,future,True
+2015-10-02,unique_visitors,Prophet,,9452.920116322417,future,True
+2015-09-19,unique_visitors,XGBoost Time-Series,,1517.0430908203125,future,False
+2015-09-20,unique_visitors,XGBoost Time-Series,,1805.7529296875,future,False
+2015-09-21,unique_visitors,XGBoost Time-Series,,2054.57373046875,future,False
+2015-09-22,unique_visitors,XGBoost Time-Series,,5457.740234375,future,False
+2015-09-23,unique_visitors,XGBoost Time-Series,,4832.16650390625,future,False
+2015-09-24,unique_visitors,XGBoost Time-Series,,4042.579833984375,future,False
+2015-09-25,unique_visitors,XGBoost Time-Series,,4027.114501953125,future,False
+2015-09-26,unique_visitors,XGBoost Time-Series,,3108.254638671875,future,False
+2015-09-27,unique_visitors,XGBoost Time-Series,,1851.16796875,future,False
+2015-09-28,unique_visitors,XGBoost Time-Series,,2154.97216796875,future,False
+2015-09-29,unique_visitors,XGBoost Time-Series,,5116.07958984375,future,False
+2015-09-30,unique_visitors,XGBoost Time-Series,,4756.2265625,future,False
+2015-10-01,unique_visitors,XGBoost Time-Series,,2694.098876953125,future,False
+2015-10-02,unique_visitors,XGBoost Time-Series,,2694.098876953125,future,False
+2015-09-19,event_volume,Rolling Average Baseline,,13835.142857142857,future,False
+2015-09-20,event_volume,Rolling Average Baseline,,13597.877551020409,future,False
+2015-09-21,event_volume,Rolling Average Baseline,,13132.002915451896,future,False
+2015-09-22,event_volume,Rolling Average Baseline,,12020.431903373596,future,False
+2015-09-23,event_volume,Rolling Average Baseline,,10819.493603855535,future,False
+2015-09-24,event_volume,Rolling Average Baseline,,10722.99269012061,future,False
+2015-09-25,event_volume,Rolling Average Baseline,,10807.99164585213,future,False
+2015-09-26,event_volume,Rolling Average Baseline,,12133.70473811672,future,False
+2015-09-27,event_volume,Rolling Average Baseline,,11890.642149684414,future,False
+2015-09-28,event_volume,Rolling Average Baseline,,11646.751378064986,future,False
+2015-09-29,event_volume,Rolling Average Baseline,,11434.572587009712,future,False
+2015-09-30,event_volume,Rolling Average Baseline,,11350.87839895773,future,False
+2015-10-01,event_volume,Rolling Average Baseline,,11426.790512543757,future,False
+2015-10-02,event_volume,Rolling Average Baseline,,11527.333058604205,future,False
+2015-09-19,event_volume,ARIMA,,0.0,future,False
+2015-09-20,event_volume,ARIMA,,0.0,future,False
+2015-09-21,event_volume,ARIMA,,0.0,future,False
+2015-09-22,event_volume,ARIMA,,0.0,future,False
+2015-09-23,event_volume,ARIMA,,0.0,future,False
+2015-09-24,event_volume,ARIMA,,0.0,future,False
+2015-09-25,event_volume,ARIMA,,0.0,future,False
+2015-09-26,event_volume,ARIMA,,0.0,future,False
+2015-09-27,event_volume,ARIMA,,0.0,future,False
+2015-09-28,event_volume,ARIMA,,0.0,future,False
+2015-09-29,event_volume,ARIMA,,0.0,future,False
+2015-09-30,event_volume,ARIMA,,0.0,future,False
+2015-10-01,event_volume,ARIMA,,0.0,future,False
+2015-10-02,event_volume,ARIMA,,0.0,future,False
+2015-09-19,event_volume,Prophet,,12398.20572701867,future,True
+2015-09-20,event_volume,Prophet,,12977.022628347324,future,True
+2015-09-21,event_volume,Prophet,,18200.816617592944,future,True
+2015-09-22,event_volume,Prophet,,18514.830011069032,future,True
+2015-09-23,event_volume,Prophet,,17667.544302169026,future,True
+2015-09-24,event_volume,Prophet,,17001.06863738035,future,True
+2015-09-25,event_volume,Prophet,,14998.8092106577,future,True
+2015-09-26,event_volume,Prophet,,11845.587872159005,future,True
+2015-09-27,event_volume,Prophet,,12424.404773488692,future,True
+2015-09-28,event_volume,Prophet,,17648.198762725722,future,True
+2015-09-29,event_volume,Prophet,,17962.212156206868,future,True
+2015-09-30,event_volume,Prophet,,17114.926447307455,future,True
+2015-10-01,event_volume,Prophet,,16448.450782518066,future,True
+2015-10-02,event_volume,Prophet,,14446.191355791889,future,True
+2015-09-19,event_volume,XGBoost Time-Series,,2497.417724609375,future,False
+2015-09-20,event_volume,XGBoost Time-Series,,2989.72314453125,future,False
+2015-09-21,event_volume,XGBoost Time-Series,,3735.418701171875,future,False
+2015-09-22,event_volume,XGBoost Time-Series,,9842.0107421875,future,False
+2015-09-23,event_volume,XGBoost Time-Series,,9253.6875,future,False
+2015-09-24,event_volume,XGBoost Time-Series,,8698.986328125,future,False
+2015-09-25,event_volume,XGBoost Time-Series,,8707.83203125,future,False
+2015-09-26,event_volume,XGBoost Time-Series,,7294.900390625,future,False
+2015-09-27,event_volume,XGBoost Time-Series,,3089.62548828125,future,False
+2015-09-28,event_volume,XGBoost Time-Series,,3756.97119140625,future,False
+2015-09-29,event_volume,XGBoost Time-Series,,10304.8076171875,future,False
+2015-09-30,event_volume,XGBoost Time-Series,,9678.8515625,future,False
+2015-10-01,event_volume,XGBoost Time-Series,,4264.0986328125,future,False
+2015-10-02,event_volume,XGBoost Time-Series,,4264.0986328125,future,False
+2015-09-19,converted_visitor_count,Rolling Average Baseline,,60.285714285714285,future,False
+2015-09-20,converted_visitor_count,Rolling Average Baseline,,59.326530612244895,future,False
+2015-09-21,converted_visitor_count,Rolling Average Baseline,,58.944606413994165,future,False
+2015-09-22,converted_visitor_count,Rolling Average Baseline,,53.93669304456476,future,False
+2015-09-23,converted_visitor_count,Rolling Average Baseline,,48.9276491937883,future,False
+2015-09-24,converted_visitor_count,Rolling Average Baseline,,45.91731336432948,future,False
+2015-09-25,converted_visitor_count,Rolling Average Baseline,,47.90550098780512,future,False
+2015-09-26,converted_visitor_count,Rolling Average Baseline,,53.60628684320585,future,False
+2015-09-27,converted_visitor_count,Rolling Average Baseline,,52.652082922847505,future,False
+2015-09-28,converted_visitor_count,Rolling Average Baseline,,51.69859039579074,future,False
+2015-09-29,converted_visitor_count,Rolling Average Baseline,,50.663445250333105,future,False
+2015-09-30,converted_visitor_count,Rolling Average Baseline,,50.19583842258572,future,False
+2015-10-01,converted_visitor_count,Rolling Average Baseline,,50.377008312413935,future,False
+2015-10-02,converted_visitor_count,Rolling Average Baseline,,51.01410759071171,future,False
+2015-09-19,converted_visitor_count,ARIMA,,47.37917229122435,future,False
+2015-09-20,converted_visitor_count,ARIMA,,68.54010415745083,future,False
+2015-09-21,converted_visitor_count,ARIMA,,79.91121765205489,future,False
+2015-09-22,converted_visitor_count,ARIMA,,86.02163958075724,future,False
+2015-09-23,converted_visitor_count,ARIMA,,89.30515760777229,future,False
+2015-09-24,converted_visitor_count,ARIMA,,91.0696005152398,future,False
+2015-09-25,converted_visitor_count,ARIMA,,92.01774782190849,future,False
+2015-09-26,converted_visitor_count,ARIMA,,92.52724762569267,future,False
+2015-09-27,converted_visitor_count,ARIMA,,92.80103424959627,future,False
+2015-09-28,converted_visitor_count,ARIMA,,92.94815720209164,future,False
+2015-09-29,converted_visitor_count,ARIMA,,93.02721571430943,future,False
+2015-09-30,converted_visitor_count,ARIMA,,93.06969887718837,future,False
+2015-10-01,converted_visitor_count,ARIMA,,93.09252778045975,future,False
+2015-10-02,converted_visitor_count,ARIMA,,93.10479520099194,future,False
+2015-09-19,converted_visitor_count,Prophet,,47.07157973132308,future,True
+2015-09-20,converted_visitor_count,Prophet,,53.09929681297071,future,True
+2015-09-21,converted_visitor_count,Prophet,,103.85207395884144,future,True
+2015-09-22,converted_visitor_count,Prophet,,107.69226740508101,future,True
+2015-09-23,converted_visitor_count,Prophet,,106.63114142173163,future,True
+2015-09-24,converted_visitor_count,Prophet,,93.36780115374098,future,True
+2015-09-25,converted_visitor_count,Prophet,,73.15256213395102,future,True
+2015-09-26,converted_visitor_count,Prophet,,45.938723511542534,future,True
+2015-09-27,converted_visitor_count,Prophet,,51.96644059320862,future,True
+2015-09-28,converted_visitor_count,Prophet,,102.71921773899194,future,True
+2015-09-29,converted_visitor_count,Prophet,,106.55941118527308,future,True
+2015-09-30,converted_visitor_count,Prophet,,105.49828520193644,future,True
+2015-10-01,converted_visitor_count,Prophet,,92.23494493393424,future,True
+2015-10-02,converted_visitor_count,Prophet,,72.01970591411109,future,True
+2015-09-19,converted_visitor_count,XGBoost Time-Series,,10.397981643676758,future,False
+2015-09-20,converted_visitor_count,XGBoost Time-Series,,23.734222412109375,future,False
+2015-09-21,converted_visitor_count,XGBoost Time-Series,,24.5351619720459,future,False
+2015-09-22,converted_visitor_count,XGBoost Time-Series,,58.60293960571289,future,False
+2015-09-23,converted_visitor_count,XGBoost Time-Series,,58.749725341796875,future,False
+2015-09-24,converted_visitor_count,XGBoost Time-Series,,80.35164642333984,future,False
+2015-09-25,converted_visitor_count,XGBoost Time-Series,,54.3089714050293,future,False
+2015-09-26,converted_visitor_count,XGBoost Time-Series,,36.581172943115234,future,False
+2015-09-27,converted_visitor_count,XGBoost Time-Series,,38.64744186401367,future,False
+2015-09-28,converted_visitor_count,XGBoost Time-Series,,24.71312713623047,future,False
+2015-09-29,converted_visitor_count,XGBoost Time-Series,,68.13970947265625,future,False
+2015-09-30,converted_visitor_count,XGBoost Time-Series,,67.24779510498047,future,False
+2015-10-01,converted_visitor_count,XGBoost Time-Series,,75.92748260498047,future,False
+2015-10-02,converted_visitor_count,XGBoost Time-Series,,51.702266693115234,future,False
+2015-09-19,high_intent_visitor_count,Rolling Average Baseline,,21.0,future,True
+2015-09-20,high_intent_visitor_count,Rolling Average Baseline,,21.714285714285715,future,True
+2015-09-21,high_intent_visitor_count,Rolling Average Baseline,,22.6734693877551,future,True
+2015-09-22,high_intent_visitor_count,Rolling Average Baseline,,21.341107871720116,future,True
+2015-09-23,high_intent_visitor_count,Rolling Average Baseline,,19.96126613910871,future,True
+2015-09-24,high_intent_visitor_count,Rolling Average Baseline,,19.09858987326709,future,True
+2015-09-25,high_intent_visitor_count,Rolling Average Baseline,,18.684102712305247,future,True
+2015-09-26,high_intent_visitor_count,Rolling Average Baseline,,20.638974528348854,future,True
+2015-09-27,high_intent_visitor_count,Rolling Average Baseline,,20.58739946097012,future,True
+2015-09-28,high_intent_visitor_count,Rolling Average Baseline,,20.42641571049646,future,True
+2015-09-29,high_intent_visitor_count,Rolling Average Baseline,,20.105408042316657,future,True
+2015-09-30,high_intent_visitor_count,Rolling Average Baseline,,19.92887949525902,future,True
+2015-10-01,high_intent_visitor_count,Rolling Average Baseline,,19.92425283185192,future,True
+2015-10-02,high_intent_visitor_count,Rolling Average Baseline,,20.042204683078324,future,True
+2015-09-19,high_intent_visitor_count,ARIMA,,14.18810596676208,future,False
+2015-09-20,high_intent_visitor_count,ARIMA,,18.050442490641892,future,False
+2015-09-21,high_intent_visitor_count,ARIMA,,19.67402448650268,future,False
+2015-09-22,high_intent_visitor_count,ARIMA,,20.356517708153746,future,False
+2015-09-23,high_intent_visitor_count,ARIMA,,20.643412363789967,future,False
+2015-09-24,high_intent_visitor_count,ARIMA,,20.764012159980627,future,False
+2015-09-25,high_intent_visitor_count,ARIMA,,20.814707809256404,future,False
+2015-09-26,high_intent_visitor_count,ARIMA,,20.836018366460245,future,False
+2015-09-27,high_intent_visitor_count,ARIMA,,20.844976528646267,future,False
+2015-09-28,high_intent_visitor_count,ARIMA,,20.848742205394345,future,False
+2015-09-29,high_intent_visitor_count,ARIMA,,20.850325155231214,future,False
+2015-09-30,high_intent_visitor_count,ARIMA,,20.850990568211053,future,False
+2015-10-01,high_intent_visitor_count,ARIMA,,20.85127028297107,future,False
+2015-10-02,high_intent_visitor_count,ARIMA,,20.851387864607347,future,False
+2015-09-19,high_intent_visitor_count,Prophet,,20.65698856133009,future,False
+2015-09-20,high_intent_visitor_count,Prophet,,19.870807545452152,future,False
+2015-09-21,high_intent_visitor_count,Prophet,,28.942720431661172,future,False
+2015-09-22,high_intent_visitor_count,Prophet,,29.686421289113454,future,False
+2015-09-23,high_intent_visitor_count,Prophet,,30.080135071039983,future,False
+2015-09-24,high_intent_visitor_count,Prophet,,29.37634215926967,future,False
+2015-09-25,high_intent_visitor_count,Prophet,,28.123636120752483,future,False
+2015-09-26,high_intent_visitor_count,Prophet,,22.343731060114827,future,False
+2015-09-27,high_intent_visitor_count,Prophet,,21.55755004423687,future,False
+2015-09-28,high_intent_visitor_count,Prophet,,30.629462930430332,future,False
+2015-09-29,high_intent_visitor_count,Prophet,,31.373163787890782,future,False
+2015-09-30,high_intent_visitor_count,Prophet,,31.766877569819425,future,False
+2015-10-01,high_intent_visitor_count,Prophet,,31.063084658048435,future,False
+2015-10-02,high_intent_visitor_count,Prophet,,29.8103786195236,future,False
+2015-09-19,high_intent_visitor_count,XGBoost Time-Series,,6.229233741760254,future,False
+2015-09-20,high_intent_visitor_count,XGBoost Time-Series,,11.27232837677002,future,False
+2015-09-21,high_intent_visitor_count,XGBoost Time-Series,,10.560771942138672,future,False
+2015-09-22,high_intent_visitor_count,XGBoost Time-Series,,13.733060836791992,future,False
+2015-09-23,high_intent_visitor_count,XGBoost Time-Series,,13.416200637817383,future,False
+2015-09-24,high_intent_visitor_count,XGBoost Time-Series,,10.600876808166504,future,False
+2015-09-25,high_intent_visitor_count,XGBoost Time-Series,,10.29661750793457,future,False
+2015-09-26,high_intent_visitor_count,XGBoost Time-Series,,8.74474048614502,future,False
+2015-09-27,high_intent_visitor_count,XGBoost Time-Series,,6.047425746917725,future,False
+2015-09-28,high_intent_visitor_count,XGBoost Time-Series,,9.142574310302734,future,False
+2015-09-29,high_intent_visitor_count,XGBoost Time-Series,,12.654702186584473,future,False
+2015-09-30,high_intent_visitor_count,XGBoost Time-Series,,13.46343994140625,future,False
+2015-10-01,high_intent_visitor_count,XGBoost Time-Series,,13.273324966430664,future,False
+2015-10-02,high_intent_visitor_count,XGBoost Time-Series,,12.512826919555664,future,False

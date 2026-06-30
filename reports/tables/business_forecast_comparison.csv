@@ -1,0 +1,21 @@
+target_name,model_name,status,mae,rmse,smape,error_message,is_best_model
+unique_visitors,Rolling Average Baseline,success,2694.2623547098524,3583.7381752815895,0.3069600204895078,,False
+unique_visitors,ARIMA,success,2728.6064592016482,3542.6662849369764,0.31167745210827086,,False
+unique_visitors,Prophet,success,2375.2516372987957,3368.9594858353817,0.28422377150029104,,True
+unique_visitors,XGBoost Time-Series,success,2776.2472795758927,3888.17564042768,0.3127141742734822,,False
+unique_visitors,LSTM Optional,failed,,,,Skipped by default. Set ENABLE_LSTM_FORECAST=1 to run.,False
+event_volume,Rolling Average Baseline,success,4476.200708228893,5775.132522332131,0.3157748693087619,,False
+event_volume,ARIMA,success,4513.741375368889,5700.048932681321,0.3200375224224993,,False
+event_volume,Prophet,success,3919.2370162899824,5327.599767970159,0.2939329514967361,,True
+event_volume,XGBoost Time-Series,success,4441.167689732143,6096.84112101908,0.3122379558824418,,False
+event_volume,LSTM Optional,failed,,,,Skipped by default. Set ENABLE_LSTM_FORECAST=1 to run.,False
+converted_visitor_count,Rolling Average Baseline,success,27.678609073227612,33.355771772260624,0.40026735529797325,,False
+converted_visitor_count,ARIMA,success,28.377785977634574,36.5963325669367,0.39948101766944294,,False
+converted_visitor_count,Prophet,success,22.313172047569306,32.362760263440286,0.32690867150734454,,True
+converted_visitor_count,XGBoost Time-Series,success,26.111398424421036,35.3606024176857,0.3730530135767745,,False
+converted_visitor_count,LSTM Optional,failed,,,,Skipped by default. Set ENABLE_LSTM_FORECAST=1 to run.,False
+high_intent_visitor_count,Rolling Average Baseline,success,6.3232948054688665,8.989568566466763,0.30473557765710185,,True
+high_intent_visitor_count,ARIMA,success,6.709561210333085,9.206575200550494,0.3194244411371211,,False
+high_intent_visitor_count,Prophet,success,6.948295805263497,9.889507223689053,0.31047397321518894,,False
+high_intent_visitor_count,XGBoost Time-Series,success,7.837505204336984,10.08337074896958,0.3550547539878418,,False
+high_intent_visitor_count,LSTM Optional,failed,,,,Skipped by default. Set ENABLE_LSTM_FORECAST=1 to run.,False

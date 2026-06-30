@@ -1,0 +1,225 @@
+date,target_name,model_name,actual_value,predicted_value,data_split,is_best_model
+2015-09-05,unique_visitors,Rolling Average Baseline,9060.0,10855.42857142857,test,False
+2015-09-06,unique_visitors,Rolling Average Baseline,9318.0,11070.918367346938,test,False
+2015-09-07,unique_visitors,Rolling Average Baseline,12230.0,11237.7638483965,test,False
+2015-09-08,unique_visitors,Rolling Average Baseline,12915.0,11159.158683881715,test,False
+2015-09-09,unique_visitors,Rolling Average Baseline,13066.0,11142.324210150533,test,False
+2015-09-10,unique_visitors,Rolling Average Baseline,14075.0,11160.227668743464,test,False
+2015-09-11,unique_visitors,Rolling Average Baseline,13080.0,11095.831621421105,test,False
+2015-09-12,unique_visitors,Rolling Average Baseline,9944.0,11103.093281624117,test,False
+2015-09-13,unique_visitors,Rolling Average Baseline,10768.0,11138.473954509196,test,False
+2015-09-14,unique_visitors,Rolling Average Baseline,13389.0,11148.124752675232,test,False
+2015-09-15,unique_visitors,Rolling Average Baseline,12687.0,11135.319167572194,test,False
+2015-09-16,unique_visitors,Rolling Average Baseline,6824.0,11131.913522385119,test,False
+2015-09-17,unique_visitors,Rolling Average Baseline,6270.0,11130.426281275775,test,False
+2015-09-18,unique_visitors,Rolling Average Baseline,1016.0,11126.168940208963,test,False
+2015-09-05,unique_visitors,ARIMA,9060.0,10686.249832212408,test,False
+2015-09-06,unique_visitors,ARIMA,9318.0,10858.77177042303,test,False
+2015-09-07,unique_visitors,ARIMA,12230.0,10775.806459640033,test,False
+2015-09-08,unique_visitors,ARIMA,12915.0,10815.704242291396,test,False
+2015-09-09,unique_visitors,ARIMA,13066.0,10796.517511771468,test,False
+2015-09-10,unique_visitors,ARIMA,14075.0,10805.744356061567,test,False
+2015-09-11,unique_visitors,ARIMA,13080.0,10801.307192811408,test,False
+2015-09-12,unique_visitors,ARIMA,9944.0,10803.441012033836,test,False
+2015-09-13,unique_visitors,ARIMA,10768.0,10802.414864421657,test,False
+2015-09-14,unique_visitors,ARIMA,13389.0,10802.908335898019,test,False
+2015-09-15,unique_visitors,ARIMA,12687.0,10802.671026864607,test,False
+2015-09-16,unique_visitors,ARIMA,6824.0,10802.785148105724,test,False
+2015-09-17,unique_visitors,ARIMA,6270.0,10802.73026752454,test,False
+2015-09-18,unique_visitors,ARIMA,1016.0,10802.75665944038,test,False
+2015-09-05,unique_visitors,Prophet,9060.0,8737.780603708357,test,True
+2015-09-06,unique_visitors,Prophet,9318.0,9025.495776732028,test,True
+2015-09-07,unique_visitors,Prophet,12230.0,11907.253775023313,test,True
+2015-09-08,unique_visitors,Prophet,12915.0,12046.908962640975,test,True
+2015-09-09,unique_visitors,Prophet,13066.0,11830.18033053145,test,True
+2015-09-10,unique_visitors,Prophet,14075.0,11408.09802506647,test,True
+2015-09-11,unique_visitors,Prophet,13080.0,10597.266951933398,test,True
+2015-09-12,unique_visitors,Prophet,9944.0,8471.379445316377,test,True
+2015-09-13,unique_visitors,Prophet,10768.0,8759.094618342639,test,True
+2015-09-14,unique_visitors,Prophet,13389.0,11640.852616632823,test,True
+2015-09-15,unique_visitors,Prophet,12687.0,11780.507804248471,test,True
+2015-09-16,unique_visitors,Prophet,6824.0,11563.77917213956,test,True
+2015-09-17,unique_visitors,Prophet,6270.0,11141.696866674667,test,True
+2015-09-18,unique_visitors,Prophet,1016.0,10330.865793545217,test,True
+2015-09-05,unique_visitors,XGBoost Time-Series,9060.0,11097.26171875,test,False
+2015-09-06,unique_visitors,XGBoost Time-Series,9318.0,9396.3896484375,test,False
+2015-09-07,unique_visitors,XGBoost Time-Series,12230.0,9508.6591796875,test,False
+2015-09-08,unique_visitors,XGBoost Time-Series,12915.0,11974.556640625,test,False
+2015-09-09,unique_visitors,XGBoost Time-Series,13066.0,12062.67578125,test,False
+2015-09-10,unique_visitors,XGBoost Time-Series,14075.0,11849.271484375,test,False
+2015-09-11,unique_visitors,XGBoost Time-Series,13080.0,11815.068359375,test,False
+2015-09-12,unique_visitors,XGBoost Time-Series,9944.0,10955.3095703125,test,False
+2015-09-13,unique_visitors,XGBoost Time-Series,10768.0,9469.52734375,test,False
+2015-09-14,unique_visitors,XGBoost Time-Series,13389.0,9243.701171875,test,False
+2015-09-15,unique_visitors,XGBoost Time-Series,12687.0,11693.853515625,test,False
+2015-09-16,unique_visitors,XGBoost Time-Series,6824.0,11654.224609375,test,False
+2015-09-17,unique_visitors,XGBoost Time-Series,6270.0,11754.669921875,test,False
+2015-09-18,unique_visitors,XGBoost Time-Series,1016.0,11848.919921875,test,False
+2015-09-05,event_volume,Rolling Average Baseline,14365.0,17337.285714285714,test,False
+2015-09-06,event_volume,Rolling Average Baseline,14574.0,17676.183673469386,test,False
+2015-09-07,event_volume,Rolling Average Baseline,19793.0,17875.924198250726,test,False
+2015-09-08,event_volume,Rolling Average Baseline,20815.0,17768.627655143686,test,False
+2015-09-09,event_volume,Rolling Average Baseline,21761.0,17710.145891592787,test,False
+2015-09-10,event_volume,Rolling Average Baseline,22548.0,17734.59530467747,test,False
+2015-09-11,event_volume,Rolling Average Baseline,21517.0,17690.82320534568,test,False
+2015-09-12,event_volume,Rolling Average Baseline,15496.0,17684.797948966494,test,False
+2015-09-13,event_volume,Rolling Average Baseline,16859.0,17734.442553920893,test,False
+2015-09-14,event_volume,Rolling Average Baseline,20913.0,17742.76525112825,test,False
+2015-09-15,event_volume,Rolling Average Baseline,20427.0,17723.742544396464,test,False
+2015-09-16,event_volume,Rolling Average Baseline,11495.0,17717.33038571829,test,False
+2015-09-17,event_volume,Rolling Average Baseline,10128.0,17718.356742021937,test,False
+2015-09-18,event_volume,Rolling Average Baseline,1528.0,17716.036947356857,test,False
+2015-09-05,event_volume,ARIMA,14365.0,16733.52241322787,test,False
+2015-09-06,event_volume,ARIMA,14574.0,17140.951550739985,test,False
+2015-09-07,event_volume,ARIMA,19793.0,16974.866283505562,test,False
+2015-09-08,event_volume,ARIMA,20815.0,17042.569629812035,test,False
+2015-09-09,event_volume,ARIMA,21761.0,17014.970895876024,test,False
+2015-09-10,event_volume,ARIMA,22548.0,17026.22130160077,test,False
+2015-09-11,event_volume,ARIMA,21517.0,17021.635162640017,test,False
+2015-09-12,event_volume,ARIMA,15496.0,17023.504665934557,test,False
+2015-09-13,event_volume,ARIMA,16859.0,17022.74257769471,test,False
+2015-09-14,event_volume,ARIMA,20913.0,17023.05323694148,test,False
+2015-09-15,event_volume,ARIMA,20427.0,17022.926599155253,test,False
+2015-09-16,event_volume,ARIMA,11495.0,17022.978222047754,test,False
+2015-09-17,event_volume,ARIMA,10128.0,17022.9571783837,test,False
+2015-09-18,event_volume,ARIMA,1528.0,17022.965756667003,test,False
+2015-09-05,event_volume,Prophet,14365.0,13295.82887325836,test,True
+2015-09-06,event_volume,Prophet,14574.0,13872.155989482653,test,True
+2015-09-07,event_volume,Prophet,19793.0,19159.13976102976,test,True
+2015-09-08,event_volume,Prophet,20815.0,19475.280900470323,test,True
+2015-09-09,event_volume,Prophet,21761.0,18974.492092817552,test,True
+2015-09-10,event_volume,Prophet,22548.0,18262.979765271804,test,True
+2015-09-11,event_volume,Prophet,21517.0,16570.060040054384,test,True
+2015-09-12,event_volume,Prophet,15496.0,12738.699596717976,test,True
+2015-09-13,event_volume,Prophet,16859.0,13315.02671294652,test,True
+2015-09-14,event_volume,Prophet,20913.0,18602.010484491802,test,True
+2015-09-15,event_volume,Prophet,20427.0,18918.15162392855,test,True
+2015-09-16,event_volume,Prophet,11495.0,18417.362816277193,test,True
+2015-09-17,event_volume,Prophet,10128.0,17705.850488731616,test,True
+2015-09-18,event_volume,Prophet,1528.0,16012.930763520624,test,True
+2015-09-05,event_volume,XGBoost Time-Series,14365.0,17610.283203125,test,False
+2015-09-06,event_volume,XGBoost Time-Series,14574.0,15136.4462890625,test,False
+2015-09-07,event_volume,XGBoost Time-Series,19793.0,15946.0146484375,test,False
+2015-09-08,event_volume,XGBoost Time-Series,20815.0,19566.9375,test,False
+2015-09-09,event_volume,XGBoost Time-Series,21761.0,18935.126953125,test,False
+2015-09-10,event_volume,XGBoost Time-Series,22548.0,19267.150390625,test,False
+2015-09-11,event_volume,XGBoost Time-Series,21517.0,18999.041015625,test,False
+2015-09-12,event_volume,XGBoost Time-Series,15496.0,17937.072265625,test,False
+2015-09-13,event_volume,XGBoost Time-Series,16859.0,15629.9501953125,test,False
+2015-09-14,event_volume,XGBoost Time-Series,20913.0,14922.3115234375,test,False
+2015-09-15,event_volume,XGBoost Time-Series,20427.0,18561.7109375,test,False
+2015-09-16,event_volume,XGBoost Time-Series,11495.0,18857.451171875,test,False
+2015-09-17,event_volume,XGBoost Time-Series,10128.0,18809.029296875,test,False
+2015-09-18,event_volume,XGBoost Time-Series,1528.0,18607.30859375,test,False
+2015-09-05,converted_visitor_count,Rolling Average Baseline,56.0,85.28571428571429,test,False
+2015-09-06,converted_visitor_count,Rolling Average Baseline,54.0,89.75510204081634,test,False
+2015-09-07,converted_visitor_count,Rolling Average Baseline,115.0,88.14868804664725,test,False
+2015-09-08,converted_visitor_count,Rolling Average Baseline,101.0,85.45564348188256,test,False
+2015-09-09,converted_visitor_count,Rolling Average Baseline,120.0,85.94930683643722,test,False
+2015-09-10,converted_visitor_count,Rolling Average Baseline,108.0,85.65635067021394,test,False
+2015-09-11,converted_visitor_count,Rolling Average Baseline,106.0,86.17868648024451,test,False
+2015-09-12,converted_visitor_count,Rolling Average Baseline,67.0,86.63278454885088,test,False
+2015-09-13,converted_visitor_count,Rolling Average Baseline,62.0,86.82522315787038,test,False
+2015-09-14,converted_visitor_count,Rolling Average Baseline,94.0,86.40666903173523,test,False
+2015-09-15,converted_visitor_count,Rolling Average Baseline,89.0,86.1578091724621,test,False
+2015-09-16,converted_visitor_count,Rolling Average Baseline,70.0,86.2581185568306,test,False
+2015-09-17,converted_visitor_count,Rolling Average Baseline,32.0,86.3022345168868,test,False
+2015-09-18,converted_visitor_count,Rolling Average Baseline,8.0,86.39450363784007,test,False
+2015-09-05,converted_visitor_count,ARIMA,56.0,89.73916102518898,test,False
+2015-09-06,converted_visitor_count,ARIMA,54.0,93.13278606949795,test,False
+2015-09-07,converted_visitor_count,ARIMA,115.0,94.841706645563,test,False
+2015-09-08,converted_visitor_count,ARIMA,101.0,95.70226416065911,test,False
+2015-09-09,converted_visitor_count,ARIMA,120.0,96.13561328592603,test,False
+2015-09-10,converted_visitor_count,ARIMA,108.0,96.35383398712881,test,False
+2015-09-11,converted_visitor_count,ARIMA,106.0,96.46372292345492,test,False
+2015-09-12,converted_visitor_count,ARIMA,67.0,96.51905946238239,test,False
+2015-09-13,converted_visitor_count,ARIMA,62.0,96.54692516609056,test,False
+2015-09-14,converted_visitor_count,ARIMA,94.0,96.56095743948897,test,False
+2015-09-15,converted_visitor_count,ARIMA,89.0,96.56802364168469,test,False
+2015-09-16,converted_visitor_count,ARIMA,70.0,96.57158195415859,test,False
+2015-09-17,converted_visitor_count,ARIMA,32.0,96.57337380603477,test,False
+2015-09-18,converted_visitor_count,ARIMA,8.0,96.57427612508901,test,False
+2015-09-05,converted_visitor_count,Prophet,56.0,52.60407031224166,test,True
+2015-09-06,converted_visitor_count,Prophet,54.0,60.06889533875544,test,True
+2015-09-07,converted_visitor_count,Prophet,115.0,111.2971869478583,test,True
+2015-09-08,converted_visitor_count,Prophet,101.0,116.62985128288292,test,True
+2015-09-09,converted_visitor_count,Prophet,120.0,115.46175036271994,test,True
+2015-09-10,converted_visitor_count,Prophet,108.0,103.5144193189581,test,True
+2015-09-11,converted_visitor_count,Prophet,106.0,82.51065273585611,test,True
+2015-09-12,converted_visitor_count,Prophet,67.0,52.048352553775246,test,True
+2015-09-13,converted_visitor_count,Prophet,62.0,59.513177580337434,test,True
+2015-09-14,converted_visitor_count,Prophet,94.0,110.74146918942287,test,True
+2015-09-15,converted_visitor_count,Prophet,89.0,116.07413352441168,test,True
+2015-09-16,converted_visitor_count,Prophet,70.0,114.90603260426568,test,True
+2015-09-17,converted_visitor_count,Prophet,32.0,102.95870156051396,test,True
+2015-09-18,converted_visitor_count,Prophet,8.0,81.95493497746453,test,True
+2015-09-05,converted_visitor_count,XGBoost Time-Series,56.0,82.41154479980469,test,False
+2015-09-06,converted_visitor_count,XGBoost Time-Series,54.0,71.86063385009766,test,False
+2015-09-07,converted_visitor_count,XGBoost Time-Series,115.0,83.4344482421875,test,False
+2015-09-08,converted_visitor_count,XGBoost Time-Series,101.0,101.18158721923828,test,False
+2015-09-09,converted_visitor_count,XGBoost Time-Series,120.0,108.7423095703125,test,False
+2015-09-10,converted_visitor_count,XGBoost Time-Series,108.0,105.0029296875,test,False
+2015-09-11,converted_visitor_count,XGBoost Time-Series,106.0,95.81050109863281,test,False
+2015-09-12,converted_visitor_count,XGBoost Time-Series,67.0,83.57365417480469,test,False
+2015-09-13,converted_visitor_count,XGBoost Time-Series,62.0,78.04533386230469,test,False
+2015-09-14,converted_visitor_count,XGBoost Time-Series,94.0,78.72924041748047,test,False
+2015-09-15,converted_visitor_count,XGBoost Time-Series,89.0,110.55286407470703,test,False
+2015-09-16,converted_visitor_count,XGBoost Time-Series,70.0,107.3713150024414,test,False
+2015-09-17,converted_visitor_count,XGBoost Time-Series,32.0,104.08432006835938,test,False
+2015-09-18,converted_visitor_count,XGBoost Time-Series,8.0,94.19775390625,test,False
+2015-09-05,high_intent_visitor_count,Rolling Average Baseline,17.0,25.428571428571427,test,True
+2015-09-06,high_intent_visitor_count,Rolling Average Baseline,14.0,26.632653061224488,test,True
+2015-09-07,high_intent_visitor_count,Rolling Average Baseline,28.0,28.151603498542272,test,True
+2015-09-08,high_intent_visitor_count,Rolling Average Baseline,28.0,28.31611828404831,test,True
+2015-09-09,high_intent_visitor_count,Rolling Average Baseline,32.0,28.07556375319807,test,True
+2015-09-10,high_intent_visitor_count,Rolling Average Baseline,27.0,27.800644289369224,test,True
+2015-09-11,high_intent_visitor_count,Rolling Average Baseline,28.0,28.200736330707684,test,True
+2015-09-12,high_intent_visitor_count,Rolling Average Baseline,16.0,27.515127235094496,test,True
+2015-09-13,high_intent_visitor_count,Rolling Average Baseline,15.0,27.813206636026365,test,True
+2015-09-14,high_intent_visitor_count,Rolling Average Baseline,32.0,27.981857146712347,test,True
+2015-09-15,high_intent_visitor_count,Rolling Average Baseline,31.0,27.9576076678795,test,True
+2015-09-16,high_intent_visitor_count,Rolling Average Baseline,26.0,27.90639186556967,test,True
+2015-09-17,high_intent_visitor_count,Rolling Average Baseline,22.0,27.882224453051325,test,True
+2015-09-18,high_intent_visitor_count,Rolling Average Baseline,5.0,27.89387876214877,test,True
+2015-09-05,high_intent_visitor_count,ARIMA,17.0,29.51220493341791,test,False
+2015-09-06,high_intent_visitor_count,ARIMA,14.0,28.011148480989608,test,False
+2015-09-07,high_intent_visitor_count,ARIMA,28.0,27.365132751749915,test,False
+2015-09-08,high_intent_visitor_count,ARIMA,28.0,27.08710435265143,test,False
+2015-09-09,high_intent_visitor_count,ARIMA,32.0,26.967448147381873,test,False
+2015-09-10,high_intent_visitor_count,ARIMA,27.0,26.91595122294561,test,False
+2015-09-11,high_intent_visitor_count,ARIMA,28.0,26.89378828354418,test,False
+2015-09-12,high_intent_visitor_count,ARIMA,16.0,26.884249929782502,test,False
+2015-09-13,high_intent_visitor_count,ARIMA,15.0,26.88014486994206,test,False
+2015-09-14,high_intent_visitor_count,ARIMA,32.0,26.878378158755346,test,False
+2015-09-15,high_intent_visitor_count,ARIMA,31.0,26.87761781212495,test,False
+2015-09-16,high_intent_visitor_count,ARIMA,26.0,26.877290578674057,test,False
+2015-09-17,high_intent_visitor_count,ARIMA,22.0,26.877149745891874,test,False
+2015-09-18,high_intent_visitor_count,ARIMA,5.0,26.877089135118485,test,False
+2015-09-05,high_intent_visitor_count,Prophet,17.0,21.906244938174403,test,False
+2015-09-06,high_intent_visitor_count,Prophet,14.0,21.397313366494338,test,False
+2015-09-07,high_intent_visitor_count,Prophet,28.0,29.92853015665123,test,False
+2015-09-08,high_intent_visitor_count,Prophet,28.0,30.958641471106745,test,False
+2015-09-09,high_intent_visitor_count,Prophet,32.0,31.597549743599387,test,False
+2015-09-10,high_intent_visitor_count,Prophet,27.0,31.4548670035698,test,False
+2015-09-11,high_intent_visitor_count,Prophet,28.0,31.08663318141431,test,False
+2015-09-12,high_intent_visitor_count,Prophet,16.0,24.879342229438713,test,False
+2015-09-13,high_intent_visitor_count,Prophet,15.0,24.370410657765216,test,False
+2015-09-14,high_intent_visitor_count,Prophet,32.0,32.90162744791935,test,False
+2015-09-15,high_intent_visitor_count,Prophet,31.0,33.93173876236922,test,False
+2015-09-16,high_intent_visitor_count,Prophet,26.0,34.57064703486372,test,False
+2015-09-17,high_intent_visitor_count,Prophet,22.0,34.42796429483224,test,False
+2015-09-18,high_intent_visitor_count,Prophet,5.0,34.05973047268903,test,False
+2015-09-05,high_intent_visitor_count,XGBoost Time-Series,17.0,32.459590911865234,test,False
+2015-09-06,high_intent_visitor_count,XGBoost Time-Series,14.0,19.972230911254883,test,False
+2015-09-07,high_intent_visitor_count,XGBoost Time-Series,28.0,18.97974395751953,test,False
+2015-09-08,high_intent_visitor_count,XGBoost Time-Series,28.0,29.74665641784668,test,False
+2015-09-09,high_intent_visitor_count,XGBoost Time-Series,32.0,28.133895874023438,test,False
+2015-09-10,high_intent_visitor_count,XGBoost Time-Series,27.0,29.214567184448242,test,False
+2015-09-11,high_intent_visitor_count,XGBoost Time-Series,28.0,30.42708969116211,test,False
+2015-09-12,high_intent_visitor_count,XGBoost Time-Series,16.0,28.980222702026367,test,False
+2015-09-13,high_intent_visitor_count,XGBoost Time-Series,15.0,22.210508346557617,test,False
+2015-09-14,high_intent_visitor_count,XGBoost Time-Series,32.0,22.89278793334961,test,False
+2015-09-15,high_intent_visitor_count,XGBoost Time-Series,31.0,28.63302993774414,test,False
+2015-09-16,high_intent_visitor_count,XGBoost Time-Series,26.0,29.490419387817383,test,False
+2015-09-17,high_intent_visitor_count,XGBoost Time-Series,22.0,30.444786071777344,test,False
+2015-09-18,high_intent_visitor_count,XGBoost Time-Series,5.0,30.418458938598633,test,False
