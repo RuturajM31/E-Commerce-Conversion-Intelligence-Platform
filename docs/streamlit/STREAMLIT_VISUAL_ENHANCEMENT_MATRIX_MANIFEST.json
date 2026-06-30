@@ -1,29 +1,32 @@
 {
-  "matrix_version": "1.0",
+  "matrix_version": "1.1",
   "created_date": "2026-06-21",
   "project": "E-Commerce Conversion Intelligence Platform",
   "total_rows": 204,
   "areas": {
-    "GOV": 12,
-    "AUDIT": 16,
-    "UX": 15,
-    "SHARED": 18,
-    "EXEC": 12,
-    "SEG": 12,
-    "KNN": 10,
-    "BATCH": 10,
-    "MODEL": 14,
-    "XAI": 12,
-    "FCST": 12,
-    "JOURNEY": 10,
     "ANOM": 10,
-    "MON": 14,
     "ARCH": 10,
-    "QA": 17
+    "AUDIT": 16,
+    "BATCH": 10,
+    "EXEC": 12,
+    "FCST": 12,
+    "GOV": 12,
+    "JOURNEY": 10,
+    "KNN": 10,
+    "MODEL": 14,
+    "MON": 14,
+    "QA": 17,
+    "SEG": 12,
+    "SHARED": 18,
+    "UX": 15,
+    "XAI": 12
   },
   "statuses": {
-    "PLANNED": 191,
-    "CONDITIONAL": 13
+    "CONDITIONAL": 13,
+    "EXCLUDED": 2,
+    "IN PROGRESS": 24,
+    "PLANNED": 134,
+    "VERIFIED": 31
   },
   "required_categories": [
     "EXEC",
@@ -45,5 +48,23 @@
     "docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_COVERAGE_MATRIX.md",
     "docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_COVERAGE_MATRIX.csv",
     "docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_HANDOFF.md"
-  ]
+  ],
+  "last_reconciled_date": "2026-06-30",
+  "active_branch": "feat/streamlit-visual-intelligence-enhancement",
+  "package_checkpoints": {
+    "package_01": {
+      "state": "committed_and_pushed",
+      "commit": "82c3f66",
+      "evidence_file": "docs/streamlit/PACKAGE_01_MATRIX_EVIDENCE.csv"
+    },
+    "package_02": {
+      "state": "qa_verified_commit_pending",
+      "automated_result": "31 passed in 7.00s",
+      "visual_qa_date": "2026-06-30",
+      "verified_rows": 10,
+      "excluded_rows": 2,
+      "evidence_file": "docs/streamlit/PACKAGE_02_MATRIX_EVIDENCE.csv"
+    }
+  },
+  "next_controlled_action": "Review, commit, and push the Package 2 closure checkpoint; then reconcile the next logical matrix package."
 }

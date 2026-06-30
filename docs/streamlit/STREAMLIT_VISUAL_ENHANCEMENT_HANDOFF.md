@@ -26,7 +26,7 @@ This phase is not permission to rebuild the app from scratch.
 - `app/pages/5_Anomaly_Outlier.py`
 - `app/pages/6_Monitoring_Drift_Health.py`
 - `app/pages/7_MLOps_Architecture.py`
-- `app/pages/8_MVD_Coverage_Proof.py`
+- `app/pages/8_ML_Validation_Evidence.py`
 
 ## Existing visual rule
 
@@ -75,7 +75,7 @@ Shared control sections also exist for governance, current-state audit, UX, filt
 
 ## First action in a new chat
 
-Do not start coding.
+Do not start a new implementation package until the Package 2 Git checkpoint is confirmed.
 
 First run or request:
 
@@ -87,7 +87,7 @@ test -f docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_COVERAGE_MATRIX.md && echo "
 test -f docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_HANDOFF.md && echo "Handoff found"
 ```
 
-Then read the full matrix and inspect the current app files before proposing changes.
+Then read the full matrix, Package 1 and Package 2 reconciliation files, and inspect the current app files before proposing changes. The immediate controlled action is the Package 2 diff review, commit, and push; after that, select the next logical matrix package.
 
 ## Working rules
 
@@ -106,12 +106,21 @@ Then read the full matrix and inspect the current app files before proposing cha
 - Do not claim a file is committed until Git evidence confirms it.
 - Do not merge without explicit user approval.
 
+## Current verified checkpoint — 30 June 2026
+
+- Active branch: `feat/streamlit-visual-intelligence-enhancement`
+- Package 1: committed and pushed at `82c3f66`
+- Package 2: automated and user visual QA passed; closure commit pending
+- Package 2 automated result: `31 passed in 7.00s`
+- Package 2 matrix result: 10 `VERIFIED`, 2 `EXCLUDED`
+- Accepted exclusions: visible investigation links and visible executive brief CSV download
+- Existing stash remains untouched
+
 ## Matrix facts
 
 - Total rows: 204
 - Areas: GOV, AUDIT, UX, SHARED, EXEC, SEG, KNN, BATCH, MODEL, XAI, FCST, JOURNEY, ANOM, MON, ARCH, QA
-- Planned rows: 191
-- Conditional rows: 13
+- Current statuses: 31 VERIFIED, 24 IN PROGRESS, 134 PLANNED, 13 CONDITIONAL, 2 EXCLUDED
 
 ## Final completion rule
 

@@ -152,3 +152,18 @@ Package 1 can close only after:
 - controlling and historical metrics are visibly separated;
 - the final 47-segment rendered review has been audited; and
 - Git changes are reviewed before the Package 1 commit.
+
+## Git closure checkpoint
+
+Package 1 is committed and pushed at `82c3f66` on
+`feat/streamlit-visual-intelligence-enhancement`.
+
+`PACKAGE_01_MATRIX_EVIDENCE.csv` now separates two meanings clearly:
+
+- a Package 1 contribution can be verified at commit `82c3f66`; and
+- a phase-wide master-matrix row may remain `IN PROGRESS` when later pages or
+  final cross-application QA must still satisfy the rest of its acceptance
+  evidence.
+
+This prevents the committed Package 1 work from remaining falsely labelled
+"pending QA and commit" without prematurely closing broader phase controls.
