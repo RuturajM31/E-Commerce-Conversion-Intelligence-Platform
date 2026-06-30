@@ -1,1065 +1,911 @@
 # 3_Model_Benchmark_Selection.py
-# Streamlit page for model benchmark and final champion selection.
+# Governed Streamlit page for model selection and final champion evidence.
 #
-# Purpose:
-#   Prove why the final production model was selected.
-#
-# Page flow:
-#   1. Page setup
-#   2. Page style
-#   3. Load final champion context
-#   4. Helper functions
-#   5. Charts
-#   6. Sidebar and header
-#   7. Champion KPI proof
-#   8. Final benchmark comparison
-#   9. Threshold and stability proof
-#   10. Raw evidence tables
+# Important evidence rule:
+# - Validation evidence compares candidate models.
+# - Untouched-holdout evidence reports final production performance.
+# - Metrics from the two evidence splits are never mixed.
 
 from __future__ import annotations
 
-# STREAMLIT CLOUD PATH BOOTSTRAP
-# Streamlit executes page files from inside the app folder.
-# Add the repository root so imports such as `app.*` and `src.*`
-# work consistently locally and on Streamlit Community Cloud.
 import sys
 from pathlib import Path
 
-_PROJECT_ROOT = Path(__file__).resolve().parent
+# Streamlit runs this file from inside the app folder. Find the repository root
+# so imports and evidence paths work locally and on Streamlit Community Cloud.
+PROJECT_ROOT = Path(__file__).resolve().parent
 
 while (
-    _PROJECT_ROOT != _PROJECT_ROOT.parent
-    and not (_PROJECT_ROOT / "src").is_dir()
+    PROJECT_ROOT != PROJECT_ROOT.parent
+    and not (PROJECT_ROOT / "src").is_dir()
 ):
-    _PROJECT_ROOT = _PROJECT_ROOT.parent
+    PROJECT_ROOT = PROJECT_ROOT.parent
 
-if str(_PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(_PROJECT_ROOT))
-
-
-from pathlib import Path
-from typing import Dict, List
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 import pandas as pd
+import plotly.express as px
 import streamlit as st
 
-try:
-    import plotly.express as px
-    import plotly.graph_objects as go
-    PLOTLY_AVAILABLE = True
-except Exception:
-    PLOTLY_AVAILABLE = False
+from app.app_utils import inject_global_css
 
-from app.app_utils import (
-    create_master_model_comparison_table,
-    escape_text,
-    format_lift,
-    format_percent,
-    format_score,
-    get_best_threshold,
-    get_champion_metrics,
-    get_champion_model_name,
-    get_champion_track,
-    inject_global_css,
-    load_model_selection_tables,
-    render_html,
+
+HOLDOUT_PATH = (
+    PROJECT_ROOT / "reports/tables/final_true_champion_holdout.csv"
+)
+COMPARISON_PATH = (
+    PROJECT_ROOT / "reports/tables/final_true_champion_comparison.csv"
+)
+THRESHOLD_PATH = (
+    PROJECT_ROOT / "reports/tables/final_true_champion_thresholds.csv"
+)
+STABILITY_PATH = (
+    PROJECT_ROOT / "reports/tables/final_true_champion_stability.csv"
+)
+SENSITIVITY_PATH = (
+    PROJECT_ROOT / "reports/tables/final_true_champion_sensitivity.csv"
 )
 
 
-# --------------------------------------------------
-# 1. PAGE SETUP
-# --------------------------------------------------
+def read_csv_if_available(path: Path) -> pd.DataFrame:
+    # Missing optional evidence should show a clear page message, not crash.
+    if not path.is_file():
+        return pd.DataFrame()
 
+    return pd.read_csv(path)
+
+
+def numeric_value(
+    row: pd.Series,
+    candidates: tuple[str, ...],
+    default: float = 0.0,
+) -> float:
+    # Different project generations used slightly different column names.
+    for column in candidates:
+        if column in row.index and pd.notna(row[column]):
+            value = pd.to_numeric(
+                pd.Series([row[column]]),
+                errors="coerce",
+            ).iloc[0]
+
+            if pd.notna(value):
+                return float(value)
+
+    return float(default)
+
+
+def text_value(
+    row: pd.Series,
+    candidates: tuple[str, ...],
+    default: str = "Unavailable",
+) -> str:
+    for column in candidates:
+        if column in row.index and pd.notna(row[column]):
+            value = str(row[column]).strip()
+            if value:
+                return value
+
+    return default
+
+
+def boolean_column(
+    data: pd.DataFrame,
+    column: str,
+    default: bool = False,
+) -> pd.Series:
+    if column not in data.columns:
+        return pd.Series(default, index=data.index, dtype=bool)
+
+    return (
+        data[column]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .isin(["true", "1", "yes", "selected"])
+    )
+
+
+def numeric_column(
+    data: pd.DataFrame,
+    candidates: tuple[str, ...],
+) -> pd.Series:
+    for column in candidates:
+        if column in data.columns:
+            return pd.to_numeric(data[column], errors="coerce")
+
+    return pd.Series(float("nan"), index=data.index, dtype=float)
+
+
+def percent(value: float) -> str:
+    return f"{value:.1%}"
+
+
+def score(value: float) -> str:
+    return f"{value:.3f}"
+
+
+def lift_text(value: float | None) -> str:
+    if value is None:
+        return "Unavailable"
+
+    return f"{value:.1f}×"
+
+
+def selected_candidate(
+    comparison: pd.DataFrame,
+    holdout_model_name: str,
+) -> pd.Series | None:
+    if comparison.empty:
+        return None
+
+    selected_mask = boolean_column(
+        comparison,
+        "is_final_champion",
+    )
+    selected_rows = comparison[selected_mask]
+
+    if not selected_rows.empty:
+        return selected_rows.iloc[0]
+
+    if "model_name" in comparison.columns:
+        name_mask = (
+            comparison["model_name"]
+            .astype(str)
+            .str.strip()
+            .str.casefold()
+            == holdout_model_name.strip().casefold()
+        )
+        matching_rows = comparison[name_mask]
+
+        if not matching_rows.empty:
+            return matching_rows.iloc[0]
+
+    deployable_mask = boolean_column(comparison, "deployable")
+    deployable_rows = comparison[deployable_mask].copy()
+
+    if not deployable_rows.empty:
+        deployable_rows["_business_score"] = numeric_column(
+            deployable_rows,
+            ("business_score", "champion_score"),
+        )
+        deployable_rows = deployable_rows.dropna(
+            subset=["_business_score"]
+        )
+
+        if not deployable_rows.empty:
+            index = deployable_rows["_business_score"].idxmax()
+            return deployable_rows.loc[index]
+
+    return comparison.iloc[0]
+
+
+def highest_pr_auc_candidate(
+    comparison: pd.DataFrame,
+) -> pd.Series | None:
+    if comparison.empty:
+        return None
+
+    candidate_data = comparison.copy()
+    candidate_data["_pr_auc"] = numeric_column(
+        candidate_data,
+        ("pr_auc",),
+    )
+    candidate_data = candidate_data.dropna(subset=["_pr_auc"])
+
+    if candidate_data.empty:
+        return None
+
+    return candidate_data.loc[candidate_data["_pr_auc"].idxmax()]
+
+
+def build_model_comparison_chart(
+    comparison: pd.DataFrame,
+) -> object | None:
+    required = {"model_name", "pr_auc"}
+
+    if comparison.empty or not required.issubset(comparison.columns):
+        return None
+
+    chart_data = comparison.copy()
+    chart_data["PR-AUC"] = numeric_column(
+        chart_data,
+        ("pr_auc",),
+    )
+    chart_data["ROC-AUC"] = numeric_column(
+        chart_data,
+        ("roc_auc",),
+    )
+    chart_data["Precision"] = numeric_column(
+        chart_data,
+        ("best_precision", "precision"),
+    )
+    chart_data["Recall"] = numeric_column(
+        chart_data,
+        ("best_recall", "recall"),
+    )
+    chart_data["Business score"] = numeric_column(
+        chart_data,
+        ("business_score", "champion_score"),
+    )
+    chart_data["Deployable"] = boolean_column(
+        chart_data,
+        "deployable",
+    ).map(
+        {
+            True: "Deployable",
+            False: "Not deployable",
+        }
+    )
+    chart_data["Selected"] = boolean_column(
+        chart_data,
+        "is_final_champion",
+    )
+    chart_data["Model"] = chart_data["model_name"].astype(str)
+    chart_data.loc[
+        chart_data["Selected"],
+        "Model",
+    ] = chart_data.loc[
+        chart_data["Selected"],
+        "Model",
+    ] + " ★ selected"
+
+    chart_data = chart_data.sort_values("PR-AUC", ascending=True)
+
+    figure = px.bar(
+        chart_data,
+        x="PR-AUC",
+        y="Model",
+        orientation="h",
+        color="Deployable",
+        hover_data={
+            "ROC-AUC": ":.3f",
+            "Precision": ":.1%",
+            "Recall": ":.1%",
+            "Business score": ":.3f",
+            "Selected": True,
+        },
+        title="Validation candidate comparison by PR-AUC",
+    )
+    figure.update_layout(
+        height=520,
+        xaxis_title="Validation PR-AUC",
+        yaxis_title="",
+        legend_title="Deployment status",
+        margin=dict(l=20, r=20, t=70, b=20),
+    )
+
+    return figure
+
+
+def build_precision_recall_chart(
+    comparison: pd.DataFrame,
+) -> object | None:
+    if comparison.empty or "model_name" not in comparison.columns:
+        return None
+
+    chart_data = comparison.copy()
+    chart_data["Recall"] = numeric_column(
+        chart_data,
+        ("best_recall", "recall"),
+    )
+    chart_data["Precision"] = numeric_column(
+        chart_data,
+        ("best_precision", "precision"),
+    )
+    chart_data["Business score"] = numeric_column(
+        chart_data,
+        ("business_score", "champion_score"),
+    ).fillna(0.0)
+    chart_data["PR-AUC"] = numeric_column(
+        chart_data,
+        ("pr_auc",),
+    )
+    chart_data["Deployable"] = boolean_column(
+        chart_data,
+        "deployable",
+    ).map(
+        {
+            True: "Deployable",
+            False: "Not deployable",
+        }
+    )
+
+    chart_data = chart_data.dropna(
+        subset=["Recall", "Precision"]
+    )
+
+    if chart_data.empty:
+        return None
+
+    # Plotly requires positive marker sizes. Add a tiny display-only floor.
+    chart_data["Marker size"] = (
+        chart_data["Business score"].clip(lower=0.001)
+    )
+
+    figure = px.scatter(
+        chart_data,
+        x="Recall",
+        y="Precision",
+        size="Marker size",
+        color="Deployable",
+        hover_name="model_name",
+        hover_data={
+            "PR-AUC": ":.3f",
+            "Business score": ":.3f",
+            "Marker size": False,
+        },
+        title="Validation targeting trade-off",
+    )
+    figure.update_xaxes(
+        title="Validation recall",
+        tickformat=".0%",
+    )
+    figure.update_yaxes(
+        title="Validation precision",
+        tickformat=".0%",
+    )
+    figure.update_layout(
+        height=520,
+        legend_title="Deployment status",
+        margin=dict(l=20, r=20, t=70, b=20),
+    )
+
+    return figure
+
+
+def build_threshold_chart(
+    thresholds: pd.DataFrame,
+    selected_threshold: float,
+) -> object | None:
+    if thresholds.empty:
+        return None
+
+    threshold_column = None
+
+    for candidate in ("threshold", "best_threshold"):
+        if candidate in thresholds.columns:
+            threshold_column = candidate
+            break
+
+    if threshold_column is None:
+        return None
+
+    metric_candidates = {
+        "Precision": ("precision", "best_precision"),
+        "Recall": ("recall", "best_recall"),
+        "F1": ("f1_score", "best_f1_score"),
+        "Target share": (
+            "predicted_positive_rate",
+            "targeted_share",
+        ),
+    }
+
+    chart_data = pd.DataFrame(
+        {
+            "Threshold": pd.to_numeric(
+                thresholds[threshold_column],
+                errors="coerce",
+            )
+        }
+    )
+
+    for label, candidates in metric_candidates.items():
+        values = numeric_column(thresholds, candidates)
+        if values.notna().any():
+            chart_data[label] = values
+
+    value_columns = [
+        column
+        for column in chart_data.columns
+        if column != "Threshold"
+    ]
+
+    if not value_columns:
+        return None
+
+    long_data = chart_data.melt(
+        id_vars="Threshold",
+        value_vars=value_columns,
+        var_name="Metric",
+        value_name="Value",
+    ).dropna()
+
+    figure = px.line(
+        long_data,
+        x="Threshold",
+        y="Value",
+        color="Metric",
+        markers=True,
+        title="Saved threshold operating trade-offs",
+    )
+    figure.add_vline(
+        x=selected_threshold,
+        line_dash="dash",
+        annotation_text=f"Production {selected_threshold:.2f}",
+        annotation_position="top right",
+    )
+    figure.update_yaxes(
+        title="Metric value",
+        tickformat=".0%",
+    )
+    figure.update_layout(
+        height=520,
+        legend_title="Metric",
+        margin=dict(l=20, r=20, t=70, b=20),
+    )
+
+    return figure
+
+
+def build_stability_chart(
+    stability: pd.DataFrame,
+) -> object | None:
+    if stability.empty or "model_name" not in stability.columns:
+        return None
+
+    mean_column = None
+    std_column = None
+
+    for candidate in (
+        "mean_pr_auc",
+        "pr_auc_mean",
+        "average_pr_auc",
+    ):
+        if candidate in stability.columns:
+            mean_column = candidate
+            break
+
+    for candidate in (
+        "std_pr_auc",
+        "pr_auc_std",
+        "stdev_pr_auc",
+    ):
+        if candidate in stability.columns:
+            std_column = candidate
+            break
+
+    if mean_column is None:
+        return None
+
+    chart_data = stability.copy()
+    chart_data["Mean PR-AUC"] = pd.to_numeric(
+        chart_data[mean_column],
+        errors="coerce",
+    )
+
+    error_column = None
+
+    if std_column is not None:
+        chart_data["PR-AUC standard deviation"] = pd.to_numeric(
+            chart_data[std_column],
+            errors="coerce",
+        )
+        error_column = "PR-AUC standard deviation"
+
+    chart_data = chart_data.dropna(subset=["Mean PR-AUC"])
+    chart_data = chart_data.sort_values(
+        "Mean PR-AUC",
+        ascending=True,
+    )
+
+    if chart_data.empty:
+        return None
+
+    figure = px.bar(
+        chart_data,
+        x="Mean PR-AUC",
+        y="model_name",
+        orientation="h",
+        error_x=error_column,
+        title="Repeated-split stability evidence",
+    )
+    figure.update_layout(
+        height=430,
+        xaxis_title="Mean validation PR-AUC",
+        yaxis_title="",
+        margin=dict(l=20, r=20, t=70, b=20),
+    )
+
+    return figure
+
+
+# --------------------------------------------------
+# PAGE SETUP
+# --------------------------------------------------
 st.set_page_config(
     page_title="Model Benchmark & Selection",
-    page_icon="🏁",
+    page_icon="📊",
     layout="wide",
 )
 
 inject_global_css()
 
+st.caption("Model selection evidence")
+st.title("Model Benchmark & Final Champion Selection")
+st.write(
+    "This page explains the production decision without mixing validation "
+    "metrics with untouched-holdout performance."
+)
 
-# --------------------------------------------------
-# 2. PAGE STYLE
-# --------------------------------------------------
-
-render_html(
-    """
-    <style>
-        .benchmark-hero {
-            padding: 34px 38px;
-            border-radius: 32px;
-            background:
-                radial-gradient(circle at 12% 18%, rgba(56, 189, 248, 0.28), transparent 30%),
-                radial-gradient(circle at 88% 82%, rgba(34, 197, 94, 0.20), transparent 34%),
-                linear-gradient(135deg, #0F172A 0%, #111827 48%, #020617 100%);
-            border: 1px solid rgba(148, 163, 184, 0.24);
-            box-shadow: 0 28px 85px rgba(0, 0, 0, 0.46);
-            margin-bottom: 22px;
-        }
-
-        .benchmark-title {
-            color: #F8FAFC;
-            font-size: 2.35rem;
-            line-height: 1.06;
-            font-weight: 950;
-            margin-bottom: 10px;
-        }
-
-        .benchmark-subtitle {
-            color: #CBD5E1;
-            font-size: 1.00rem;
-            line-height: 1.58;
-            max-width: 1050px;
-        }
-
-        .winner-card {
-            padding: 24px 26px;
-            border-radius: 28px;
-            background:
-                radial-gradient(circle at top right, rgba(34, 197, 94, 0.18), transparent 30%),
-                linear-gradient(180deg, rgba(15, 23, 42, 0.97), rgba(17, 24, 39, 0.90));
-            border: 1px solid rgba(148, 163, 184, 0.22);
-            box-shadow: 0 22px 62px rgba(0, 0, 0, 0.32);
-            min-height: 188px;
-            margin-bottom: 18px;
-        }
-
-        .winner-label {
-            color: #94A3B8;
-            font-size: 0.78rem;
-            font-weight: 900;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .winner-value {
-            color: #F8FAFC;
-            font-size: 2.05rem;
-            line-height: 1;
-            font-weight: 950;
-            margin-bottom: 10px;
-        }
-
-        .winner-help {
-            color: #CBD5E1;
-            font-size: 0.88rem;
-            line-height: 1.48;
-        }
-
-        .logic-card {
-            padding: 24px 26px;
-            border-radius: 30px;
-            background:
-                radial-gradient(circle at top left, rgba(56, 189, 248, 0.16), transparent 30%),
-                linear-gradient(135deg, rgba(15, 23, 42, 0.97), rgba(2, 6, 23, 0.94));
-            border: 1px solid rgba(148, 163, 184, 0.22);
-            box-shadow: 0 22px 62px rgba(0, 0, 0, 0.34);
-            margin-bottom: 18px;
-        }
-
-        .logic-title {
-            color: #F8FAFC;
-            font-size: 1.28rem;
-            font-weight: 950;
-            margin-bottom: 8px;
-        }
-
-        .logic-text {
-            color: #CBD5E1;
-            font-size: 0.94rem;
-            line-height: 1.58;
-        }
-
-        .section-kicker {
-            color: #7DD3FC;
-            font-size: 0.78rem;
-            font-weight: 900;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            margin-top: 16px;
-            margin-bottom: 4px;
-        }
-
-        .section-title {
-            color: #F8FAFC;
-            font-size: 1.45rem;
-            font-weight: 950;
-            margin-bottom: 12px;
-        }
-
-        .decision-step {
-            padding: 22px 22px;
-            border-radius: 26px;
-            background: rgba(15, 23, 42, 0.88);
-            border: 1px solid rgba(148, 163, 184, 0.20);
-            box-shadow: 0 16px 46px rgba(0, 0, 0, 0.24);
-            min-height: 154px;
-            margin-bottom: 16px;
-        }
-
-        .step-number {
-            display: inline-block;
-            width: 32px;
-            height: 32px;
-            border-radius: 11px;
-            background: linear-gradient(135deg, #0EA5E9, #22C55E);
-            color: #020617;
-            font-weight: 950;
-            text-align: center;
-            line-height: 32px;
-            margin-bottom: 12px;
-        }
-
-        .step-title {
-            color: #F8FAFC;
-            font-size: 1.02rem;
-            font-weight: 900;
-            margin-bottom: 7px;
-        }
-
-        .step-text {
-            color: #CBD5E1;
-            font-size: 0.86rem;
-            line-height: 1.48;
-        }
-
-        .table-note {
-            color: #94A3B8;
-            font-size: 0.82rem;
-            line-height: 1.48;
-            margin-top: 8px;
-        }
-    </style>
-    """
+st.info(
+    "Evidence boundary: validation compares candidate models. "
+    "The untouched holdout reports final champion performance. "
+    "Every final KPI and the lift calculation below use the untouched "
+    "holdout only."
 )
 
 
 # --------------------------------------------------
-# 3. LOAD FINAL CHAMPION CONTEXT
+# LOAD CONTROLLING EVIDENCE
 # --------------------------------------------------
+holdout = read_csv_if_available(HOLDOUT_PATH)
+comparison = read_csv_if_available(COMPARISON_PATH)
+thresholds = read_csv_if_available(THRESHOLD_PATH)
+stability = read_csv_if_available(STABILITY_PATH)
+sensitivity = read_csv_if_available(SENSITIVITY_PATH)
 
-tables = load_model_selection_tables()
-champion_metrics = get_champion_metrics()
-master_table = create_master_model_comparison_table()
-
-champion_model_name = get_champion_model_name()
-champion_track = get_champion_track()
-best_threshold = get_best_threshold()
-
-pr_auc = float(champion_metrics.get("pr_auc", 0))
-roc_auc = float(champion_metrics.get("roc_auc", 0))
-best_precision = float(champion_metrics.get("best_precision", 0))
-best_recall = float(champion_metrics.get("best_recall", 0))
-best_f1 = float(champion_metrics.get("best_f1_score", 0))
-
-
-# --------------------------------------------------
-# 4. HELPER FUNCTIONS
-# --------------------------------------------------
-
-def load_optional_csv(path: str) -> pd.DataFrame:
-    """Load optional CSV if it exists."""
-
-    csv_path = Path(path)
-
-    if csv_path.exists():
-        return pd.read_csv(csv_path)
-
-    return pd.DataFrame()
-
-
-def get_natural_conversion_rate() -> float:
-    """Return the labeled final-holdout buyer rate used for lift.
-
-    The production visitor table intentionally has no outcome label.
-    Therefore, lift must use the untouched labeled evaluation holdout,
-    not the current production scoring population.
-    """
-
-    holdout = load_optional_csv(
-        "reports/tables/final_true_champion_holdout.csv"
+if holdout.empty:
+    st.error(
+        "Untouched-holdout evidence is unavailable. "
+        "The page cannot make final performance claims safely."
     )
-
-    if holdout.empty:
-        raise RuntimeError(
-            "Final holdout results are unavailable. "
-            "Run: python3 -m src.models.finalize_true_champion"
-        )
-
-    if "positive_rate" in holdout.columns:
-        rates = pd.to_numeric(
-            holdout["positive_rate"],
-            errors="coerce",
-        ).dropna()
-
-        if not rates.empty and 0 < float(rates.iloc[0]) <= 1:
-            return float(rates.iloc[0])
-
-    required = {"rows", "positive_rows"}
-
-    if required.issubset(holdout.columns):
-        rows = float(holdout.iloc[0]["rows"])
-        positives = float(holdout.iloc[0]["positive_rows"])
-
-        if rows > 0 and 0 <= positives <= rows:
-            return positives / rows
-
-    raise RuntimeError(
-        "Final holdout results do not contain a valid labeled buyer rate."
+    st.code(
+        "python3 -m src.models.finalize_true_champion",
+        language="bash",
     )
-
-def calculate_lift(precision: float) -> float:
-    """Calculate lift versus random targeting."""
-
-    natural_rate = get_natural_conversion_rate()
-
-    if natural_rate <= 0:
-        return 0.0
-
-    return precision / natural_rate
-
-
-def readable_track_name(track_name: str) -> str:
-    """Convert internal track names into readable dashboard labels."""
-
-    track_lower = str(track_name).lower()
-
-    if "final" in track_lower:
-        return "Final True Champion"
-
-    if "manual" in track_lower:
-        return "Manual Champion/Challenger"
-
-    if "automl" in track_lower:
-        return "AutoML-style Benchmark"
-
-    return str(track_name)
-
-
-def safe_numeric(data: pd.DataFrame, column: str, default: float = 0.0) -> pd.Series:
-    """Return a numeric column or a default series."""
-
-    if data.empty or column not in data.columns:
-        return pd.Series([default] * len(data), index=data.index)
-
-    return pd.to_numeric(data[column], errors="coerce").fillna(default)
-
-
-def get_final_champion_row(comparison: pd.DataFrame) -> pd.Series:
-    """Find the selected final champion row from comparison table."""
-
-    if comparison.empty:
-        return pd.Series(dtype="object")
-
-    data = comparison.copy()
-
-    if "is_final_champion" in data.columns:
-        selected = data[data["is_final_champion"] == True]
-        if not selected.empty:
-            return selected.iloc[0]
-
-    if "model_name" in data.columns:
-        selected = data[data["model_name"].astype(str) == champion_model_name]
-        if not selected.empty:
-            return selected.iloc[0]
-
-    return data.iloc[0]
-
-
-def get_metric_from_row(row: pd.Series, column: str, fallback: float) -> float:
-    """Read one metric from a pandas row safely."""
-
-    if row.empty or column not in row.index:
-        return fallback
-
-    value = row[column]
-
-    if pd.isna(value):
-        return fallback
-
-    return float(value)
-
-
-def prepare_display_table(comparison: pd.DataFrame) -> pd.DataFrame:
-    """Prepare final model comparison table for display."""
-
-    if comparison.empty:
-        return comparison
-
-    data = comparison.copy()
-
-    if "track" not in data.columns:
-        data["track"] = "final_true_champion"
-
-    if "deployable" not in data.columns:
-        data["deployable"] = True
-
-    if "business_score" not in data.columns and "champion_score" in data.columns:
-        data["business_score"] = data["champion_score"]
-
-    if "best_lift_vs_random" not in data.columns:
-        data["best_lift_vs_random"] = safe_numeric(data, "best_precision").apply(calculate_lift)
-
-    data["Track"] = data["track"].apply(readable_track_name)
-    data["Status"] = data["is_final_champion"].map(
-        {
-            True: "Selected final champion",
-            False: "Compared model",
-        }
-    )
-
-    columns = [
-        "model_rank",
-        "model_name",
-        "model_family",
-        "deployable",
-        "pr_auc",
-        "roc_auc",
-        "best_threshold",
-        "best_precision",
-        "best_recall",
-        "best_f1_score",
-        "business_score",
-        "best_lift_vs_random",
-        "Status",
-    ]
-
-    available_columns = [column for column in columns if column in data.columns]
-    display = data[available_columns].copy()
-
-    display = display.rename(
-        columns={
-            "model_rank": "Rank",
-            "model_name": "Model",
-            "model_family": "Family",
-            "deployable": "Deployable",
-            "pr_auc": "PR-AUC",
-            "roc_auc": "ROC-AUC",
-            "best_threshold": "Threshold",
-            "best_precision": "Precision",
-            "best_recall": "Recall",
-            "best_f1_score": "F1",
-            "business_score": "Business Score",
-            "best_lift_vs_random": "Lift vs Random",
-        }
-    )
-
-    return display
-
-
-def get_threshold_table() -> pd.DataFrame:
-    """Return the best available threshold table."""
-
-    final_thresholds = tables.get("final_true_champion_thresholds", pd.DataFrame())
-
-    if not final_thresholds.empty:
-        data = final_thresholds.copy()
-
-        if "model_name" in data.columns:
-            matching = data[data["model_name"].astype(str) == champion_model_name]
-            if not matching.empty:
-                data = matching.copy()
-
-        return data
-
-    old_thresholds = tables.get("old_champion_threshold", pd.DataFrame())
-
-    if not old_thresholds.empty:
-        return old_thresholds.copy()
-
-    return pd.DataFrame()
-
-
-def get_stability_table() -> pd.DataFrame:
-    """Return final champion stability table."""
-
-    return tables.get("final_true_champion_stability", pd.DataFrame())
-
-
-def get_sensitivity_table() -> pd.DataFrame:
-    """Return final champion outlier sensitivity table."""
-
-    return tables.get("final_true_champion_sensitivity", pd.DataFrame())
-
-
-
-
-def render_chart_explanation(title: str, shows: str, conclusion: str) -> None:
-    """Add a compact explanation and conclusion under a chart."""
-
-    render_html(
-        (
-            f'<div class="story-card">'
-            f'<div class="story-title">{escape_text(title)}</div>'
-            f'<div class="story-text">'
-            f'<b>What this chart shows:</b> {escape_text(shows)}<br><br>'
-            f'<b>Conclusion:</b> {escape_text(conclusion)}'
-            f'</div></div>'
-        )
-    )
-
-# --------------------------------------------------
-# 5. CHART FUNCTIONS
-# --------------------------------------------------
-
-def build_pr_auc_chart(comparison: pd.DataFrame):
-    """Create PR-AUC ranking chart."""
-
-    if not PLOTLY_AVAILABLE or comparison.empty:
-        return None
-
-    data = comparison.head(10).copy()
-
-    if "track" not in data.columns:
-        data["track"] = "final_true_champion"
-
-    data["model_display"] = (
-        data["model_name"].astype(str)
-        + " · "
-        + data["track"].apply(readable_track_name)
-    )
-
-    data["champion_status"] = data["is_final_champion"].map(
-        {
-            True: "Final champion",
-            False: "Compared model",
-        }
-    )
-
-    data = data.sort_values("pr_auc", ascending=True)
-
-    fig = px.bar(
-        data,
-        x="pr_auc",
-        y="model_display",
-        orientation="h",
-        color="champion_status",
-        hover_data={
-            "best_f1_score": ":.3f" if "best_f1_score" in data.columns else False,
-            "best_precision": ":.3f" if "best_precision" in data.columns else False,
-            "best_recall": ":.3f" if "best_recall" in data.columns else False,
-            "business_score": ":.3f" if "business_score" in data.columns else False,
-        },
-        title="Final model comparison: rare-buyer ranking strength",
-    )
-
-    fig.update_layout(
-        template="plotly_dark",
-        height=460,
-        margin=dict(l=20, r=20, t=60, b=20),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        xaxis_title="PR-AUC",
-        yaxis_title="",
-        legend_title="",
-        title_font=dict(size=20),
-    )
-
-    return fig
-
-
-def build_precision_recall_chart(comparison: pd.DataFrame):
-    """Create precision vs recall chart."""
-
-    if not PLOTLY_AVAILABLE or comparison.empty:
-        return None
-
-    data = comparison.copy()
-
-    if "model_name" not in data.columns:
-        return None
-
-    size_column = "business_score" if "business_score" in data.columns else "best_f1_score"
-
-    data["champion_status"] = data["is_final_champion"].map(
-        {
-            True: "Final champion",
-            False: "Compared model",
-        }
-    )
-
-    fig = px.scatter(
-        data,
-        x="best_recall",
-        y="best_precision",
-        size=size_column,
-        color="champion_status",
-        hover_name="model_name",
-        hover_data={
-            "pr_auc": ":.3f" if "pr_auc" in data.columns else False,
-            "best_f1_score": ":.3f" if "best_f1_score" in data.columns else False,
-            "best_threshold": ":.2f" if "best_threshold" in data.columns else False,
-        },
-        title="Campaign trade-off: buyer capture vs target quality",
-    )
-
-    fig.update_traces(
-        marker=dict(
-            opacity=0.88,
-            line=dict(width=1),
-        )
-    )
-
-    fig.update_layout(
-        template="plotly_dark",
-        height=460,
-        margin=dict(l=20, r=20, t=60, b=20),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        xaxis_title="Recall: buyers captured",
-        yaxis_title="Precision: target quality",
-        legend_title="",
-        title_font=dict(size=20),
-    )
-
-    return fig
-
-
-def build_threshold_chart(thresholds: pd.DataFrame):
-    """Create threshold trade-off chart."""
-
-    if not PLOTLY_AVAILABLE or thresholds.empty:
-        return None
-
-    data = thresholds.copy()
-
-    if "threshold" not in data.columns:
-        return None
-
-    rename_map = {
-        "precision": "Precision",
-        "best_precision": "Precision",
-        "recall": "Recall",
-        "best_recall": "Recall",
-        "f1_score": "F1",
-        "best_f1_score": "F1",
-        "predicted_positive_rate": "Targeted Share",
-        "targeted_share": "Targeted Share",
-    }
-
-    available_metric_columns = [
-        column for column in rename_map
-        if column in data.columns
-    ]
-
-    if not available_metric_columns:
-        return None
-
-    chart_data = data[["threshold", *available_metric_columns]].copy()
-    chart_data = chart_data.rename(columns=rename_map)
-
-    long_data = chart_data.melt(
-        id_vars="threshold",
-        var_name="Metric",
-        value_name="Value",
-    )
-
-    fig = px.line(
-        long_data,
-        x="threshold",
-        y="Value",
-        color="Metric",
-        markers=True,
-        title="Threshold trade-off: precision, recall, F1, and target share",
-    )
-
-    fig.add_vline(
-        x=best_threshold,
-        line_dash="dash",
-        annotation_text=f"Selected {best_threshold:.2f}",
-        annotation_position="top right",
-    )
-
-    fig.update_layout(
-        template="plotly_dark",
-        height=460,
-        margin=dict(l=20, r=20, t=60, b=20),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        xaxis_title="Decision threshold",
-        yaxis_title="Metric value",
-        legend_title="",
-        title_font=dict(size=20),
-    )
-
-    return fig
-
-
-def build_stability_chart(stability: pd.DataFrame):
-    """Create model stability chart if stability output exists."""
-
-    if not PLOTLY_AVAILABLE or stability.empty:
-        return None
-
-    data = stability.copy()
-
-    if "model_name" not in data.columns:
-        return None
-
-    metric_column = None
-
-    for candidate in ["mean_pr_auc", "pr_auc_mean", "average_pr_auc"]:
-        if candidate in data.columns:
-            metric_column = candidate
-            break
-
-    if metric_column is None:
-        return None
-
-    error_column = None
-
-    for candidate in ["std_pr_auc", "pr_auc_std", "stdev_pr_auc"]:
-        if candidate in data.columns:
-            error_column = candidate
-            break
-
-    fig = px.bar(
-        data.sort_values(metric_column, ascending=True),
-        x=metric_column,
-        y="model_name",
-        orientation="h",
-        error_x=error_column if error_column else None,
-        title="Stability check: mean PR-AUC across repeated splits",
-    )
-
-    fig.update_layout(
-        template="plotly_dark",
-        height=380,
-        margin=dict(l=20, r=20, t=60, b=20),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        xaxis_title="Mean PR-AUC",
-        yaxis_title="Model",
-        title_font=dict(size=20),
-    )
-
-    return fig
+    st.stop()
+
+holdout_row = holdout.iloc[0]
+
+champion_name = text_value(
+    holdout_row,
+    ("model_name", "champion_model_name"),
+)
+production_threshold = numeric_value(
+    holdout_row,
+    ("threshold", "best_threshold", "production_threshold"),
+)
+holdout_pr_auc = numeric_value(
+    holdout_row,
+    ("pr_auc", "holdout_pr_auc"),
+)
+holdout_roc_auc = numeric_value(
+    holdout_row,
+    ("roc_auc", "holdout_roc_auc"),
+)
+holdout_precision = numeric_value(
+    holdout_row,
+    ("precision", "best_precision"),
+)
+holdout_recall = numeric_value(
+    holdout_row,
+    ("recall", "best_recall"),
+)
+holdout_f1 = numeric_value(
+    holdout_row,
+    ("f1_score", "best_f1_score", "f1"),
+)
+
+holdout_rows = numeric_value(
+    holdout_row,
+    ("rows", "holdout_rows"),
+)
+positive_rows = numeric_value(
+    holdout_row,
+    ("positive_rows", "holdout_positive_rows"),
+)
+positive_rate = numeric_value(
+    holdout_row,
+    ("positive_rate", "buyer_rate"),
+)
+
+if positive_rate <= 0 and holdout_rows > 0:
+    positive_rate = positive_rows / holdout_rows
+
+holdout_lift = (
+    holdout_precision / positive_rate
+    if positive_rate > 0
+    else None
+)
+
+selected_row = selected_candidate(
+    comparison,
+    champion_name,
+)
+highest_row = highest_pr_auc_candidate(comparison)
 
 
 # --------------------------------------------------
-# 6. DERIVED VALUES
+# FINAL PERFORMANCE CLAIM
 # --------------------------------------------------
+st.subheader("Final production performance")
+st.caption(
+    "All cards in this section come from the untouched final holdout."
+)
 
-champion_row = get_final_champion_row(master_table)
+metric_columns = st.columns(4)
 
-# Prefer row values because final comparison files are the strongest evidence.
-pr_auc = get_metric_from_row(champion_row, "pr_auc", pr_auc)
-roc_auc = get_metric_from_row(champion_row, "roc_auc", roc_auc)
-best_precision = get_metric_from_row(champion_row, "best_precision", best_precision)
-best_recall = get_metric_from_row(champion_row, "best_recall", best_recall)
-best_f1 = get_metric_from_row(champion_row, "best_f1_score", best_f1)
-business_score = get_metric_from_row(champion_row, "business_score", get_metric_from_row(champion_row, "champion_score", 0))
-best_lift = calculate_lift(best_precision)
+metric_columns[0].metric(
+    "Champion",
+    champion_name,
+    help="The saved production model.",
+)
+metric_columns[1].metric(
+    "Production threshold",
+    score(production_threshold),
+    help="The saved operating rule.",
+)
+metric_columns[2].metric(
+    "Holdout PR-AUC",
+    score(holdout_pr_auc),
+    help="Rare-buyer ranking quality on untouched data.",
+)
+metric_columns[3].metric(
+    "Holdout ROC-AUC",
+    score(holdout_roc_auc),
+    help="General discrimination on untouched data.",
+)
 
-thresholds = get_threshold_table()
-stability = get_stability_table()
-sensitivity = get_sensitivity_table()
-display_table = prepare_display_table(master_table)
+metric_columns = st.columns(4)
 
+metric_columns[0].metric(
+    "Holdout precision",
+    percent(holdout_precision),
+    help="How many targeted visitors were actual buyers.",
+)
+metric_columns[1].metric(
+    "Holdout recall",
+    percent(holdout_recall),
+    help="How many actual buyers were captured.",
+)
+metric_columns[2].metric(
+    "Holdout F1",
+    score(holdout_f1),
+    help="Precision-recall balance on untouched data.",
+)
+metric_columns[3].metric(
+    "Lift vs random",
+    lift_text(holdout_lift),
+    help=(
+        "Untouched-holdout precision divided by the untouched-holdout "
+        "buyer rate."
+    ),
+)
 
-# --------------------------------------------------
-# 7. SIDEBAR
-# --------------------------------------------------
-
-st.sidebar.markdown("## 🏁 Model Benchmark")
-st.sidebar.caption("Final champion selection proof")
-
-st.sidebar.markdown("---")
-st.sidebar.markdown(f"**Final champion:** {champion_model_name}")
-st.sidebar.markdown(f"**Threshold:** {best_threshold:.2f}")
-st.sidebar.markdown(f"**PR-AUC:** {pr_auc:.3f}")
-st.sidebar.markdown(f"**Precision:** {format_percent(best_precision)}")
-st.sidebar.markdown(f"**Recall:** {format_percent(best_recall)}")
-st.sidebar.markdown("---")
-st.sidebar.caption("Shows why the final deployable model was selected.")
-
-
-# --------------------------------------------------
-# 8. HEADER
-# --------------------------------------------------
-
-render_html(
-    (
-        f'<div class="benchmark-hero">'
-        f'<div class="eyebrow">Model selection evidence</div>'
-        f'<div class="benchmark-title">Model Benchmark & Final Champion Selection</div>'
-        f'<div class="benchmark-subtitle">'
-        f'This page proves why the final production model was selected. '
-        f'It compares baseline, tuned models, boosting, imbalance handling, ensemble checks, '
-        f'threshold trade-offs, and stability evidence.'
-        f'</div><br>'
-        f'<span class="success-pill">Final champion: {escape_text(champion_model_name)}</span>'
-        f'&nbsp;<span class="info-pill">Threshold: {best_threshold:.2f}</span>'
-        f'&nbsp;<span class="warning-pill">Lift: {format_lift(best_lift)} vs random</span>'
-        f'</div>'
-    )
+st.caption(
+    "Lift formula: holdout precision ÷ holdout buyer rate. "
+    f"Baseline buyer rate: {positive_rate:.3%}."
 )
 
 
 # --------------------------------------------------
-# 9. CHAMPION KPI PROOF
+# CANDIDATE-SELECTION DECISION
 # --------------------------------------------------
+st.divider()
+st.subheader("Why this deployable champion was selected")
+st.caption(
+    "This section uses model-selection validation evidence. "
+    "These numbers are not presented as final holdout performance."
+)
 
-winner_1, winner_2, winner_3, winner_4 = st.columns(4)
+decision_left, decision_right = st.columns(2)
 
-with winner_1:
-    render_html(
-        (
-            f'<div class="winner-card">'
-            f'<div class="winner-label">Final champion</div>'
-            f'<div class="winner-value">{escape_text(champion_model_name)}</div>'
-            f'<div class="winner-help">Selected as the strongest deployable model after final hardening.</div>'
-            f'</div>'
+with decision_left:
+    st.markdown("#### Highest raw validation PR-AUC")
+
+    if highest_row is None:
+        st.warning("Candidate-comparison evidence is unavailable.")
+    else:
+        highest_name = text_value(
+            highest_row,
+            ("model_name",),
         )
-    )
-
-with winner_2:
-    render_html(
-        (
-            f'<div class="winner-card">'
-            f'<div class="winner-label">PR-AUC</div>'
-            f'<div class="winner-value">{pr_auc:.3f}</div>'
-            f'<div class="winner-help">Ranking quality for rare-buyer detection.</div>'
-            f'</div>'
+        highest_pr_auc = numeric_value(
+            highest_row,
+            ("pr_auc",),
         )
-    )
-
-with winner_3:
-    render_html(
-        (
-            f'<div class="winner-card">'
-            f'<div class="winner-label">Precision / Recall</div>'
-            f'<div class="winner-value">{format_percent(best_precision)} / {format_percent(best_recall)}</div>'
-            f'<div class="winner-help">Target quality balanced with buyer capture.</div>'
-            f'</div>'
+        highest_deployable = bool(
+            boolean_column(
+                pd.DataFrame([highest_row]),
+                "deployable",
+            ).iloc[0]
         )
-    )
-
-with winner_4:
-    render_html(
-        (
-            f'<div class="winner-card">'
-            f'<div class="winner-label">F1 / Business score</div>'
-            f'<div class="winner-value">{best_f1:.3f} / {business_score:.3f}</div>'
-            f'<div class="winner-help">Final decision score used for business-ready selection.</div>'
-            f'</div>'
+        status = (
+            "deployable"
+            if highest_deployable
+            else "not deployable"
         )
-    )
 
+        st.metric(
+            highest_name,
+            score(highest_pr_auc),
+        )
+        st.write(f"Deployment status: **{status}**.")
 
-# --------------------------------------------------
-# 10. SELECTION LOGIC
-# --------------------------------------------------
+with decision_right:
+    st.markdown("#### Selected deployable champion")
 
-render_html('<div class="section-kicker">Selection logic</div><div class="section-title">How the true champion was selected</div>')
+    if selected_row is None:
+        st.warning("Selected candidate evidence is unavailable.")
+    else:
+        selected_name = text_value(
+            selected_row,
+            ("model_name",),
+            champion_name,
+        )
+        selected_pr_auc = numeric_value(
+            selected_row,
+            ("pr_auc",),
+        )
+        selected_business_score = numeric_value(
+            selected_row,
+            ("business_score", "champion_score"),
+        )
 
-step_1, step_2, step_3, step_4 = st.columns(4)
+        st.metric(
+            selected_name,
+            score(selected_pr_auc),
+        )
+        st.write(
+            "Selected because it had the strongest governed business "
+            "score among deployable candidates."
+        )
+        st.caption(
+            f"Saved validation business score: "
+            f"{selected_business_score:.3f}."
+        )
 
-with step_1:
-    render_html(
-        '<div class="decision-step">'
-        '<div class="step-number">1</div>'
-        '<div class="step-title">Baseline and benchmark</div>'
-        '<div class="step-text">Started with Logistic Regression and manual/AutoML-style benchmark comparison.</div>'
-        '</div>'
-    )
-
-with step_2:
-    render_html(
-        '<div class="decision-step">'
-        '<div class="step-number">2</div>'
-        '<div class="step-title">Imbalance handling</div>'
-        '<div class="step-text">Checked class weights, threshold optimisation, and optional SMOTE-style logic.</div>'
-        '</div>'
-    )
-
-with step_3:
-    render_html(
-        '<div class="decision-step">'
-        '<div class="step-number">3</div>'
-        '<div class="step-title">Model hardening</div>'
-        '<div class="step-text">Compared tuned Random Forest, XGBoost, and ensemble output against deployable criteria.</div>'
-        '</div>'
-    )
-
-with step_4:
-    render_html(
-        '<div class="decision-step">'
-        '<div class="step-number">4</div>'
-        '<div class="step-title">Production decision</div>'
-        '<div class="step-text">Selected the best deployable model with strong PR-AUC, F1, precision, and stability.</div>'
-        '</div>'
-    )
+st.success(
+    "Decision meaning: the model with the highest raw validation PR-AUC "
+    "does not automatically become production champion. Deployability, "
+    "business score, targeting trade-offs, and stability also control "
+    "the final selection."
+)
 
 
 # --------------------------------------------------
-# 11. FINAL BENCHMARK VISUALS
+# VALIDATION COMPARISON CHARTS
 # --------------------------------------------------
+st.divider()
+st.subheader("Model-selection validation evidence")
 
-render_html('<div class="section-kicker">Final benchmark</div><div class="section-title">Model comparison after final hardening</div>')
+comparison_chart = build_model_comparison_chart(comparison)
+tradeoff_chart = build_precision_recall_chart(comparison)
 
-if PLOTLY_AVAILABLE and not master_table.empty:
-    chart_col_1, chart_col_2 = st.columns(2)
-
-    with chart_col_1:
-        st.plotly_chart(
-            build_pr_auc_chart(master_table),
-            use_container_width=True,
-        )
-        render_chart_explanation(
-            "Chart explanation: PR-AUC model ranking",
-            "It compares models by PR-AUC. PR-AUC is important here because buyers are rare, so it shows how well each model ranks likely buyers above non-buyers.",
-            "The strongest model is the one with the highest PR-AUC and acceptable business metrics. This supports why the final champion was selected instead of relying on accuracy alone.",
-        )
-
-    with chart_col_2:
-        st.plotly_chart(
-            build_precision_recall_chart(master_table),
-            use_container_width=True,
-        )
-        render_chart_explanation(
-            "Chart explanation: precision versus recall",
-            "It compares targeting quality. Precision means how many targeted visitors actually converted. Recall means how many real buyers the model captured.",
-            "A useful campaign model needs balance. Very high recall with poor precision wastes budget, while very high precision with poor recall misses many buyers.",
-        )
+if comparison_chart is None:
+    st.warning(
+        "Model-comparison chart cannot be drawn from the saved evidence."
+    )
 else:
-    st.info("Run final champion workflow and install Plotly to see benchmark charts.")
+    st.plotly_chart(
+        comparison_chart,
+        width="stretch",
+        key="validation_pr_auc_comparison",
+    )
+    st.caption(
+        "Longer bars mean stronger validation PR-AUC. "
+        "Colour shows whether the candidate was deployable."
+    )
+
+if tradeoff_chart is None:
+    st.warning(
+        "Precision-recall comparison cannot be drawn from the saved evidence."
+    )
+else:
+    st.plotly_chart(
+        tradeoff_chart,
+        width="stretch",
+        key="validation_precision_recall",
+    )
+    st.caption(
+        "This chart uses validation precision and recall only. "
+        "It does not replace the untouched-holdout KPI cards."
+    )
 
 
 # --------------------------------------------------
-# 12. THRESHOLD AND STABILITY PROOF
+# THRESHOLD AND ROBUSTNESS EVIDENCE
 # --------------------------------------------------
+st.divider()
+st.subheader("Threshold and robustness evidence")
 
-render_html('<div class="section-kicker">Threshold and stability</div><div class="section-title">Why the production score gate is strict</div>')
+threshold_chart = build_threshold_chart(
+    thresholds,
+    production_threshold,
+)
+stability_chart = build_stability_chart(stability)
 
-threshold_col, stability_col = st.columns(2)
+if threshold_chart is None:
+    st.info("Saved threshold operating points are unavailable.")
+else:
+    st.plotly_chart(
+        threshold_chart,
+        width="stretch",
+        key="threshold_operating_tradeoffs",
+    )
+    st.caption(
+        "The dashed line marks the saved production threshold. "
+        "The surrounding points show the targeting trade-off."
+    )
 
-with threshold_col:
-    threshold_chart = build_threshold_chart(thresholds)
-
-    if threshold_chart is not None:
-        st.plotly_chart(
-            threshold_chart,
-            use_container_width=True,
-        )
-        render_chart_explanation(
-            "Chart explanation: threshold performance",
-            "It shows how precision, recall, and F1 change when the purchase-intent cutoff changes.",
-            "The threshold is a business decision, not only a technical setting. The selected threshold should target visitors with strong buying intent while avoiding too much wasted outreach.",
-        )
-    else:
-        st.info("Threshold chart will appear when threshold table is available.")
-
-with stability_col:
-    stability_chart = build_stability_chart(stability)
-
-    if stability_chart is not None:
-        st.plotly_chart(
-            stability_chart,
-            use_container_width=True,
-        )
-        render_chart_explanation(
-            "Chart explanation: stability check",
-            "It shows whether top models remain strong across repeated train/test splits or different random seeds.",
-            "A stable model is safer for production because its performance is not based on one lucky split.",
-        )
-    else:
-        render_html(
-            '<div class="logic-card">'
-            '<div class="logic-title">Stability proof</div>'
-            '<div class="logic-text">'
-            'The final champion workflow includes repeated split checks. '
-            'If the stability table is available, it will appear here as a chart.'
-            '</div>'
-            '</div>'
-        )
-
-
-# --------------------------------------------------
-# 13. OUTLIER SENSITIVITY STORY
-# --------------------------------------------------
-
-render_html('<div class="section-kicker">Outlier sensitivity</div><div class="section-title">Anomalies are reviewed, not blindly removed</div>')
+if stability_chart is None:
+    st.info("Repeated-split stability chart is unavailable.")
+else:
+    st.plotly_chart(
+        stability_chart,
+        width="stretch",
+        key="repeated_split_stability",
+    )
+    st.caption(
+        "Higher mean PR-AUC with lower variation indicates more stable "
+        "validation performance."
+    )
 
 if not sensitivity.empty:
+    with st.expander("Outlier-sensitivity evidence"):
+        st.dataframe(
+            sensitivity,
+            width="stretch",
+            hide_index=True,
+        )
+
+
+# --------------------------------------------------
+# RAW GOVERNED EVIDENCE
+# --------------------------------------------------
+st.divider()
+st.subheader("Raw governed evidence")
+
+with st.expander(
+    "Untouched-holdout result",
+    expanded=True,
+):
     st.dataframe(
-        sensitivity,
-        use_container_width=True,
+        holdout,
+        width="stretch",
         hide_index=True,
     )
-else:
-    render_html(
-        '<div class="logic-card">'
-        '<div class="logic-title">Sensitivity check included</div>'
-        '<div class="logic-text">'
-        'The final champion workflow checks how model quality changes when anomaly-flagged visitors are removed. '
-        'This supports the design choice: keep anomalies as a review layer instead of deleting useful conversion signals.'
-        '</div>'
-        '</div>'
+    st.caption(
+        "This table controls final production-performance claims."
     )
 
-
-# --------------------------------------------------
-# 14. RAW EVIDENCE TABLES
-# --------------------------------------------------
-
-render_html('<div class="section-kicker">Raw evidence</div><div class="section-title">Tables used by this page</div>')
-
-with st.expander("Final model comparison table", expanded=True):
-    if not display_table.empty:
+with st.expander("Model-selection validation comparison"):
+    if comparison.empty:
+        st.info("Validation comparison table is unavailable.")
+    else:
         st.dataframe(
-            display_table,
-            use_container_width=True,
+            comparison,
+            width="stretch",
             hide_index=True,
         )
-        st.caption("This table is the main evidence for the final champion decision.")
-    else:
-        st.info("Final comparison table not available yet.")
+        st.caption(
+            "This table controls candidate comparison and selection logic."
+        )
 
-with st.expander("Threshold table"):
-    if not thresholds.empty:
+with st.expander("Threshold operating points"):
+    if thresholds.empty:
+        st.info("Threshold table is unavailable.")
+    else:
         st.dataframe(
             thresholds,
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
-    else:
-        st.info("Threshold table not available yet.")
 
-with st.expander("Stability table"):
-    if not stability.empty:
+with st.expander("Repeated-split stability"):
+    if stability.empty:
+        st.info("Stability table is unavailable.")
+    else:
         st.dataframe(
             stability,
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
-    else:
-        st.info("Stability table not available yet.")
 
-with st.expander("Manual and AutoML-style benchmark tables"):
-    manual_results = tables.get("manual_results", pd.DataFrame())
-    automl_results = tables.get("automl_results", pd.DataFrame())
-
-    st.markdown("#### Manual benchmark")
-    if not manual_results.empty:
-        st.dataframe(manual_results, use_container_width=True, hide_index=True)
-    else:
-        st.info("Manual benchmark table not available.")
-
-    st.markdown("#### AutoML-style benchmark")
-    if not automl_results.empty:
-        st.dataframe(automl_results, use_container_width=True, hide_index=True)
-    else:
-        st.info("AutoML-style benchmark table not available.")
-
-# --------------------------------------------------
-# FINAL CLOSURE EXTENSION: MODEL DECISION INTELLIGENCE
-# --------------------------------------------------
-
-from app.ui.model_decision_intelligence import (
-    render_model_decision_intelligence,
+st.caption(
+    "Sources: final_true_champion_holdout.csv, "
+    "final_true_champion_comparison.csv, "
+    "final_true_champion_thresholds.csv, and "
+    "final_true_champion_stability.csv."
 )
-
-render_model_decision_intelligence()
