@@ -1,0 +1,3 @@
+method,source,rows_checked,outlier_rate,business_meaning
+Local Outlier Factor,This script,40000,0.04,Detects visitors unusual compared with nearby visitors.
+Rule + Isolation Forest anomaly layer,src/anomaly/build_anomaly_signals.py,1407500,0.036631616341030196,Combines explainable rules with Isolation Forest for review layer.

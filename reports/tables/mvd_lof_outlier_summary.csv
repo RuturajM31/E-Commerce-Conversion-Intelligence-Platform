@@ -1,0 +1,2 @@
+method,sample_rows,outlier_count,outlier_rate,converted_rate_all,converted_rate_outliers,converted_rate_normal
+Local Outlier Factor,40000,1600,0.04,0.0078,0.070625,0.005182291666666667

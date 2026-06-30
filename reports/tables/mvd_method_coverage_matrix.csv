@@ -1,0 +1,16 @@
+learning_day,topic,status,project_artifact,proof_note
+Day 1,"ML intro, supervised/unsupervised/RL, EDA",Covered,Full project workflow + README/deck later,"Supervised conversion model, unsupervised clustering/anomaly methods, and RL future-extension note."
+Day 2,"Preprocessing, leakage-safe features, train/test split",Covered,"src/data/build_visitor_features.py, src/models/finalize_true_champion.py","Visitor grain, target creation, numeric feature matrix, stratified train/test split."
+Day 3,Imbalanced data,Covered,reports/tables/final_true_champion_comparison.csv,"Class weights, threshold optimisation, XGBoost scale_pos_weight, optional SMOTE model."
+Day 4,Outlier detection,Covered,"reports/tables/mvd_lof_outlier_summary.csv, reports/tables/mvd_outlier_method_comparison.csv",LOF added here; rule + Isolation Forest anomaly layer already exists.
+Day 5,PCA and dimensionality reduction,Covered,"reports/tables/mvd_pca_explained_variance.csv, outputs/charts/mvd_pca_scree_plot.png","PCA explained variance, scree plot, and 2D behaviour map."
+Day 6,Autoencoders,Concept / optional extension,Coverage matrix note,Autoencoder is not used as final tabular classifier. It is documented as an optional anomaly extension.
+Day 7,"Decision trees, feature importance, explainability",Covered,final champion Random Forest + final comparison tables,Tree-based final champion; feature importance can be added in final reporting/polish.
+Day 8,Clustering,Covered,"reports/tables/mvd_kmeans_summary.csv, reports/tables/mvd_dbscan_summary.csv",K-Means k=3/5/7 with elbow; DBSCAN grid with noise counts.
+Day 9,"Ensembles, stacking, blending",Covered,reports/tables/final_true_champion_comparison.csv,"Random Forest, boosting, and probability-average ensemble check."
+Day 10,Boosting,Covered,reports/tables/final_true_champion_comparison.csv,XGBoost baseline and tuned XGBoost included in final champion check.
+Day 11,Hyperparameter tuning,Covered,src/models/finalize_true_champion.py,RandomizedSearchCV tuning for Random Forest and XGBoost.
+Day 12,"Regression, logistic regression, GLM",Mostly covered,baseline Logistic Regression + forecasting pipeline,Logistic regression baseline and KPI forecasting are covered. GLM count models can be documented as future extension if not added.
+Day 13,Reinforcement learning,Not applicable / future extension,Coverage matrix note,Not suitable for static supervised conversion prediction; future extension could be campaign policy or bandit optimisation.
+Day 14,Transfer learning,Not applicable / documented,Coverage matrix note,Image transfer learning is not suitable for tabular RetailRocket visitor behaviour data.
+Day 15,AutoML,Covered,"reports/tables/automl_benchmark_results.csv, app/pages/3_Model_Benchmark_Selection.py",AutoML-style benchmark and final model comparison covered. PyCaret avoided for stability unless added later.

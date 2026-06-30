@@ -1,0 +1,17 @@
+model_name,evaluation_group,validation_rows,pr_auc,roc_auc,note
+Existing Champion Model,all_validation_visitors,283412,0.02624476997162522,0.7857125025297503,Performance on full validation set.
+Existing Champion Model,non_anomalous_validation_visitors,282471,0.01207649801531284,0.7639413176242074,Performance after removing anomaly-flagged visitors.
+Logistic Regression Class Weight,all_validation_visitors,283412,0.036188784755257136,0.8032440499685138,Performance on full validation set.
+Logistic Regression Class Weight,non_anomalous_validation_visitors,282471,0.016759189962094426,0.7829204576256736,Performance after removing anomaly-flagged visitors.
+Random Forest Class Weight,all_validation_visitors,283412,0.05584520887323339,0.7529186945064031,Performance on full validation set.
+Random Forest Class Weight,non_anomalous_validation_visitors,282471,0.015494825856707957,0.7230530758201751,Performance after removing anomaly-flagged visitors.
+Tuned Random Forest,all_validation_visitors,283412,0.06452492146753008,0.7467832130967259,Performance on full validation set.
+Tuned Random Forest,non_anomalous_validation_visitors,282471,0.020166886587338187,0.7178667014730248,Performance after removing anomaly-flagged visitors.
+XGBoost Baseline,all_validation_visitors,283412,0.06216049018015237,0.7543489112334341,Performance on full validation set.
+XGBoost Baseline,non_anomalous_validation_visitors,282471,0.019676896849866742,0.7359791337209002,Performance after removing anomaly-flagged visitors.
+Tuned XGBoost,all_validation_visitors,283412,0.06251185478766783,0.8030339994544723,Performance on full validation set.
+Tuned XGBoost,non_anomalous_validation_visitors,282471,0.023561640480614446,0.7841368768328553,Performance after removing anomaly-flagged visitors.
+SMOTE Logistic Regression Sample,all_validation_visitors,283412,0.04206279721217823,0.7991538444410994,Performance on full validation set.
+SMOTE Logistic Regression Sample,non_anomalous_validation_visitors,282471,0.019298072354258893,0.7783604246483489,Performance after removing anomaly-flagged visitors.
+Probability Average Ensemble,all_validation_visitors,283412,0.06602662394688094,0.7930639242840873,Performance on full validation set.
+Probability Average Ensemble,non_anomalous_validation_visitors,282471,0.023975640870854378,0.7712411387275686,Performance after removing anomaly-flagged visitors.
