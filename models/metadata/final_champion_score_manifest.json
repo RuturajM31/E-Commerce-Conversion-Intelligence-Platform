@@ -1,0 +1,16 @@
+{
+  "model_generation": "final_true_champion",
+  "created_at_utc": "2026-06-30T13:53:18.596386+00:00",
+  "score_path": "data/processed/final_champion_visitor_scores.csv",
+  "row_count": 78998,
+  "score_column": "purchase_intent_score",
+  "production_threshold": 0.98,
+  "threshold_eligible_rows": 70,
+  "score_min": 0.0123327607288956,
+  "score_max": 0.9970622658729552,
+  "score_mean": 0.3078245077310225,
+  "score_file_sha256": "eb056edb933e4429683253af00eb4a0914ee82b6444378d0d40d98ea298961dc",
+  "model_file_sha256": "c6e3c13df136fe609615def78c6fcd8d9928d14b1f0055e30c5a9c57e67869c9",
+  "model_metadata_sha256": "745d64efe09fedcc89599f0a4b7dc5fe292384c5f2ef3a8950b72db38135fdad",
+  "scope": "Cached current visitor scores for operational audience monitoring; not matured production outcomes."
+}

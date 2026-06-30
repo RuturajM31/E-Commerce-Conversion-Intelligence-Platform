@@ -1,0 +1,9 @@
+{
+  "tracking_uri": "http://127.0.0.1:5000",
+  "experiment_name": "ecommerce-conversion-intelligence",
+  "run_id": "e8a080c17e4541369a8dc905683e4791",
+  "registered_model_name": "ecommerce-conversion-champion",
+  "registered_model_version": "3",
+  "registered_model_alias": "champion",
+  "model_uri": "models:/ecommerce-conversion-champion@champion"
+}

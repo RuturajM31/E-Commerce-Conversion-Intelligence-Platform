@@ -1,240 +1,194 @@
 # 6_Monitoring_Drift_Health.py
-# Streamlit page for model monitoring, drift, and health checks.
+# Consolidated Streamlit page for monitoring, drift, and operational health.
 #
-# Purpose:
-#   Show whether the deployed scoring system is behaving normally.
-#
-# Page flow:
-#   1. Page setup
-#   2. Page style
-#   3. Paths
-#   4. Helper functions
-#   5. Drift and health logic
-#   6. Chart functions
-#   7. Load monitoring data
-#   8. Sidebar and header
-#   9. Health KPI cards
-#   10. Drift and score-health charts
-#   11. Operational evidence tables
+# Evidence boundaries:
+# - Current session logs show only predictions recorded by the running app.
+# - Saved Evidently JSON files show the latest governed offline drift snapshot.
+# - Delayed-label evidence is shown only when matured labels exist.
+# - Offline holdout metrics are never relabelled as live production results.
 
 from __future__ import annotations
 
-# STREAMLIT CLOUD PATH BOOTSTRAP
-# Streamlit executes page files from inside the app folder.
-# Add the repository root so imports such as `app.*` and `src.*`
-# work consistently locally and on Streamlit Community Cloud.
+import hashlib
+import json
 import sys
 from pathlib import Path
-
-_PROJECT_ROOT = Path(__file__).resolve().parent
-
-while (
-    _PROJECT_ROOT != _PROJECT_ROOT.parent
-    and not (_PROJECT_ROOT / "src").is_dir()
-):
-    _PROJECT_ROOT = _PROJECT_ROOT.parent
-
-if str(_PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(_PROJECT_ROOT))
-
-
-from pathlib import Path
-from typing import Dict, List
+from typing import Any
 
 import numpy as np
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 import streamlit as st
 
-try:
-    import plotly.express as px
-    PLOTLY_AVAILABLE = True
-except Exception:
-    PLOTLY_AVAILABLE = False
 
-from app.app_utils import (
-    escape_text,
-    format_percent,
+# --------------------------------------------------
+# PROJECT ROOT
+# --------------------------------------------------
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+while (
+    PROJECT_ROOT != PROJECT_ROOT.parent
+    and not (PROJECT_ROOT / "src").is_dir()
+):
+    PROJECT_ROOT = PROJECT_ROOT.parent
+
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from app.app_utils import (  # noqa: E402
     get_best_threshold,
     get_champion_model_name,
     inject_global_css,
-    render_html,
 )
 
 
 # --------------------------------------------------
-# 1. PAGE SETUP
+# PATHS
 # --------------------------------------------------
-
-st.set_page_config(
-    page_title="Monitoring, Drift & Health",
-    page_icon="📡",
-    layout="wide",
+SINGLE_LOG_PATH = (
+    PROJECT_ROOT
+    / "monitoring/prediction_logs/prediction_log.csv"
+)
+BATCH_LOG_PATH = (
+    PROJECT_ROOT
+    / "monitoring/prediction_logs/batch_scoring_log.csv"
 )
 
-inject_global_css()
+SCORE_PATHS = [
+    PROJECT_ROOT
+    / "data/processed/final_champion_visitor_scores.csv",
+    PROJECT_ROOT
+    / "data/processed/champion_visitor_scores.csv",
+]
 
-
-# --------------------------------------------------
-# 2. PAGE STYLE
-# --------------------------------------------------
-
-render_html(
-    """
-    <style>
-        .monitor-hero {
-            padding: 34px 38px;
-            border-radius: 32px;
-            background:
-                radial-gradient(circle at 12% 18%, rgba(56, 189, 248, 0.26), transparent 30%),
-                radial-gradient(circle at 88% 82%, rgba(168, 85, 247, 0.22), transparent 34%),
-                linear-gradient(135deg, #0F172A 0%, #111827 48%, #020617 100%);
-            border: 1px solid rgba(148, 163, 184, 0.24);
-            box-shadow: 0 28px 85px rgba(0, 0, 0, 0.46);
-            margin-bottom: 22px;
-        }
-
-        .monitor-title {
-            color: #F8FAFC;
-            font-size: 2.35rem;
-            line-height: 1.06;
-            font-weight: 950;
-            margin-bottom: 10px;
-        }
-
-        .monitor-subtitle {
-            color: #CBD5E1;
-            font-size: 1.00rem;
-            line-height: 1.58;
-            max-width: 1050px;
-        }
-
-        .health-card {
-            padding: 24px 26px;
-            border-radius: 28px;
-            background:
-                radial-gradient(circle at top right, rgba(56, 189, 248, 0.15), transparent 30%),
-                linear-gradient(180deg, rgba(15, 23, 42, 0.97), rgba(17, 24, 39, 0.90));
-            border: 1px solid rgba(148, 163, 184, 0.22);
-            box-shadow: 0 22px 62px rgba(0, 0, 0, 0.32);
-            min-height: 184px;
-            margin-bottom: 18px;
-        }
-
-        .health-label {
-            color: #94A3B8;
-            font-size: 0.78rem;
-            font-weight: 900;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .health-value {
-            color: #F8FAFC;
-            font-size: 2.20rem;
-            line-height: 1;
-            font-weight: 950;
-            margin-bottom: 10px;
-        }
-
-        .health-help {
-            color: #CBD5E1;
-            font-size: 0.88rem;
-            line-height: 1.48;
-        }
-
-        .section-kicker {
-            color: #93C5FD;
-            font-size: 0.78rem;
-            font-weight: 900;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            margin-top: 16px;
-            margin-bottom: 4px;
-        }
-
-        .section-title {
-            color: #F8FAFC;
-            font-size: 1.45rem;
-            font-weight: 950;
-            margin-bottom: 12px;
-        }
-
-        .story-card {
-            padding: 24px 26px;
-            border-radius: 30px;
-            background:
-                radial-gradient(circle at top left, rgba(56, 189, 248, 0.16), transparent 30%),
-                linear-gradient(135deg, rgba(15, 23, 42, 0.97), rgba(2, 6, 23, 0.94));
-            border: 1px solid rgba(148, 163, 184, 0.22);
-            box-shadow: 0 22px 62px rgba(0, 0, 0, 0.34);
-            margin-bottom: 18px;
-        }
-
-        .story-title {
-            color: #F8FAFC;
-            font-size: 1.25rem;
-            font-weight: 950;
-            margin-bottom: 8px;
-        }
-
-        .story-text {
-            color: #CBD5E1;
-            font-size: 0.94rem;
-            line-height: 1.58;
-        }
-    </style>
-    """
+ANOMALY_SUMMARY_PATH = (
+    PROJECT_ROOT / "reports/tables/anomaly_summary.csv"
+)
+FORECAST_FUTURE_PATH = (
+    PROJECT_ROOT / "reports/tables/business_forecast_future.csv"
+)
+DAILY_KPI_PATH = (
+    PROJECT_ROOT / "reports/tables/daily_business_kpis.csv"
 )
 
+FEATURE_DRIFT_PATH = (
+    PROJECT_ROOT
+    / "reports/evidently/latest/feature_drift_report.json"
+)
+PREDICTION_DRIFT_PATH = (
+    PROJECT_ROOT
+    / "reports/evidently/latest/prediction_drift_report.json"
+)
+
+SOURCE_STATUS_PATH = (
+    PROJECT_ROOT
+    / "reports/visuals/ml_visual_intelligence/monitoring/"
+    "monitoring_source_status.csv"
+)
+DELAYED_FUNNEL_PATH = (
+    PROJECT_ROOT
+    / "reports/visuals/ml_visual_intelligence/monitoring/"
+    "delayed_label_funnel.csv"
+)
+DELAYED_REJECTIONS_PATH = (
+    PROJECT_ROOT
+    / "reports/visuals/ml_visual_intelligence/monitoring/"
+    "delayed_label_rejections.csv"
+)
+
+MODEL_PATH = (
+    PROJECT_ROOT
+    / "models/trained/final_champion_model.joblib"
+)
+MODEL_METADATA_PATH = (
+    PROJECT_ROOT
+    / "models/metadata/final_champion_metadata.json"
+)
+SCORE_MANIFEST_PATH = (
+    PROJECT_ROOT
+    / "models/metadata/final_champion_score_manifest.json"
+)
+MLFLOW_LINEAGE_PATH = (
+    PROJECT_ROOT
+    / "models/metadata/mlflow_champion_lineage.json"
+)
+REGISTRY_PATH = (
+    PROJECT_ROOT
+    / "reports/visuals/ml_visual_intelligence/"
+    "experiment_tracking/verified_ecommerce_registry_versions.csv"
+)
+
+MINIMUM_LIVE_SAMPLE = 30
+
 
 # --------------------------------------------------
-# 3. INPUT PATHS
+# LOADERS
 # --------------------------------------------------
+@st.cache_data(show_spinner=False)
+def read_csv_if_exists(path_text: str) -> pd.DataFrame:
+    """Read a CSV when present and return an empty frame otherwise."""
 
-SINGLE_PREDICTION_LOG_PATH = Path("monitoring/prediction_logs/prediction_log.csv")
-BATCH_SCORING_LOG_PATH = Path("monitoring/prediction_logs/batch_scoring_log.csv")
+    path = Path(path_text)
 
-FINAL_CHAMPION_VISITOR_SCORES_PATH = Path("data/processed/final_champion_visitor_scores.csv")
-CHAMPION_VISITOR_SCORES_PATH = Path("data/processed/champion_visitor_scores.csv")
-
-ANOMALY_SUMMARY_PATH = Path("reports/tables/anomaly_summary.csv")
-FORECAST_FUTURE_PATH = Path("reports/tables/business_forecast_future.csv")
-DAILY_KPI_PATH = Path("reports/tables/daily_business_kpis.csv")
-
-
-# --------------------------------------------------
-# 4. HELPER FUNCTIONS
-# --------------------------------------------------
-
-def load_optional_csv(path: Path) -> pd.DataFrame:
-    """Load a CSV if it exists."""
-
-    if not path.exists():
+    if not path.is_file():
         return pd.DataFrame()
 
     data = pd.read_csv(path)
 
-    for column in ["timestamp_utc", "date", "scored_at_utc"]:
+    for column in (
+        "timestamp_utc",
+        "scored_at_utc",
+        "date",
+        "created_at_utc",
+    ):
         if column in data.columns:
-            data[column] = pd.to_datetime(data[column], errors="coerce")
+            data[column] = pd.to_datetime(
+                data[column],
+                errors="coerce",
+                utc=True,
+            )
 
     return data
 
 
 @st.cache_data(show_spinner=False)
-def load_score_baseline(path_text: str, sample_size: int = 200_000) -> pd.DataFrame:
-    """Load a sample of champion visitor scores for baseline monitoring."""
+def read_json_if_exists(path_text: str) -> dict[str, Any]:
+    """Read one JSON artifact when it exists."""
 
     path = Path(path_text)
 
-    if not path.exists():
+    if not path.is_file():
+        return {}
+
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+@st.cache_data(show_spinner=False)
+def load_score_baseline(
+    path_text: str,
+    sample_size: int = 200_000,
+) -> pd.DataFrame:
+    """Load a deterministic baseline sample from the active score file."""
+
+    path = Path(path_text)
+
+    if not path.is_file():
         return pd.DataFrame()
 
     data = pd.read_csv(path)
 
     if "purchase_intent_score" not in data.columns:
         return pd.DataFrame()
+
+    data["purchase_intent_score"] = pd.to_numeric(
+        data["purchase_intent_score"],
+        errors="coerce",
+    )
+    data = data.dropna(subset=["purchase_intent_score"])
 
     if len(data) > sample_size:
         data = data.sample(
@@ -245,781 +199,1238 @@ def load_score_baseline(path_text: str, sample_size: int = 200_000) -> pd.DataFr
     return data
 
 
-def get_active_score_file() -> Path:
-    """Prefer final champion score file, then fallback to current champion scores."""
+def active_score_file() -> Path:
+    """Prefer the final champion score file."""
 
-    if FINAL_CHAMPION_VISITOR_SCORES_PATH.exists():
-        return FINAL_CHAMPION_VISITOR_SCORES_PATH
+    for path in SCORE_PATHS:
+        if path.is_file():
+            return path
 
-    return CHAMPION_VISITOR_SCORES_PATH
-
-
-def format_count(value: float) -> str:
-    """Format count values for cards."""
-
-    if pd.isna(value):
-        return "NA"
-
-    value = float(value)
-
-    if abs(value) >= 1_000_000:
-        return f"{value / 1_000_000:.1f}M"
-
-    if abs(value) >= 1_000:
-        return f"{value / 1_000:.1f}K"
-
-    return f"{value:,.0f}"
+    return SCORE_PATHS[0]
 
 
-def format_score(value: float) -> str:
-    """Format a probability score as a percent."""
+def file_hash(path: Path) -> str:
+    """Return a short SHA-256 hash for one local artifact."""
 
-    if pd.isna(value):
-        return "NA"
+    if not path.is_file():
+        return "Unavailable"
 
-    return f"{float(value) * 100:.1f}%"
+    digest = hashlib.sha256()
 
+    with path.open("rb") as file:
+        for chunk in iter(lambda: file.read(1024 * 1024), b""):
+            digest.update(chunk)
 
-def get_summary_value(summary: pd.DataFrame, metric: str) -> float:
-    """Read one metric from anomaly_summary.csv."""
-
-    if summary.empty:
-        return np.nan
-
-    if {"metric", "value"}.issubset(summary.columns):
-        row = summary[summary["metric"].astype(str) == metric]
-
-        if not row.empty:
-            return float(row.iloc[0]["value"])
-
-    if metric in summary.columns:
-        return float(summary.iloc[0][metric])
-
-    return np.nan
+    return digest.hexdigest()[:12]
 
 
-def extract_live_prediction_scores(single_log: pd.DataFrame) -> pd.DataFrame:
-    """Standardise live prediction scores from prediction logs."""
+# --------------------------------------------------
+# SESSION LOG PREPARATION
+# --------------------------------------------------
+def extract_live_scores(log: pd.DataFrame) -> pd.DataFrame:
+    """Normalise score values from the current app prediction log."""
 
-    if single_log.empty:
+    if log.empty:
         return pd.DataFrame()
 
-    data = single_log.copy()
-
-    score_candidates = [
-        "purchase_intent_score",
-        "score",
-        "prediction_score",
-        "intent_score",
-    ]
-
-    score_column = None
-
-    for candidate in score_candidates:
-        if candidate in data.columns:
-            score_column = candidate
-            break
+    score_column = next(
+        (
+            column
+            for column in (
+                "purchase_intent_score",
+                "score",
+                "prediction_score",
+                "intent_score",
+            )
+            if column in log.columns
+        ),
+        None,
+    )
 
     if score_column is None:
         return pd.DataFrame()
 
-    output = pd.DataFrame()
-
-    output["timestamp_utc"] = (
-        pd.to_datetime(data["timestamp_utc"], errors="coerce")
-        if "timestamp_utc" in data.columns
-        else pd.NaT
+    output = pd.DataFrame(
+        {
+            "purchase_intent_score": pd.to_numeric(
+                log[score_column],
+                errors="coerce",
+            )
+        }
     )
 
-    output["purchase_intent_score"] = pd.to_numeric(
-        data[score_column],
-        errors="coerce",
-    )
-
-    output["intent_segment"] = (
-        data["intent_segment"].astype(str)
-        if "intent_segment" in data.columns
-        else "Unknown"
-    )
-
-    output["recommended_action"] = (
-        data["recommended_action"].astype(str)
-        if "recommended_action" in data.columns
-        else "Unknown"
-    )
+    if "timestamp_utc" in log.columns:
+        output["timestamp_utc"] = pd.to_datetime(
+            log["timestamp_utc"],
+            errors="coerce",
+            utc=True,
+        )
+    else:
+        output["timestamp_utc"] = pd.NaT
 
     return output.dropna(subset=["purchase_intent_score"])
 
 
-def create_score_bucket(score: float, threshold: float) -> str:
-    """Convert score into business-friendly bucket."""
-
-    if score >= threshold:
-        return "High Intent"
-    if score >= 0.80:
-        return "Strong Intent"
-    if score >= 0.50:
-        return "Warm Intent"
-    if score >= 0.20:
-        return "Low Intent"
-
-    return "Cold Visitor"
-
-
-def build_score_bucket_table(
-    scores: pd.Series,
-    source_label: str,
-    threshold: float,
-) -> pd.DataFrame:
-    """Build score-bucket distribution for baseline or live scores."""
-
-    clean_scores = pd.to_numeric(scores, errors="coerce").dropna()
-
-    if clean_scores.empty:
-        return pd.DataFrame()
-
-    buckets = clean_scores.apply(lambda score: create_score_bucket(score, threshold))
-
-    order = [
-        "Cold Visitor",
-        "Low Intent",
-        "Warm Intent",
-        "Strong Intent",
-        "High Intent",
-    ]
-
-    counts = buckets.value_counts().reindex(order).fillna(0).reset_index()
-    counts.columns = ["Score Bucket", "Visitor Count"]
-    counts["Source"] = source_label
-    counts["Visitor Share"] = counts["Visitor Count"] / counts["Visitor Count"].sum()
-
-    return counts
-
-
-def calculate_population_stability_index(
+# --------------------------------------------------
+# DRIFT HELPERS
+# --------------------------------------------------
+def calculate_psi(
     expected_scores: pd.Series,
     actual_scores: pd.Series,
     bins: int = 10,
 ) -> float:
-    """Calculate simple PSI between baseline and live score distributions."""
+    """Calculate PSI only after sample-size gating is satisfied."""
 
-    expected = pd.to_numeric(expected_scores, errors="coerce").dropna()
-    actual = pd.to_numeric(actual_scores, errors="coerce").dropna()
+    expected = pd.to_numeric(
+        expected_scores,
+        errors="coerce",
+    ).dropna()
+    actual = pd.to_numeric(
+        actual_scores,
+        errors="coerce",
+    ).dropna()
 
-    if expected.empty or actual.empty:
-        return np.nan
+    if expected.empty or len(actual) < MINIMUM_LIVE_SAMPLE:
+        return float("nan")
 
-    bin_edges = np.linspace(0, 1, bins + 1)
+    edges = np.linspace(0.0, 1.0, bins + 1)
+    expected_counts, _ = np.histogram(expected, bins=edges)
+    actual_counts, _ = np.histogram(actual, bins=edges)
 
-    expected_counts, _ = np.histogram(expected, bins=bin_edges)
-    actual_counts, _ = np.histogram(actual, bins=bin_edges)
+    expected_share = (
+        expected_counts / max(expected_counts.sum(), 1)
+    )
+    actual_share = actual_counts / max(actual_counts.sum(), 1)
 
-    expected_pct = expected_counts / max(expected_counts.sum(), 1)
-    actual_pct = actual_counts / max(actual_counts.sum(), 1)
+    expected_share = np.where(
+        expected_share == 0,
+        0.0001,
+        expected_share,
+    )
+    actual_share = np.where(
+        actual_share == 0,
+        0.0001,
+        actual_share,
+    )
 
-    expected_pct = np.where(expected_pct == 0, 0.0001, expected_pct)
-    actual_pct = np.where(actual_pct == 0, 0.0001, actual_pct)
+    values = (
+        (actual_share - expected_share)
+        * np.log(actual_share / expected_share)
+    )
 
-    psi_values = (actual_pct - expected_pct) * np.log(actual_pct / expected_pct)
-
-    return float(np.sum(psi_values))
+    return float(values.sum())
 
 
-def interpret_psi(psi_value: float) -> str:
-    """Convert PSI number into health status."""
+def psi_status(value: float, live_count: int) -> str:
+    """Translate PSI into a status without overstating tiny samples."""
 
-    if pd.isna(psi_value):
-        return "Not enough live data"
+    if live_count < MINIMUM_LIVE_SAMPLE:
+        return "Insufficient live data"
 
-    if psi_value < 0.10:
+    if pd.isna(value):
+        return "Unavailable"
+
+    if value < 0.10:
         return "Stable"
 
-    if psi_value < 0.25:
+    if value < 0.25:
         return "Moderate drift"
 
     return "Major drift"
 
 
-def get_numeric_summary(data: pd.DataFrame, column: str) -> Dict[str, float]:
-    """Calculate simple score health statistics."""
+def score_bucket(score: float, threshold: float) -> str:
+    """Convert a score into one readable operational bucket."""
 
-    if data.empty or column not in data.columns:
-        return {
-            "count": 0,
-            "mean": np.nan,
-            "median": np.nan,
-            "p95": np.nan,
-            "max": np.nan,
-        }
+    if score >= threshold:
+        return "High intent"
+    if score >= 0.80:
+        return "Strong intent"
+    if score >= 0.50:
+        return "Warm intent"
+    if score >= 0.20:
+        return "Low intent"
 
-    values = pd.to_numeric(data[column], errors="coerce").dropna()
-
-    if values.empty:
-        return {
-            "count": 0,
-            "mean": np.nan,
-            "median": np.nan,
-            "p95": np.nan,
-            "max": np.nan,
-        }
-
-    return {
-        "count": len(values),
-        "mean": float(values.mean()),
-        "median": float(values.median()),
-        "p95": float(values.quantile(0.95)),
-        "max": float(values.max()),
-    }
+    return "Cold visitor"
 
 
-def check_file_status(path: Path) -> str:
-    """Return OK or Missing for a project file."""
+def score_bucket_table(
+    scores: pd.Series,
+    source: str,
+    threshold: float,
+) -> pd.DataFrame:
+    """Create a comparable bucket distribution."""
 
-    return "OK" if path.exists() else "Missing"
+    clean = pd.to_numeric(scores, errors="coerce").dropna()
 
+    if clean.empty:
+        return pd.DataFrame()
 
+    order = [
+        "Cold visitor",
+        "Low intent",
+        "Warm intent",
+        "Strong intent",
+        "High intent",
+    ]
 
-def format_score_value(value: float) -> str:
-    """Format a numeric health value."""
-
-    if pd.isna(value):
-        return "NA"
-
-    return f"{float(value):.3f}"
-
-
-
-
-def render_chart_explanation(title: str, shows: str, conclusion: str) -> None:
-    """Add a compact explanation and conclusion under a chart."""
-
-    render_html(
-        (
-            f'<div class="story-card">'
-            f'<div class="story-title">{escape_text(title)}</div>'
-            f'<div class="story-text">'
-            f'<b>What this chart shows:</b> {escape_text(shows)}<br><br>'
-            f'<b>Conclusion:</b> {escape_text(conclusion)}'
-            f'</div></div>'
+    counts = (
+        clean.apply(
+            lambda value: score_bucket(value, threshold)
         )
+        .value_counts()
+        .reindex(order)
+        .fillna(0)
+        .rename_axis("Score bucket")
+        .reset_index(name="Visitor count")
     )
+    counts["Visitor share"] = (
+        counts["Visitor count"]
+        / max(counts["Visitor count"].sum(), 1)
+    )
+    counts["Source"] = source
+
+    return counts
+
+
+def numeric_value(
+    mapping: dict[str, Any],
+    keys: tuple[str, ...],
+) -> float | None:
+    """Read the first finite numeric value from a dictionary."""
+
+    for key in keys:
+        if key not in mapping:
+            continue
+
+        try:
+            value = float(mapping[key])
+        except (TypeError, ValueError):
+            continue
+
+        if np.isfinite(value):
+            return value
+
+    return None
+
+
+def parse_drift_report(
+    report: dict[str, Any],
+    source_name: str,
+) -> pd.DataFrame:
+    """Extract drift evidence from old and new Evidently JSON layouts."""
+
+    rows: list[dict[str, Any]] = []
+    seen: set[tuple[str, float, str]] = set()
+
+    def visit(node: Any) -> None:
+        if isinstance(node, list):
+            for item in node:
+                visit(item)
+            return
+
+        if not isinstance(node, dict):
+            return
+
+        config = (
+            node.get("config")
+            if isinstance(node.get("config"), dict)
+            else {}
+        )
+        result = (
+            node.get("result")
+            if isinstance(node.get("result"), dict)
+            else {}
+        )
+
+        context = " ".join(
+            str(value)
+            for value in (
+                node.get("type"),
+                node.get("metric"),
+                node.get("metric_id"),
+                node.get("id"),
+                config.get("type"),
+                config.get("metric"),
+                result.get("metric"),
+            )
+            if value is not None
+        ).lower()
+
+        feature = next(
+            (
+                str(value)
+                for value in (
+                    config.get("column"),
+                    config.get("column_name"),
+                    node.get("column"),
+                    node.get("column_name"),
+                    result.get("column"),
+                    result.get("column_name"),
+                    result.get("feature"),
+                )
+                if value not in (None, "")
+            ),
+            None,
+        )
+
+        score = numeric_value(
+            node,
+            ("drift_score", "score"),
+        )
+
+        if score is None:
+            score = numeric_value(
+                result,
+                ("drift_score", "score", "value"),
+            )
+
+        if score is None and "drift" in context:
+            score = numeric_value(node, ("value",))
+
+        threshold = (
+            numeric_value(
+                config,
+                ("threshold", "drift_threshold"),
+            )
+            or numeric_value(
+                node,
+                ("threshold", "drift_threshold"),
+            )
+            or numeric_value(
+                result,
+                ("threshold", "drift_threshold"),
+            )
+            or 0.10
+        )
+
+        detected_value = next(
+            (
+                value
+                for value in (
+                    node.get("drift_detected"),
+                    node.get("detected"),
+                    result.get("drift_detected"),
+                    result.get("detected"),
+                )
+                if value is not None
+            ),
+            None,
+        )
+
+        detected = (
+            bool(detected_value)
+            if isinstance(detected_value, bool)
+            else (
+                str(detected_value).strip().lower()
+                in {"true", "1", "yes", "drift"}
+                if detected_value is not None
+                else (
+                    score >= threshold
+                    if score is not None
+                    else False
+                )
+            )
+        )
+
+        if feature is not None and score is not None:
+            key = (feature, round(score, 12), source_name)
+
+            if key not in seen:
+                rows.append(
+                    {
+                        "Feature": feature,
+                        "Drift score": score,
+                        "Threshold": threshold,
+                        "Alert state": (
+                            "Drift" if detected else "Stable"
+                        ),
+                        "Source": source_name,
+                        "Method": str(
+                            config.get("method")
+                            or node.get("method")
+                            or result.get("method")
+                            or "Saved Evidently metric"
+                        ),
+                    }
+                )
+                seen.add(key)
+
+        for value in node.values():
+            if isinstance(value, (dict, list)):
+                visit(value)
+
+    visit(report)
+
+    return pd.DataFrame(rows)
+
 
 # --------------------------------------------------
-# 5. CHART FUNCTIONS
+# CHARTS
 # --------------------------------------------------
+def bucket_figure(data: pd.DataFrame) -> go.Figure:
+    """Draw score-bucket shares."""
 
-def build_score_bucket_chart(bucket_table: pd.DataFrame):
-    """Create readable baseline vs live score-bucket chart.
-
-    This replaces the old raw histogram because the raw baseline score distribution
-    is too dominated by cold visitors.
-    """
-
-    if not PLOTLY_AVAILABLE or bucket_table.empty:
-        return None
-
-    fig = px.bar(
-        bucket_table,
-        x="Score Bucket",
-        y="Visitor Share",
+    figure = px.bar(
+        data,
+        x="Score bucket",
+        y="Visitor share",
         color="Source",
         barmode="group",
-        text="Visitor Share",
-        title="Score health: baseline vs live visitor intent buckets",
+        text="Visitor share",
+        title="Score distribution by operational intent bucket",
     )
-
-    fig.update_traces(
+    figure.update_traces(
         texttemplate="%{text:.1%}",
         textposition="outside",
-        marker_line_width=0,
+    )
+    figure.update_yaxes(
+        tickformat=".0%",
+        title="Visitor share",
+    )
+    figure.update_xaxes(title="")
+    figure.update_layout(
+        height=470,
+        margin=dict(l=20, r=20, t=70, b=20),
+        legend_title="Evidence",
     )
 
-    fig.update_layout(
-        template="plotly_dark",
-        height=440,
-        margin=dict(l=20, r=20, t=62, b=20),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        xaxis_title="Intent bucket",
-        yaxis_title="Visitor share",
-        legend_title="Source",
-        title_font=dict(size=20),
-    )
-
-    fig.update_yaxes(tickformat=".0%")
-
-    return fig
+    return figure
 
 
-def build_prediction_volume_chart(live_scores: pd.DataFrame, batch_log: pd.DataFrame):
-    """Create prediction logging volume chart."""
+def logging_volume_figure(
+    single_scores: pd.DataFrame,
+    batch_log: pd.DataFrame,
+) -> go.Figure | None:
+    """Draw available session-local scoring activity."""
 
-    if not PLOTLY_AVAILABLE:
-        return None
+    rows: list[pd.DataFrame] = []
 
-    rows = []
-
-    if not live_scores.empty and "timestamp_utc" in live_scores.columns:
-        single_daily = (
-            live_scores
-            .dropna(subset=["timestamp_utc"])
-            .assign(date=lambda data: data["timestamp_utc"].dt.date)
+    if (
+        not single_scores.empty
+        and "timestamp_utc" in single_scores.columns
+    ):
+        single = (
+            single_scores.dropna(subset=["timestamp_utc"])
+            .assign(
+                date=lambda frame: (
+                    frame["timestamp_utc"].dt.date
+                )
+            )
             .groupby("date")
             .size()
-            .reset_index(name="prediction_count")
+            .reset_index(name="Logged events")
         )
-        single_daily["source"] = "Single visitor"
+        single["Source"] = "Single visitor"
+        rows.append(single)
 
-        rows.append(single_daily)
-
-    if not batch_log.empty:
-        date_column = "timestamp_utc" if "timestamp_utc" in batch_log.columns else None
-
-        if date_column is not None:
-            batch_daily = (
-                batch_log
-                .dropna(subset=[date_column])
-                .assign(date=lambda data: data[date_column].dt.date)
-                .groupby("date")
-                .size()
-                .reset_index(name="prediction_count")
+    if (
+        not batch_log.empty
+        and "timestamp_utc" in batch_log.columns
+    ):
+        batch = (
+            batch_log.dropna(subset=["timestamp_utc"])
+            .assign(
+                date=lambda frame: (
+                    frame["timestamp_utc"].dt.date
+                )
             )
-            batch_daily["source"] = "Batch scoring"
-
-            rows.append(batch_daily)
+            .groupby("date")
+            .size()
+            .reset_index(name="Logged events")
+        )
+        batch["Source"] = "Batch scoring"
+        rows.append(batch)
 
     if not rows:
         return None
 
-    chart_data = pd.concat(rows, ignore_index=True)
-    chart_data["date"] = pd.to_datetime(chart_data["date"])
+    data = pd.concat(rows, ignore_index=True)
+    data["date"] = pd.to_datetime(data["date"])
 
-    fig = px.line(
-        chart_data,
+    figure = px.line(
+        data,
         x="date",
-        y="prediction_count",
-        color="source",
+        y="Logged events",
+        color="Source",
         markers=True,
-        title="Prediction logging volume over time",
+        title="Available prediction-log activity",
     )
-
-    fig.update_layout(
-        template="plotly_dark",
-        height=420,
-        margin=dict(l=20, r=20, t=62, b=20),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
+    figure.update_layout(
+        height=430,
+        margin=dict(l=20, r=20, t=70, b=20),
+        legend_title="Log type",
         xaxis_title="Date",
-        yaxis_title="Logged prediction events",
-        legend_title="Log source",
-        title_font=dict(size=20),
     )
 
-    return fig
+    return figure
 
 
-def build_forecast_health_chart(forecast_future: pd.DataFrame):
-    """Create future forecast availability chart."""
+def forecast_health_figure(
+    forecast: pd.DataFrame,
+) -> go.Figure | None:
+    """Show that approved forecast outputs are available."""
 
-    if not PLOTLY_AVAILABLE or forecast_future.empty:
+    required = {
+        "date",
+        "target_name",
+        "predicted_value",
+    }
+
+    if forecast.empty or not required.issubset(
+        forecast.columns
+    ):
         return None
 
-    required = {"date", "target_name", "predicted_value"}
-
-    if not required.issubset(forecast_future.columns):
-        return None
-
-    data = forecast_future.copy()
+    data = forecast.copy()
 
     if "is_best_model" in data.columns:
-        best_rows = data[data["is_best_model"].astype(str).str.lower().isin(["true", "1", "yes"])]
+        best = (
+            data["is_best_model"]
+            .astype(str)
+            .str.strip()
+            .str.lower()
+            .isin({"true", "1", "yes"})
+        )
 
-        if not best_rows.empty:
-            data = best_rows.copy()
+        if best.any():
+            data = data.loc[best].copy()
 
-    fig = px.line(
+    figure = px.line(
         data,
         x="date",
         y="predicted_value",
         color="target_name",
         markers=True,
-        title="Forecast output health: future KPI predictions are available",
+        title="Approved future KPI forecast availability",
     )
-
-    fig.update_layout(
-        template="plotly_dark",
+    figure.update_layout(
         height=430,
-        margin=dict(l=20, r=20, t=62, b=20),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(l=20, r=20, t=70, b=20),
+        legend_title="KPI",
         xaxis_title="Date",
         yaxis_title="Predicted value",
-        legend_title="KPI",
-        title_font=dict(size=20),
     )
 
-    return fig
+    return figure
+
+
+def drift_figure(drift: pd.DataFrame) -> go.Figure:
+    """Draw the saved offline drift snapshot."""
+
+    ordered = drift.sort_values(
+        "Drift score",
+        ascending=True,
+    )
+
+    figure = px.bar(
+        ordered,
+        x="Drift score",
+        y="Feature",
+        orientation="h",
+        color="Alert state",
+        text="Drift score",
+        hover_data={
+            "Threshold": ":.4f",
+            "Source": True,
+            "Method": True,
+        },
+        title="Latest saved Evidently drift snapshot",
+    )
+    figure.update_traces(
+        texttemplate="%{text:.4f}",
+        textposition="outside",
+    )
+
+    threshold = float(
+        pd.to_numeric(
+            drift["Threshold"],
+            errors="coerce",
+        ).dropna().max()
+    )
+    figure.add_vline(
+        x=threshold,
+        line_dash="dash",
+        annotation_text="Saved alert threshold",
+    )
+    figure.update_layout(
+        height=max(450, 45 * len(drift)),
+        margin=dict(l=20, r=20, t=70, b=20),
+        legend_title="State",
+    )
+
+    return figure
+
+
+def delayed_label_figure(
+    funnel: pd.DataFrame,
+) -> go.Figure | None:
+    """Draw matured-label progression when the evidence exists."""
+
+    if (
+        funnel.empty
+        or not {"stage", "count"}.issubset(funnel.columns)
+    ):
+        return None
+
+    figure = go.Figure(
+        go.Funnel(
+            y=funnel["stage"],
+            x=pd.to_numeric(
+                funnel["count"],
+                errors="coerce",
+            ).fillna(0),
+            textinfo="value+percent initial",
+        )
+    )
+    figure.update_layout(
+        title="Delayed-label maturity funnel",
+        height=480,
+        margin=dict(l=20, r=20, t=70, b=20),
+    )
+
+    return figure
 
 
 # --------------------------------------------------
-# 6. LOAD MONITORING DATA
+# DISPLAY HELPERS
 # --------------------------------------------------
+def format_count(value: int | float) -> str:
+    """Format one count for a KPI card."""
 
-single_log = load_optional_csv(SINGLE_PREDICTION_LOG_PATH)
-batch_log = load_optional_csv(BATCH_SCORING_LOG_PATH)
+    number = float(value)
 
-score_file = get_active_score_file()
+    if abs(number) >= 1_000_000:
+        return f"{number / 1_000_000:.1f}M"
+
+    if abs(number) >= 1_000:
+        return f"{number / 1_000:.1f}K"
+
+    return f"{number:,.0f}"
+
+
+def format_rate(value: float) -> str:
+    """Format a valid rate or show unavailable."""
+
+    if pd.isna(value):
+        return "Not assessed"
+
+    return f"{value:.1%}"
+
+
+def environment_summary(metadata: dict[str, Any]) -> str:
+    """Turn training-environment metadata into one readable line."""
+
+    environment = metadata.get("environment", {})
+
+    if not isinstance(environment, dict):
+        return str(environment or "Unavailable")
+
+    python_version = environment.get(
+        "python_version",
+        "Unknown Python",
+    )
+    operating_system = environment.get(
+        "operating_system",
+        "Unknown OS",
+    )
+    architecture = environment.get(
+        "machine_architecture",
+        "Unknown architecture",
+    )
+
+    return (
+        f"Python {python_version} · "
+        f"{operating_system} · {architecture}"
+    )
+
+
+# --------------------------------------------------
+# LOAD EVIDENCE
+# --------------------------------------------------
+score_file = active_score_file()
 baseline_scores = load_score_baseline(str(score_file))
+single_log = read_csv_if_exists(str(SINGLE_LOG_PATH))
+batch_log = read_csv_if_exists(str(BATCH_LOG_PATH))
+live_scores = extract_live_scores(single_log)
 
-anomaly_summary = load_optional_csv(ANOMALY_SUMMARY_PATH)
-forecast_future = load_optional_csv(FORECAST_FUTURE_PATH)
-daily_kpis = load_optional_csv(DAILY_KPI_PATH)
+anomaly_summary = read_csv_if_exists(
+    str(ANOMALY_SUMMARY_PATH)
+)
+forecast_future = read_csv_if_exists(
+    str(FORECAST_FUTURE_PATH)
+)
+daily_kpis = read_csv_if_exists(str(DAILY_KPI_PATH))
 
-live_scores = extract_live_prediction_scores(single_log)
-
-champion_model_name = get_champion_model_name()
-best_threshold = get_best_threshold()
-
-
-# --------------------------------------------------
-# 7. HEALTH CALCULATIONS
-# --------------------------------------------------
-
-baseline_score_summary = get_numeric_summary(
-    baseline_scores,
-    "purchase_intent_score",
+feature_report = read_json_if_exists(
+    str(FEATURE_DRIFT_PATH)
+)
+prediction_report = read_json_if_exists(
+    str(PREDICTION_DRIFT_PATH)
+)
+feature_drift = parse_drift_report(
+    feature_report,
+    "Feature drift",
+)
+prediction_drift = parse_drift_report(
+    prediction_report,
+    "Prediction drift",
+)
+drift = pd.concat(
+    [feature_drift, prediction_drift],
+    ignore_index=True,
 )
 
-live_score_summary = get_numeric_summary(
-    live_scores,
-    "purchase_intent_score",
+source_status = read_csv_if_exists(
+    str(SOURCE_STATUS_PATH)
+)
+delayed_funnel = read_csv_if_exists(
+    str(DELAYED_FUNNEL_PATH)
+)
+delayed_rejections = read_csv_if_exists(
+    str(DELAYED_REJECTIONS_PATH)
+)
+registry = read_csv_if_exists(str(REGISTRY_PATH))
+
+metadata = read_json_if_exists(
+    str(MODEL_METADATA_PATH)
+)
+score_manifest = read_json_if_exists(
+    str(SCORE_MANIFEST_PATH)
+)
+lineage = read_json_if_exists(
+    str(MLFLOW_LINEAGE_PATH)
 )
 
-psi_value = calculate_population_stability_index(
-    baseline_scores["purchase_intent_score"] if "purchase_intent_score" in baseline_scores.columns else pd.Series(dtype=float),
-    live_scores["purchase_intent_score"] if "purchase_intent_score" in live_scores.columns else pd.Series(dtype=float),
+champion_name = get_champion_model_name()
+threshold = float(get_best_threshold())
+
+baseline_count = int(len(baseline_scores))
+live_count = int(len(live_scores))
+live_sample_ready = live_count >= MINIMUM_LIVE_SAMPLE
+
+psi_value = calculate_psi(
+    baseline_scores.get(
+        "purchase_intent_score",
+        pd.Series(dtype=float),
+    ),
+    live_scores.get(
+        "purchase_intent_score",
+        pd.Series(dtype=float),
+    ),
 )
-
-psi_status = interpret_psi(psi_value)
-
-live_high_intent_rate = (
-    float((live_scores["purchase_intent_score"] >= best_threshold).mean())
-    if not live_scores.empty
-    else np.nan
+current_psi_status = psi_status(
+    psi_value,
+    live_count,
 )
 
 baseline_high_intent_rate = (
-    float((baseline_scores["purchase_intent_score"] >= best_threshold).mean())
-    if not baseline_scores.empty
-    else np.nan
+    float(
+        baseline_scores["purchase_intent_score"]
+        .ge(threshold)
+        .mean()
+    )
+    if baseline_count
+    else float("nan")
+)
+live_high_intent_rate = (
+    float(
+        live_scores["purchase_intent_score"]
+        .ge(threshold)
+        .mean()
+    )
+    if live_sample_ready
+    else float("nan")
 )
 
-anomaly_rate = get_summary_value(anomaly_summary, "final_anomaly_rate")
+drift_alerts = (
+    int(drift["Alert state"].eq("Drift").sum())
+    if not drift.empty
+    else None
+)
 
-baseline_bucket_table = (
-    build_score_bucket_table(
+ready_sources = (
+    int(
+        source_status["exists"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .isin({"true", "1", "yes"})
+        .sum()
+    )
+    if (
+        not source_status.empty
+        and "exists" in source_status.columns
+    )
+    else None
+)
+
+matured_count = (
+    int(
+        pd.to_numeric(
+            delayed_funnel.iloc[-1]["count"],
+            errors="coerce",
+        )
+    )
+    if (
+        not delayed_funnel.empty
+        and "count" in delayed_funnel.columns
+    )
+    else None
+)
+
+
+# --------------------------------------------------
+# PAGE
+# --------------------------------------------------
+st.set_page_config(
+    page_title="Monitoring, Drift & Health",
+    page_icon="🩺",
+    layout="wide",
+)
+inject_global_css()
+
+st.caption("Production monitoring layer")
+st.title("Monitoring, Drift & Health")
+st.write(
+    "This page separates session logging, saved offline drift evidence, "
+    "artifact readiness, and genuine matured-label performance."
+)
+
+st.info(
+    "A PSI result is not reported until at least "
+    f"{MINIMUM_LIVE_SAMPLE} live prediction scores exist. "
+    "One prediction cannot establish production drift."
+)
+
+header_1, header_2, header_3 = st.columns(3)
+header_1.metric("Champion", champion_name)
+header_2.metric("Production threshold", f"{threshold:.2f}")
+header_3.metric("Live PSI status", current_psi_status)
+
+
+# --------------------------------------------------
+# LIVE SESSION HEALTH
+# --------------------------------------------------
+st.subheader("Current logging and score health")
+st.caption(
+    "Prediction-log counts describe the currently available app log file. "
+    "They are not presented as durable multi-period production history."
+)
+
+card_1, card_2, card_3, card_4 = st.columns(4)
+
+card_1.metric(
+    "Available live predictions",
+    format_count(live_count),
+    help="Scores currently present in the single-prediction log.",
+)
+card_2.metric(
+    "Baseline score sample",
+    format_count(baseline_count),
+    help="Saved champion scores used as the comparison baseline.",
+)
+card_3.metric(
+    "PSI status",
+    current_psi_status,
+    help=(
+        f"PSI is assessed only after {MINIMUM_LIVE_SAMPLE} "
+        "live scores are available."
+    ),
+)
+card_4.metric(
+    "Live high-intent rate",
+    format_rate(live_high_intent_rate),
+    help=(
+        f"Baseline high-intent rate: "
+        f"{format_rate(baseline_high_intent_rate)}"
+    ),
+)
+
+if not live_sample_ready:
+    st.warning(
+        f"Only {live_count} live prediction score(s) are available. "
+        f"At least {MINIMUM_LIVE_SAMPLE} are required before PSI, "
+        "live high-intent rate, or live-versus-baseline drift claims "
+        "are shown."
+    )
+else:
+    st.caption(f"Calculated PSI: {psi_value:.3f}")
+
+baseline_buckets = (
+    score_bucket_table(
         baseline_scores["purchase_intent_score"],
-        "Champion baseline",
-        best_threshold,
+        "Saved champion baseline",
+        threshold,
     )
     if "purchase_intent_score" in baseline_scores.columns
     else pd.DataFrame()
 )
 
-live_bucket_table = (
-    build_score_bucket_table(
+if live_sample_ready:
+    live_buckets = score_bucket_table(
         live_scores["purchase_intent_score"],
-        "Live predictions",
-        best_threshold,
+        "Current live sample",
+        threshold,
     )
-    if "purchase_intent_score" in live_scores.columns
-    else pd.DataFrame()
-)
+else:
+    live_buckets = pd.DataFrame()
 
-bucket_table = pd.concat(
-    [baseline_bucket_table, live_bucket_table],
+bucket_data = pd.concat(
+    [baseline_buckets, live_buckets],
     ignore_index=True,
 )
 
+if bucket_data.empty:
+    st.info("Score-distribution evidence is unavailable.")
+else:
+    st.plotly_chart(
+        bucket_figure(bucket_data),
+        width="stretch",
+        key="monitoring_score_buckets",
+    )
+    st.caption(
+        "The live comparison is added only after the minimum sample gate "
+        "is reached. Until then, the chart shows the saved baseline only."
+    )
+
+chart_left, chart_right = st.columns(2)
+
+with chart_left:
+    volume = logging_volume_figure(
+        live_scores,
+        batch_log,
+    )
+
+    if volume is None:
+        st.info("No prediction-log timeline is available yet.")
+    else:
+        st.plotly_chart(
+            volume,
+            width="stretch",
+            key="monitoring_log_volume",
+        )
+        st.caption(
+            "This is available log activity, not a guaranteed persistent "
+            "production-history store."
+        )
+
+with chart_right:
+    forecast_chart = forecast_health_figure(
+        forecast_future
+    )
+
+    if forecast_chart is None:
+        st.info("Approved forecast output is unavailable.")
+    else:
+        st.plotly_chart(
+            forecast_chart,
+            width="stretch",
+            key="monitoring_forecast_health",
+        )
+        st.caption(
+            "This confirms that the approved forecast artifact is present."
+        )
+
 
 # --------------------------------------------------
-# 8. SIDEBAR
+# SAVED OFFLINE DRIFT SNAPSHOT
 # --------------------------------------------------
+st.divider()
+st.subheader("Latest governed drift snapshot")
+st.caption(
+    "This section reads saved Evidently feature and prediction drift JSON. "
+    "It is separate from the small live-session log above."
+)
 
-st.sidebar.markdown("## 📡 Monitoring")
-st.sidebar.caption("Drift and production health")
+if drift.empty:
+    st.error(
+        "No compatible saved drift metrics are available. "
+        "The page therefore does not claim that the system is healthy."
+    )
+else:
+    st.plotly_chart(
+        drift_figure(drift),
+        width="stretch",
+        key="monitoring_saved_drift",
+    )
 
-st.sidebar.markdown("---")
-st.sidebar.markdown(f"**Final champion:** {champion_model_name}")
-st.sidebar.markdown(f"**Threshold:** {best_threshold:.2f}")
-st.sidebar.markdown(f"**Baseline score file:** {score_file.name if score_file.exists() else 'Missing'}")
-st.sidebar.markdown(f"**PSI status:** {psi_status}")
-st.sidebar.markdown("---")
-st.sidebar.caption("Tracks prediction logs, score health, drift, anomaly outputs, and forecast availability.")
+    highest = drift.sort_values(
+        "Drift score",
+        ascending=False,
+    ).iloc[0]
+
+    st.write(
+        f"**Highest saved drift score:** "
+        f"{highest['Drift score']:.4f} for "
+        f"{highest['Feature']}."
+    )
+    st.write(
+        f"**Active saved alerts:** {drift_alerts}."
+    )
+    st.dataframe(
+        drift,
+        width="stretch",
+        hide_index=True,
+    )
 
 
 # --------------------------------------------------
-# 9. HEADER
+# OPERATIONAL READINESS
 # --------------------------------------------------
+st.divider()
+st.subheader("Operational readiness")
 
-render_html(
+readiness_1, readiness_2, readiness_3, readiness_4 = (
+    st.columns(4)
+)
+
+readiness_1.metric(
+    "Saved drift alerts",
     (
-        f'<div class="monitor-hero">'
-        f'<div class="eyebrow">Production monitoring layer</div>'
-        f'<div class="monitor-title">Monitoring, Drift & Health</div>'
-        f'<div class="monitor-subtitle">'
-        f'This page checks whether the scoring system is being logged, whether score distributions look healthy, '
-        f'whether live predictions drift from the champion baseline, and whether supporting anomaly/forecast outputs exist.'
-        f'</div><br>'
-        f'<span class="success-pill">Champion: {escape_text(champion_model_name)}</span>'
-        f'&nbsp;<span class="info-pill">Threshold: {best_threshold:.2f}</span>'
-        f'&nbsp;<span class="warning-pill">PSI status: {escape_text(psi_status)}</span>'
-        f'</div>'
-    )
+        format_count(drift_alerts)
+        if drift_alerts is not None
+        else "Unavailable"
+    ),
+)
+readiness_2.metric(
+    "Monitoring sources",
+    (
+        f"{ready_sources}/{len(source_status)}"
+        if ready_sources is not None
+        else "Unavailable"
+    ),
+)
+readiness_3.metric(
+    "Evaluated matured cohort",
+    (
+        format_count(matured_count)
+        if matured_count is not None
+        else "Not published"
+    ),
+)
+readiness_4.metric(
+    "Verified registry rows",
+    (
+        format_count(len(registry))
+        if not registry.empty
+        else "Not published"
+    ),
 )
 
-
-# --------------------------------------------------
-# 10. HEALTH KPI CARDS
-# --------------------------------------------------
-
-card_1, card_2, card_3, card_4 = st.columns(4)
-
-with card_1:
-    render_html(
-        (
-            f'<div class="health-card">'
-            f'<div class="health-label">Live predictions</div>'
-            f'<div class="health-value">{format_count(live_score_summary["count"])}</div>'
-            f'<div class="health-help">Single-visitor predictions logged in monitoring folder.</div>'
-            f'</div>'
-        )
+if source_status.empty:
+    st.warning(
+        "Monitoring source-status evidence is unavailable."
+    )
+else:
+    st.dataframe(
+        source_status,
+        width="stretch",
+        hide_index=True,
     )
 
-with card_2:
-    render_html(
-        (
-            f'<div class="health-card">'
-            f'<div class="health-label">Baseline scores</div>'
-            f'<div class="health-value">{format_count(baseline_score_summary["count"])}</div>'
-            f'<div class="health-help">Sample used to compare production score distribution.</div>'
-            f'</div>'
-        )
+funnel_chart = delayed_label_figure(delayed_funnel)
+
+if funnel_chart is None:
+    st.info(
+        "No matured delayed-label evaluation artifact is published. "
+        "Offline holdout results remain separate and are not presented "
+        "as live production performance."
+    )
+else:
+    st.plotly_chart(
+        funnel_chart,
+        width="stretch",
+        key="monitoring_delayed_label_funnel",
     )
 
-with card_3:
-    render_html(
-        (
-            f'<div class="health-card">'
-            f'<div class="health-label">PSI drift status</div>'
-            f'<div class="health-value">{escape_text(psi_status)}</div>'
-            f'<div class="health-help">PSI value: {format_score_value(psi_value)}</div>'
-            f'</div>'
+    if not delayed_rejections.empty:
+        with st.expander("Delayed-label rejection reasons"):
+            st.dataframe(
+                delayed_rejections,
+                width="stretch",
+                hide_index=True,
+            )
+
+
+# --------------------------------------------------
+# LINEAGE
+# --------------------------------------------------
+st.divider()
+st.subheader("Artifact lineage")
+
+lineage_1, lineage_2 = st.columns(2)
+
+with lineage_1:
+    st.markdown("#### Model artifact")
+    st.write(
+        str(
+            metadata.get("final_model_name")
+            or metadata.get("model_name")
+            or champion_name
         )
     )
+    st.caption(f"SHA-256: {file_hash(MODEL_PATH)}")
 
-with card_4:
-    render_html(
-        (
-            f'<div class="health-card">'
-            f'<div class="health-label">Live high-intent rate</div>'
-            f'<div class="health-value">{format_score(live_high_intent_rate)}</div>'
-            f'<div class="health-help">Baseline high-intent rate: {format_score(baseline_high_intent_rate)}</div>'
-            f'</div>'
+    st.markdown("#### Training environment")
+    st.write(environment_summary(metadata))
+    st.caption(f"Metadata SHA-256: {file_hash(MODEL_METADATA_PATH)}")
+
+with lineage_2:
+    st.markdown("#### Score manifest")
+
+    if score_manifest:
+        st.write(
+            str(
+                score_manifest.get(
+                    "model_generation",
+                    "Final champion scores",
+                )
+            )
         )
-    )
-
-
-# --------------------------------------------------
-# 11. HEALTH STORY
-# --------------------------------------------------
-
-render_html(
-    '<div class="story-card">'
-    '<div class="story-title">How to read this page</div>'
-    '<div class="story-text">'
-    'A model is not finished when it is trained. A production-style model must be watched. '
-    'Here we check logs, score buckets, drift, anomaly output, forecast output, and data availability. '
-    'The bucket chart is more useful than a raw histogram because ecommerce data has many cold visitors.'
-    '</div>'
-    '</div>'
-)
-
-
-# --------------------------------------------------
-# 12. DRIFT AND SCORE HEALTH CHARTS
-# --------------------------------------------------
-
-render_html('<div class="section-kicker">Score health</div><div class="section-title">Baseline vs live prediction distribution</div>')
-
-if PLOTLY_AVAILABLE:
-    bucket_chart = build_score_bucket_chart(bucket_table)
-
-    if bucket_chart is not None:
-        st.plotly_chart(bucket_chart, use_container_width=True)
-        render_chart_explanation(
-            "Chart explanation: baseline versus live score buckets",
-            "It compares the normal champion score distribution with live prediction scores across intent buckets.",
-            "If live scores move strongly away from baseline, the model may be seeing different visitor behaviour and should be checked for drift.",
+        st.caption(
+            f"Rows: "
+            f"{score_manifest.get('row_count', 'Unavailable')} · "
+            f"SHA-256: {file_hash(SCORE_MANIFEST_PATH)}"
         )
     else:
-        st.info("Score-bucket chart needs baseline scores or live prediction logs.")
+        st.write("Not published")
 
-    chart_col_1, chart_col_2 = st.columns(2)
+    st.markdown("#### MLflow lineage")
 
-    with chart_col_1:
-        volume_chart = build_prediction_volume_chart(
-            live_scores=live_scores,
-            batch_log=batch_log,
+    if lineage:
+        st.write(
+            str(
+                lineage.get("run_id")
+                or lineage.get("model_name")
+                or "Published lineage"
+            )
         )
+        st.caption(
+            f"SHA-256: {file_hash(MLFLOW_LINEAGE_PATH)}"
+        )
+    else:
+        st.write("Not published")
 
-        if volume_chart is not None:
-            st.plotly_chart(volume_chart, use_container_width=True)
-            render_chart_explanation(
-                "Chart explanation: prediction logging volume",
-                "It shows how many single and batch predictions are being logged over time.",
-                "Healthy production systems should produce consistent logs. Missing or sudden drops can mean the app, logging, or scoring workflow needs attention.",
-            )
-        else:
-            st.info("Prediction volume chart appears after prediction logs exist.")
 
-    with chart_col_2:
-        forecast_chart = build_forecast_health_chart(forecast_future)
+# --------------------------------------------------
+# CURRENT HEALTH DECISION
+# --------------------------------------------------
+st.divider()
+st.subheader("Current monitoring decision")
 
-        if forecast_chart is not None:
-            st.plotly_chart(forecast_chart, use_container_width=True)
-            render_chart_explanation(
-                "Chart explanation: forecast output health",
-                "It confirms that future KPI forecasts are available for the monitoring layer.",
-                "If forecast outputs are missing or outdated, the planning dashboard is not fully production-ready.",
-            )
-        else:
-            st.info("Forecast health chart appears after forecast output exists.")
-
+if drift.empty:
+    health_state = "Evidence unavailable"
+    action = (
+        "Generate and publish compatible feature and prediction "
+        "drift reports."
+    )
+elif drift_alerts and drift_alerts > 0:
+    health_state = "Drift investigation required"
+    action = (
+        "Investigate the saved alerts before treating the snapshot "
+        "as healthy."
+    )
 else:
-    st.info("Plotly is not installed. Charts will appear after installing plotly.")
+    health_state = "Saved snapshot stable"
+    action = (
+        "Continue scheduled regeneration and accumulate durable "
+        "multi-snapshot history."
+    )
 
+decision_1, decision_2, decision_3 = st.columns(3)
+decision_1.metric("Current health", health_state)
+decision_2.metric("Required action", action)
+decision_3.metric(
+    "Production limitation",
+    "Matured labels only",
+    help=(
+        "Offline holdout metrics are not live production performance."
+    ),
+)
 
-# --------------------------------------------------
-# 13. OPERATIONAL CHECKLIST
-# --------------------------------------------------
-
-render_html('<div class="section-kicker">Operational checklist</div><div class="section-title">Files needed for production-style monitoring</div>')
-
-checklist_rows = [
-    {
-        "Component": "Single prediction log",
-        "Path": str(SINGLE_PREDICTION_LOG_PATH),
-        "Status": check_file_status(SINGLE_PREDICTION_LOG_PATH),
-    },
-    {
-        "Component": "Batch scoring log",
-        "Path": str(BATCH_SCORING_LOG_PATH),
-        "Status": check_file_status(BATCH_SCORING_LOG_PATH),
-    },
-    {
-        "Component": "Champion visitor scores",
-        "Path": str(score_file),
-        "Status": check_file_status(score_file),
-    },
-    {
-        "Component": "Anomaly summary",
-        "Path": str(ANOMALY_SUMMARY_PATH),
-        "Status": check_file_status(ANOMALY_SUMMARY_PATH),
-    },
-    {
-        "Component": "Forecast future output",
-        "Path": str(FORECAST_FUTURE_PATH),
-        "Status": check_file_status(FORECAST_FUTURE_PATH),
-    },
-    {
-        "Component": "Daily KPI table",
-        "Path": str(DAILY_KPI_PATH),
-        "Status": check_file_status(DAILY_KPI_PATH),
-    },
-]
-
-checklist = pd.DataFrame(checklist_rows)
-
-st.dataframe(
-    checklist,
-    use_container_width=True,
-    hide_index=True,
+st.caption(
+    "No multi-snapshot drift-history table is claimed. "
+    "The page shows current available logs and the latest saved "
+    "offline monitoring snapshot only."
 )
 
 
 # --------------------------------------------------
-# 14. RAW EVIDENCE TABLES
+# RAW EVIDENCE
 # --------------------------------------------------
+st.divider()
+st.subheader("Raw monitoring evidence")
 
-render_html('<div class="section-kicker">Raw evidence</div><div class="section-title">Monitoring data used by this page</div>')
-
-tab_1, tab_2, tab_3, tab_4, tab_5 = st.tabs(
+tabs = st.tabs(
     [
         "Live scores",
         "Baseline scores",
         "Batch logs",
         "Anomaly summary",
         "Forecast output",
+        "Registry evidence",
     ]
 )
 
-with tab_1:
+with tabs[0]:
     if live_scores.empty:
-        st.info("No live prediction logs yet. Use the Visitor Intent Predictor page to create logs.")
+        st.info("No single-prediction scores are available.")
     else:
         st.dataframe(
             live_scores,
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
 
-with tab_2:
+with tabs[1]:
     if baseline_scores.empty:
-        st.info("Champion score file is missing or does not contain purchase_intent_score.")
+        st.info("The champion score baseline is unavailable.")
     else:
         st.dataframe(
             baseline_scores.head(1000),
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
 
-with tab_3:
+with tabs[2]:
     if batch_log.empty:
-        st.info("No batch scoring log yet. Use the Batch Scoring page to create logs.")
+        st.info("No batch-scoring log is available.")
     else:
         st.dataframe(
             batch_log,
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
 
-with tab_4:
+with tabs[3]:
     if anomaly_summary.empty:
-        st.info("Anomaly summary is missing.")
+        st.info("The anomaly summary is unavailable.")
     else:
         st.dataframe(
             anomaly_summary,
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
 
-with tab_5:
+with tabs[4]:
     if forecast_future.empty:
-        st.info("Forecast future output is missing.")
+        st.info("The future forecast artifact is unavailable.")
     else:
         st.dataframe(
             forecast_future,
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
 
-# --------------------------------------------------
-# FINAL CLOSURE EXTENSION: MONITORING HEALTH INTELLIGENCE
-# --------------------------------------------------
-
-from app.ui.operations_intelligence import (
-    render_monitoring_health_intelligence,
-)
-
-render_monitoring_health_intelligence()
+with tabs[5]:
+    if registry.empty:
+        st.info(
+            "Verified ecommerce registry evidence is not published."
+        )
+    else:
+        st.dataframe(
+            registry,
+            width="stretch",
+            hide_index=True,
+        )

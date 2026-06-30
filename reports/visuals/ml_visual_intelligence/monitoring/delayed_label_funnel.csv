@@ -1,0 +1,6 @@
+stage,count,retention_from_prior,source_note
+Scored population,78998,,data/processed/final_champion_visitor_scores.csv
+Production predictions logged,9,0.00011392693485911035,monitoring/prediction_logs/prediction_log.csv
+Outcome window matured,0,0.0,delayed-label validation evidence
+Labels received,0,,no delayed-label input found
+Evaluable outcomes,0,,monitoring/delayed_labels/matured_prediction_outcomes.csv

@@ -1,0 +1,14 @@
+source,path,exists,status,scope,row_count,size_bytes,modified_at_utc
+Final champion model,models/trained/final_champion_model.joblib,True,Available,Model artifact,,293257.0,2026-06-30T13:53:13.772033+00:00
+Final champion metadata,models/metadata/final_champion_metadata.json,True,Available,Model lineage,,2574.0,2026-06-30T13:53:13.770811+00:00
+Current visitor scores,data/processed/final_champion_visitor_scores.csv,True,Available,Current scoring evidence,78998.0,2612288.0,2026-06-30T13:53:13.657834+00:00
+Score manifest,models/metadata/final_champion_score_manifest.json,True,Available,Score lineage,,798.0,2026-06-30T13:53:18.606718+00:00
+Untouched holdout,reports/tables/final_true_champion_holdout.csv,True,Available,Offline final evaluation,1.0,349.0,2026-06-30T13:53:13.795350+00:00
+Feature drift report,reports/evidently/latest/feature_drift_report.json,True,Available,Saved offline monitoring snapshot,,17014.0,2026-06-21T04:08:10.945254+00:00
+Prediction drift report,reports/evidently/latest/prediction_drift_report.json,True,Available,Saved offline monitoring snapshot,,5036.0,2026-06-21T04:08:11.577144+00:00
+Anomaly summary,reports/tables/anomaly_summary.csv,True,Available,Supporting operational evidence,6.0,440.0,2026-06-30T13:53:13.793492+00:00
+Future forecast,reports/tables/business_forecast_future.csv,True,Available,Supporting planning evidence,224.0,16999.0,2026-06-30T13:53:13.794130+00:00
+Single prediction log,monitoring/prediction_logs/prediction_log.csv,False,Not published,Current app-session log,,,
+Batch scoring log,monitoring/prediction_logs/batch_scoring_log.csv,False,Not published,Current app-session log,,,
+Delayed-label funnel,reports/visuals/ml_visual_intelligence/monitoring/delayed_label_funnel.csv,True,Available,Matured production-label evidence,5.0,411.0,2026-06-21T17:39:13.108665+00:00
+Verified registry evidence,reports/visuals/ml_visual_intelligence/experiment_tracking/verified_ecommerce_registry_versions.csv,True,Available,Experiment registry evidence,3.0,334.0,2026-06-21T17:59:12.696149+00:00
