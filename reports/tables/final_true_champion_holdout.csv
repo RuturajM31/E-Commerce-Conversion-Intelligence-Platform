@@ -1,0 +1,2 @@
+evaluation_split,model_name,threshold,rows,positive_rows,positive_rate,predicted_positive_rows,predicted_positive_rate,pr_auc,roc_auc,precision,recall,f1_score
+final_holdout,Tuned XGBoost,0.98,248639,318,0.0012789626727906724,231,0.0009290577906120922,0.15186619185675237,0.848444891741996,0.2857142857142857,0.20754716981132076,0.24043715846994534
