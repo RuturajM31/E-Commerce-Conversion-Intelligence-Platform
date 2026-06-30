@@ -1,539 +1,703 @@
 <div align="center">
 
-<h1>E-Commerce Conversion Intelligence Platform</h1>
+# E-Commerce Conversion Intelligence Platform
 
-<p><strong>Machine Learning + MLOps platform for predicting purchase intent, ranking high-value visitors, and turning raw e-commerce behaviour into campaign-ready business decisions.</strong></p>
+### End-to-end machine learning, business intelligence, and MLOps for purchase-intent prediction
 
-<p>
-  <img src="https://img.shields.io/github/actions/workflow/status/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/ci.yml?branch=main&style=for-the-badge&logo=github-actions&logoColor=white&label=CI%2FCD" alt="CI/CD" />
-  <img src="https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11" />
-  <img src="https://img.shields.io/badge/scikit--learn-ML-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white" alt="scikit-learn" />
-  <img src="https://img.shields.io/badge/Streamlit-Business%20App-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit" />
-</p>
+Transforming raw e-commerce behaviour into visitor-level intelligence, campaign-ready audiences, explainable model decisions, monitored production signals, and deployable business applications.
 
-<p>
-  <img src="https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
-  <img src="https://img.shields.io/badge/Kubernetes-Orchestration-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white" alt="Kubernetes" />
-  <img src="https://img.shields.io/badge/Helm-Deployment%20Packaging-0F1689?style=for-the-badge&logo=helm&logoColor=white" alt="Helm" />
-</p>
+[![Live App](https://img.shields.io/badge/Live%20App-Streamlit%20Cloud-FF4B4B?logo=streamlit&logoColor=white)](https://ecommerce-conversion-intelligence.streamlit.app)
+[![CI](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![License](https://img.shields.io/github/license/RuturajM31/E-Commerce-Conversion-Intelligence-Platform)](LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/RuturajM31/E-Commerce-Conversion-Intelligence-Platform)](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/commits/main)
+[![Stars](https://img.shields.io/github/stars/RuturajM31/E-Commerce-Conversion-Intelligence-Platform?style=flat)](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/stargazers)
 
-<p>
-  <img src="https://img.shields.io/badge/Prometheus-Monitoring-E6522C?style=for-the-badge&logo=prometheus&logoColor=white" alt="Prometheus" />
-  <img src="https://img.shields.io/badge/Grafana-Mission%20Control-F46800?style=for-the-badge&logo=grafana&logoColor=white" alt="Grafana" />
-  <img src="https://img.shields.io/badge/pytest-Tested-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white" alt="pytest" />
-  <img src="https://img.shields.io/badge/Status-Portfolio%20Ready-16A34A?style=for-the-badge" alt="Portfolio Ready" />
-</p>
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.54.0-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.5.0-F7931E?logo=scikitlearn&logoColor=white)](https://scikit-learn.org/)
+[![XGBoost](https://img.shields.io/badge/XGBoost-3.2.0-189AB4)](https://xgboost.ai/)
+[![MLflow](https://img.shields.io/badge/MLflow-3.14.0-0194E2?logo=mlflow&logoColor=white)](https://mlflow.org/)
+[![Evidently](https://img.shields.io/badge/Evidently-0.7.21-6C63FF)](https://www.evidentlyai.com/)
+[![Plotly](https://img.shields.io/badge/Plotly-5.24.1-3F4F75?logo=plotly&logoColor=white)](https://plotly.com/python/)
 
-<table align="center">
-<tr>
-<td align="center"><b>1.4M+</b><br>Visitors analyzed</td>
-<td align="center"><b>19.6K</b><br>High-intent visitors</td>
-<td align="center"><b>0.4151</b><br>PR-AUC</td>
-<td align="center"><b>0.9696</b><br>ROC-AUC</td>
-<td align="center"><b>36.61%</b><br>Precision</td>
-<td align="center"><b>72.16%</b><br>Recall</td>
-</tr>
-</table>
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Validated-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io/)
+[![Helm](https://img.shields.io/badge/Helm-Chart-0F1689?logo=helm&logoColor=white)](https://helm.sh/)
+[![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-E6522C?logo=prometheus&logoColor=white)](https://prometheus.io/)
+[![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?logo=grafana&logoColor=white)](https://grafana.com/)
+[![pytest](https://img.shields.io/badge/pytest-Automated%20QA-0A9EDC?logo=pytest&logoColor=white)](https://pytest.org/)
+[![Ruff](https://img.shields.io/badge/Ruff-Lint%20%26%20Format-D7FF64?logo=ruff&logoColor=black)](https://docs.astral.sh/ruff/)
+[![pip-audit](https://img.shields.io/badge/pip--audit-Dependency%20Security-2E8B57)](https://pypi.org/project/pip-audit/)
 
-<p><strong>From raw RetailRocket visitor events → visitor-level features → purchase-intent scores → campaign audience → Streamlit business app → monitored MLOps deployment.</strong></p>
+<br/>
+
+[**Launch the app**](https://ecommerce-conversion-intelligence.streamlit.app)
+·
+[**View CI/CD**](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/actions/workflows/ci.yml)
+·
+[**Explore the source**](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform)
 
 </div>
 
 ---
 
-## Table of Contents
+## Executive Summary
 
-* [Project Summary](#project-summary)
-* [Business Problem](#business-problem)
-* [Key Results](#key-results)
-* [Original Dataset Background](#original-dataset-background)
-* [Data Flow](#data-flow-from-raw-events-to-campaign-audience)
-* [Feature Engineering](#feature-engineering)
-* [Machine Learning Strategy](#machine-learning-strategy)
-* [Model Workflow](#model-workflow)
-* [Final Champion Model](#final-champion-model)
-* [Threshold Optimization](#threshold-optimization)
-* [Streamlit Business Application](#streamlit-business-application)
-* [Platform Architecture](#platform-architecture)
-* [Monitoring and MLOps Design](#monitoring-and-mlops-design)
-* [Deployment](#deployment)
-* [CI/CD Quality Gates](#cicd-quality-gates)
-* [Recommended Run Order](#recommended-run-order)
-* [Project Structure](#project-structure)
-* [Main Outputs](#main-outputs)
-* [Portfolio and Recruiter Value](#portfolio-and-recruiter-value)
-* [Limitations](#limitations)
-* [Future Improvements](#future-improvements)
-* [Final Message](#final-message)
+The **E-Commerce Conversion Intelligence Platform** is a portfolio-grade, end-to-end machine learning and MLOps system built to answer one practical business question:
 
----
+> **Which visitors are most likely to purchase, and how should the business act on that signal?**
 
-## Project Summary
+The platform converts raw RetailRocket event data into visitor-level features, benchmarks multiple models, selects and validates a champion, optimizes the decision threshold, scores visitors, creates campaign-ready audiences, explains model decisions, monitors drift and delayed outcomes, and presents the complete workflow through a multi-page Streamlit business application.
 
-The **E-Commerce Conversion Intelligence Platform** is an end-to-end machine learning and MLOps project built on real e-commerce visitor behaviour data.
+This is not only a predictive model. It is a complete analytics product that connects:
 
-The project answers one practical business question:
-
-> Which visitors are most likely to buy, and how should the business act on that information?
-
-The platform takes raw visitor event data, converts it into visitor-level features, trains and selects a purchase-intent model, optimizes a business decision threshold, and produces a high-intent visitor audience for campaign targeting.
-
-This project goes beyond a standard machine learning notebook. It includes a working business application, batch scoring, forecasting, anomaly review, monitoring, alerting design, Docker deployment, Kubernetes and Helm deployment proof, and CI/CD validation.
+- business problem framing;
+- event-level data engineering;
+- rare-event classification;
+- campaign prioritization;
+- model explainability;
+- experiment tracking;
+- drift monitoring;
+- delayed-label performance measurement;
+- business forecasting;
+- anomaly detection;
+- customer segmentation and journey intelligence;
+- containerization and orchestration;
+- CI/CD, security, and reproducibility controls.
 
 ---
 
-## Business Problem
+## Project at a Glance
 
-Most e-commerce visitors do not buy. If a business targets every visitor equally, marketing budget is wasted on many low-intent visitors.
+| Metric | Result | Business meaning |
+|---|---:|---|
+| Visitors analyzed | **1,407,500** | Full visitor population evaluated |
+| Observed conversion rate | **0.827%** | Highly imbalanced purchase problem |
+| High-intent audience | **19,588 visitors** | Focused campaign activation group |
+| High-intent share | **~1.39%** | Small, prioritized audience |
+| Champion model | **Tuned Random Forest** | Final deployable purchase-intent model |
+| PR-AUC | **0.4151** | Strong ranking quality for rare conversions |
+| ROC-AUC | **0.9696** | Strong class separation |
+| Precision | **36.61%** | Selected audience is much cleaner than random targeting |
+| Recall | **72.16%** | Captures a large share of actual buyers |
+| F1 score | **0.4858** | Balanced precision and recall |
+| Decision threshold | **0.97** | Business cutoff for high-intent selection |
+| Anomaly rate | **3.66%** | Share of visitors flagged for unusual behaviour |
+| Buyer concentration | **~44× baseline** | Model precision versus observed conversion rate |
 
-The goal of this project is to help a marketing or growth team identify visitors with stronger buying intent before campaign activation.
-
-Instead of asking:
-
-> How many visitors came to the website?
-
-the platform asks:
-
-> Which visitors show behaviour that suggests they are more likely to buy?
-
-This changes the business workflow from broad targeting to intent-based targeting.
-
-The platform helps the business move from:
-
-| Traditional approach                  | Platform-based approach                          |
-| ------------------------------------- | ------------------------------------------------ |
-| Target broad visitor groups           | Target high-intent visitors                      |
-| Spend budget on many low-intent users | Focus on visitors with stronger purchase signals |
-| Use raw traffic counts                | Use visitor-level purchase-intent scores         |
-| Manual campaign selection             | Model-supported campaign shortlist               |
-| Little production visibility          | Monitoring with Prometheus and Grafana           |
+> **Important:** the ~44× concentration is model-evaluation evidence, not proven campaign uplift. Real marketing impact must still be validated with controlled A/B testing.
 
 ---
 
-## Key Results
+## Why This Project Matters
 
-| Metric                   |              Result |
-| ------------------------ | ------------------: |
-| Visitors analyzed        |           1,407,500 |
-| High-intent visitors     |              19,588 |
-| Observed conversion rate |              0.827% |
-| Final champion model     | Tuned Random Forest |
-| PR-AUC                   |              0.4151 |
-| ROC-AUC                  |              0.9696 |
-| Precision                |              36.61% |
-| Recall                   |              72.16% |
-| F1 Score                 |              0.4858 |
-| Decision threshold       |                0.97 |
-| Anomaly rate             |               3.66% |
+Most e-commerce visitors do not purchase. Broad targeting wastes budget on users with little evidence of intent.
 
-### Business meaning
+This platform changes the decision process from:
 
-The original visitor population is large, but only a small share of visitors convert. Random marketing would spend budget on many low-intent visitors.
+| Traditional workflow | Intelligence-driven workflow |
+|---|---|
+| Target a broad visitor population | Prioritize high-intent visitors |
+| Use traffic volume as the main signal | Use visitor-level purchase probability |
+| Select campaigns manually | Use model-supported audience ranking |
+| Monitor only application uptime | Monitor features, predictions, outcomes, and services |
+| Treat ML as a notebook result | Deliver ML through a governed business application |
 
-The model creates a smaller and stronger campaign shortlist:
-
-| Audience             |     Count | Meaning                           |
-| -------------------- | --------: | --------------------------------- |
-| All visitors         | 1,407,500 | Full visitor population           |
-| High-intent visitors |    19,588 | Prioritized campaign audience     |
-| High-intent share    |    ~1.39% | Smaller group selected for action |
-
-The model precision of **36.61%** is much higher than the overall observed conversion rate of **0.827%**. This shows that the selected audience has a much stronger buyer concentration than the full visitor base.
-
-This should be treated as model-evaluation evidence. Real campaign uplift should still be validated with A/B testing before production business claims.
-
----
-
-## Original Dataset Background
-
-This project uses the **RetailRocket e-commerce dataset** from Kaggle:
-
-[RetailRocket E-Commerce Dataset](https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset)
-
-The original dataset is based on visitor behaviour from an e-commerce website. It contains event-level records, meaning one row represents one visitor action.
-
-Examples of events:
-
-* a visitor views an item
-* a visitor adds an item to cart
-* a visitor completes a transaction
-
-The original dataset is useful because it reflects realistic e-commerce behaviour. Most visitors only browse, fewer visitors add products to cart, and only a very small share complete a transaction.
-
-### Original dataset files
-
-| File                  | Description                                                                  | Project relevance                                     |
-| --------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------- |
-| `events.csv`          | Visitor behaviour events such as views, add-to-cart actions and transactions | Main source for purchase-intent modelling             |
-| `item_properties.csv` | Item-level property information over time                                    | Useful for product context and recommender-style work |
-| `category_tree.csv`   | Product category hierarchy                                                   | Useful for product/category relationship analysis     |
-
-### Original data grain
-
-The original dataset is not directly a campaign targeting table.
-
-One visitor can appear many times because each row is one event. A marketing team does not usually target individual clicks. It targets visitors.
-
-Therefore, the project transforms the data from:
-
-> one row per event
-
-into:
-
-> one row per visitor
-
-This transformation is important because the final business decision is visitor-level: which visitors should be prioritized for campaign activation?
-
----
-
-## Data Flow: From Raw Events to Campaign Audience
+The final output is not simply a probability. It is a decision system:
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"background": "#0D1117", "primaryTextColor": "#FFFFFF", "lineColor": "#94A3B8", "fontFamily": "Arial"}}}%%
 flowchart LR
-    A["RetailRocket events.csv<br/>One row = one visitor action"] --> B["Clean and prepare events"]
-    B --> C["Aggregate behaviour by visitor"]
-    C --> D["Visitor-level feature table"]
-    D --> E["Purchase-intent model"]
-    E --> F["Intent score per visitor"]
-    F --> G["Threshold optimization"]
-    G --> H["High-intent campaign audience"]
-
-    classDef source fill:#0F3D64,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
-    classDef process fill:#1F2937,stroke:#94A3B8,color:#FFFFFF,stroke-width:1.5px;
-    classDef feature fill:#14532D,stroke:#4ADE80,color:#FFFFFF,stroke-width:2px;
-    classDef model fill:#7C2D12,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
-    classDef outcome fill:#064E3B,stroke:#34D399,color:#FFFFFF,stroke-width:2.5px;
-
-    class A source;
-    class B,C,F,G process;
-    class D feature;
-    class E model;
-    class H outcome;
-
-    linkStyle default stroke:#94A3B8,stroke-width:2px;
+    A["Raw visitor events"] --> B["Visitor-level features"]
+    B --> C["Purchase-intent model"]
+    C --> D["Calibrated intent score"]
+    D --> E["Business threshold"]
+    E --> F["High-intent audience"]
+    F --> G["Campaign prioritization"]
+    G --> H["Measured outcomes"]
+    H --> I["Monitoring and retraining evidence"]
 ```
-
-### Why this flow matters
-
-The raw data shows actions. The business needs decisions.
-
-The data flow converts millions of behaviour events into a visitor-level table. This makes the machine learning model useful for marketing because every visitor can receive a score and a recommended action.
 
 ---
 
-## Feature Engineering
+## Business Capabilities
 
-The model learns from visitor behaviour patterns.
+The platform supports six connected decision areas:
 
-The raw events are converted into visitor-level features such as:
+| Capability | Business output |
+|---|---|
+| Purchase-intent prediction | Probability that a visitor will convert |
+| Campaign prioritization | Ranked and capacity-aware high-intent audience |
+| Model governance | Champion/challenger comparison, threshold, stability, and economics |
+| Customer intelligence | Segments, nearest-neighbour context, and journey patterns |
+| Operational intelligence | Forecasts, anomalies, drift, delayed outcomes, and system health |
+| Deployment intelligence | Streamlit Cloud, Docker Compose, Kubernetes, Helm, and CI/CD evidence |
 
-| Feature            | Meaning                                               |
-| ------------------ | ----------------------------------------------------- |
-| `view_count`       | How often the visitor viewed products                 |
-| `addtocart_count`  | How often the visitor added products to cart          |
-| `unique_items`     | How many different items the visitor interacted with  |
-| `activity_span_ms` | How long the visitor activity lasted                  |
-| `converted`        | Target variable showing whether the visitor purchased |
+---
 
-These features help the model understand different levels of purchase intent.
+## End-to-End Platform Architecture
 
-For example, a visitor who viewed many products and added items to cart usually shows stronger buying intent than a visitor with only one product view.
+```mermaid
+flowchart TB
+    subgraph DATA["1. Data Layer"]
+        D1["RetailRocket events"]
+        D2["Cleaning and validation"]
+        D3["Visitor-level aggregation"]
+        D4["Feature table"]
+    end
+
+    subgraph ML["2. Machine Learning Layer"]
+        M1["Baseline logistic regression"]
+        M2["Champion/challenger benchmark"]
+        M3["Tuned Random Forest"]
+        M4["Threshold optimization"]
+        M5["Batch scoring"]
+    end
+
+    subgraph INTEL["3. Business Intelligence Layer"]
+        B1["Executive overview"]
+        B2["Visitor predictor"]
+        B3["Campaign intelligence"]
+        B4["Model decision intelligence"]
+        B5["Segmentation and journey"]
+        B6["Forecast and anomaly intelligence"]
+    end
+
+    subgraph MLOPS["4. MLOps and Governance Layer"]
+        O1["MLflow experiment tracking"]
+        O2["Model metadata and registry evidence"]
+        O3["Prediction ledger"]
+        O4["Delayed-label evaluation"]
+        O5["Evidently drift analysis"]
+    end
+
+    subgraph OBS["5. Observability Layer"]
+        P1["Monitoring snapshot"]
+        P2["Metrics exporter"]
+        P3["Prometheus"]
+        P4["Grafana"]
+        P5["Alertmanager"]
+        P6["Blackbox exporter"]
+    end
+
+    subgraph DELIVERY["6. Delivery Layer"]
+        X1["Streamlit Community Cloud"]
+        X2["Docker Compose"]
+        X3["Kubernetes manifests"]
+        X4["Helm chart"]
+        X5["GitHub Actions CI/CD"]
+    end
+
+    D1 --> D2 --> D3 --> D4
+    D4 --> M1
+    D4 --> M2 --> M3 --> M4 --> M5
+    M1 --> O1
+    M2 --> O1
+    M3 --> O1
+    M3 --> O2
+    M5 --> B1
+    M5 --> B2
+    M5 --> B3
+    M3 --> B4
+    D4 --> B5
+    D4 --> B6
+    M5 --> O3 --> O4
+    D4 --> O5
+    M5 --> O5
+    O4 --> P1
+    O5 --> P1
+    P1 --> P2 --> P3
+    P6 --> P3
+    P3 --> P4
+    P3 --> P5
+    B1 --> X1
+    B1 --> X2
+    X2 --> X3 --> X4
+    X5 --> DATA
+    X5 --> ML
+    X5 --> OBS
+    X5 --> DELIVERY
+```
+
+---
+
+## Data Engineering Pipeline
+
+The RetailRocket dataset is event-level: one row represents one visitor action such as a product view, add-to-cart event, or transaction. The business decision is visitor-level, so the project changes the data grain.
+
+```mermaid
+flowchart LR
+    A["events.csv<br/>One row per action"] --> B["Schema and quality checks"]
+    B --> C["Event cleaning"]
+    C --> D["Visitor aggregation"]
+    D --> E["Behavioural features"]
+    E --> F["One row per visitor"]
+    F --> G["Training / scoring split"]
+    G --> H["Model-ready dataset"]
+```
+
+### Core visitor features
+
+| Feature | Meaning |
+|---|---|
+| `view_count` | Number of product views |
+| `addtocart_count` | Number of add-to-cart actions |
+| `unique_items` | Number of distinct items viewed |
+| `activity_span_ms` | Duration of observed visitor activity |
+| `converted` | Purchase outcome used as the target |
+
+The project also contains modular packages for:
+
+- feature engineering;
+- segmentation;
+- forecasting;
+- anomaly detection;
+- model evaluation;
+- monitoring and delayed labels;
+- visualization and business intelligence.
 
 ---
 
 ## Machine Learning Strategy
 
-The project is a rare-conversion problem because the observed conversion rate is only **0.827%**.
+The observed conversion rate is only **0.827%**, so accuracy is not a useful primary metric. A model that predicts “no purchase” for almost everyone can look accurate while being useless for campaign targeting.
 
-In this type of problem, accuracy alone can be misleading. A model can look accurate by predicting that most visitors will not buy, but that does not help marketing teams find buyers.
+The project therefore emphasizes:
 
-Therefore, the project focuses on metrics that are more useful for rare purchase prediction:
+| Metric | Why it matters |
+|---|---|
+| PR-AUC | Evaluates ranking quality under severe class imbalance |
+| ROC-AUC | Measures buyer versus non-buyer separation |
+| Precision | Measures the quality of the selected campaign audience |
+| Recall | Measures how many actual buyers are captured |
+| F1 | Balances precision and recall |
+| Threshold economics | Converts model scores into a business operating decision |
 
-| Metric    | Why it matters                                                            |
-| --------- | ------------------------------------------------------------------------- |
-| PR-AUC    | Measures how well the model ranks likely buyers when conversions are rare |
-| ROC-AUC   | Measures overall separation between buyers and non-buyers                 |
-| Precision | Shows how clean the selected campaign audience is                         |
-| Recall    | Shows how many actual buyers the model captures                           |
-| F1 Score  | Balances precision and recall                                             |
-| Threshold | Controls how many visitors enter the campaign shortlist                   |
-
----
-
-## Model Workflow
+### Model lifecycle
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"background": "#0D1117", "primaryTextColor": "#FFFFFF", "lineColor": "#94A3B8", "fontFamily": "Arial"}}}%%
 flowchart TD
-    A["Visitor-level features"] --> B["Baseline Logistic Regression"]
-    A --> C["Champion / Challenger Benchmark"]
-    C --> D["AutoML-style Model Comparison"]
-    D --> E["Tuned Random Forest"]
-    E --> F["Threshold Optimization"]
-    F --> G["Final Champion Metadata"]
-    G --> H["Batch Visitor Scoring"]
-    H --> I["High-Intent Campaign List"]
-
-    classDef input fill:#0F3D64,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
-    classDef process fill:#1F2937,stroke:#94A3B8,color:#FFFFFF,stroke-width:1.5px;
-    classDef model fill:#14532D,stroke:#4ADE80,color:#FFFFFF,stroke-width:2.5px;
-    classDef decision fill:#7C2D12,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
-    classDef output fill:#064E3B,stroke:#34D399,color:#FFFFFF,stroke-width:2.5px;
-
-    class A input;
-    class B,C,D,G,H process;
-    class E model;
-    class F decision;
-    class I output;
-
-    linkStyle default stroke:#94A3B8,stroke-width:2px;
+    A["Visitor feature table"] --> B["Baseline model"]
+    A --> C["Candidate model benchmark"]
+    C --> D["Hyperparameter tuning"]
+    D --> E["Tuned Random Forest champion"]
+    E --> F["Threshold analysis"]
+    F --> G["Stability and sensitivity checks"]
+    G --> H["Champion metadata"]
+    H --> I["Batch visitor scoring"]
+    I --> J["Campaign audience"]
+    J --> K["Prediction ledger"]
+    K --> L["Delayed outcome evaluation"]
 ```
 
----
+### Champion decision
 
-## Final Champion Model
+The tuned Random Forest was selected because it combined strong rare-event ranking with a practical campaign operating point:
 
-The final deployable champion model is:
-
-> **Tuned Random Forest**
-
-It was selected because it performed strongly for purchase-intent ranking and business targeting.
-
-| Metric    | Result | Simple meaning                                             |
-| --------- | -----: | ---------------------------------------------------------- |
-| PR-AUC    | 0.4151 | Strong buyer-ranking quality for a rare-conversion problem |
-| ROC-AUC   | 0.9696 | Strong separation between likely buyers and non-buyers     |
-| Precision | 36.61% | Higher-quality selected audience                           |
-| Recall    | 72.16% | Captures a large share of buyers                           |
-| F1 Score  | 0.4858 | Balanced precision and recall                              |
-| Threshold |   0.97 | Final campaign decision cutoff                             |
-
-The model does not only return a score. It supports a business action: decide which visitors should be prioritized.
-
----
-
-## Threshold Optimization
-
-The decision threshold is important because it controls the size and quality of the campaign audience.
-
-A lower threshold selects more visitors. This may capture more buyers, but it can also include more low-intent visitors.
-
-A higher threshold selects fewer visitors. This creates a smaller campaign audience, but the audience is usually cleaner and more focused.
-
-The final threshold of **0.97** was selected to create a focused high-intent visitor group for business targeting.
+- **PR-AUC:** 0.4151
+- **ROC-AUC:** 0.9696
+- **Precision:** 36.61%
+- **Recall:** 72.16%
+- **F1:** 0.4858
+- **Decision threshold:** 0.97
 
 ---
 
 ## Streamlit Business Application
 
-The project includes a Streamlit application for business users.
+The Streamlit application is the business-facing layer of the platform.
 
-Run the app with:
-
-```bash
-python3 -m streamlit run app/Executive_Overview.py
-```
-
-Main app pages:
-
-| Page                      | Purpose                                             |
-| ------------------------- | --------------------------------------------------- |
-| Executive Overview        | Shows the full business story and headline KPIs     |
-| Visitor Intent Predictor  | Scores a single visitor scenario                    |
-| Batch Scoring             | Scores many visitors for campaign activation        |
-| Model Benchmark Selection | Explains model comparison and final champion choice |
-| Business KPI Forecasting  | Forecasts future business and operational KPIs      |
-| Anomaly Outlier Detection | Reviews unusual visitor behaviour                   |
-| Monitoring Drift Health   | Shows system health and model monitoring views      |
-| MLOps Architecture        | Explains the production-style platform design       |
-| MVD Coverage Proof        | Shows course/project method coverage evidence       |
-
----
-
-## Platform Architecture
+**Entrypoint:** `app/Executive_Overview.py`
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"background": "#0D1117", "primaryTextColor": "#FFFFFF", "lineColor": "#94A3B8", "fontFamily": "Arial", "clusterBkg": "#111827", "clusterBorder": "#64748B"}}}%%
 flowchart TB
-    subgraph Data_Layer["Data Layer"]
-        A1["RetailRocket Events"]
-        A2["Processed Visitor Features"]
-    end
+    HOME["Executive Overview"]
 
-    subgraph ML_Layer["Machine Learning Layer"]
-        B1["Baseline Model"]
-        B2["Model Benchmarking"]
-        B3["Tuned Random Forest Champion"]
-        B4["Threshold Optimization"]
-    end
+    HOME --> P1["Visitor Intent Predictor"]
+    HOME --> P2["Batch Scoring"]
+    HOME --> P3["Model Benchmark Selection"]
+    HOME --> P4["Business KPI Forecasting"]
+    HOME --> P5["Anomaly and Outlier"]
+    HOME --> P6["Monitoring, Drift and Health"]
+    HOME --> P7["MLOps Architecture"]
+    HOME --> P8["ML Validation and Evidence"]
+    HOME --> P9["Customer Segmentation and Journey"]
 
-    subgraph Business_Layer["Business Application Layer"]
-        C1["Streamlit Executive Dashboard"]
-        C2["Visitor Intent Predictor"]
-        C3["Batch Scoring Workflow"]
-        C4["Forecasting and Anomaly Review"]
-    end
-
-    subgraph Monitoring_Layer["Monitoring Layer"]
-        D1["Metrics Exporter"]
-        D2["Prometheus"]
-        D3["Grafana Dashboard"]
-        D4["Alertmanager"]
-        D5["Blackbox Exporter"]
-    end
-
-    subgraph Deployment_Layer["Deployment and Quality Layer"]
-        E1["Docker Compose"]
-        E2["Kubernetes Manifests"]
-        E3["Helm Chart"]
-        E4["GitHub Actions CI/CD"]
-    end
-
-    A1 --> A2
-    A2 --> B1
-    B1 --> B2
-    B2 --> B3
-    B3 --> B4
-    B4 --> C1
-    C1 --> C2
-    C1 --> C3
-    C1 --> C4
-    C1 --> D1
-    D1 --> D2
-    D5 --> D2
-    D2 --> D3
-    D2 --> D4
-    C1 --> E1
-    E1 --> E2
-    E2 --> E3
-    E4 --> E1
-
-    classDef data fill:#0F3D64,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
-    classDef ml fill:#7C2D12,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
-    classDef business fill:#14532D,stroke:#4ADE80,color:#FFFFFF,stroke-width:2px;
-    classDef monitoring fill:#713F12,stroke:#FACC15,color:#FFFFFF,stroke-width:2px;
-    classDef deployment fill:#334155,stroke:#CBD5E1,color:#FFFFFF,stroke-width:2px;
-
-    class A1,A2 data;
-    class B1,B2,B3,B4 ml;
-    class C1,C2,C3,C4 business;
-    class D1,D2,D3,D4,D5 monitoring;
-    class E1,E2,E3,E4 deployment;
-
-    style Data_Layer fill:#0B1220,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
-    style ML_Layer fill:#1C1110,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
-    style Business_Layer fill:#0D1F17,stroke:#4ADE80,color:#FFFFFF,stroke-width:2px;
-    style Monitoring_Layer fill:#211A0A,stroke:#FACC15,color:#FFFFFF,stroke-width:2px;
-    style Deployment_Layer fill:#111827,stroke:#CBD5E1,color:#FFFFFF,stroke-width:2px;
-
-    linkStyle default stroke:#94A3B8,stroke-width:2px;
+    P1 --> U1["Single-visitor decision support"]
+    P2 --> U2["Campaign capacity and audience export"]
+    P3 --> U3["Champion, threshold, confusion and economics"]
+    P4 --> U4["Forecast scenarios and residual diagnostics"]
+    P5 --> U5["Anomaly triage and investigation"]
+    P6 --> U6["Drift, lineage, delayed labels and service health"]
+    P7 --> U7["Deployment and architecture evidence"]
+    P8 --> U8["Reproducibility and validation proof"]
+    P9 --> U9["Segments, nearest neighbours and journey patterns"]
 ```
 
-### Architecture meaning
+### Application pages
 
-The platform is designed as a complete analytics-to-deployment workflow.
-
-The data layer prepares visitor behaviour data. The machine learning layer trains and selects the purchase-intent model. The business layer makes the model usable through Streamlit. The monitoring layer checks system health and model-related metrics. The deployment layer shows how the project can run with Docker, Kubernetes, Helm, and CI/CD validation.
+| Page | Primary purpose |
+|---|---|
+| Executive Overview | Headline KPIs, business narrative, risk, and action priorities |
+| Visitor Intent Predictor | Score and explain a single visitor scenario |
+| Batch Scoring | Score visitors, apply campaign capacity, and create target audiences |
+| Model Benchmark Selection | Compare candidates and explain the champion decision |
+| Business KPI Forecasting | Forecast business KPIs with scenario and residual diagnostics |
+| Anomaly and Outlier | Detect, rank, and investigate unusual behaviour |
+| Monitoring, Drift and Health | Review data drift, prediction drift, delayed outcomes, and service status |
+| MLOps Architecture | Explain platform components, deployment paths, and operational boundaries |
+| ML Validation and Evidence | Surface test, reproducibility, provenance, and model-validation evidence |
+| Customer Segmentation and Journey | Explore behavioural segments, similar visitors, and journey patterns |
 
 ---
 
-## Monitoring and MLOps Design
+## Campaign Intelligence
 
-The monitoring layer is designed to show whether the system is running correctly after deployment.
-
-The project includes:
-
-| Component         | Purpose                                         |
-| ----------------- | ----------------------------------------------- |
-| Metrics Exporter  | Exposes project metrics for Prometheus          |
-| Prometheus        | Scrapes metrics and service health              |
-| Grafana           | Displays mission-control dashboards             |
-| Blackbox Exporter | Checks Streamlit app health endpoint            |
-| Alertmanager      | Supports alerting rules and notification design |
-
-### Fast monitoring snapshot design
-
-The project uses a cached monitoring snapshot so Prometheus does not repeatedly scan large CSV files.
+Batch scoring is designed as a business workflow, not only a technical inference step.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"background": "#0D1117", "primaryTextColor": "#FFFFFF", "lineColor": "#94A3B8", "fontFamily": "Arial"}}}%%
 flowchart LR
-    A["Heavy project output files<br/>CSV tables and logs"] --> B["Build monitoring snapshot"]
-    B --> C["ecommerce_metrics_snapshot.json"]
-    C --> D["Metrics Exporter"]
-    D --> E["Prometheus"]
-    E --> F["Grafana Dashboard"]
-    E --> G["Alertmanager"]
-
-    classDef source fill:#334155,stroke:#CBD5E1,color:#FFFFFF,stroke-width:2px;
-    classDef process fill:#1F2937,stroke:#94A3B8,color:#FFFFFF,stroke-width:1.5px;
-    classDef cache fill:#0F3D64,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
-    classDef exporter fill:#7C2D12,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
-    classDef monitor fill:#713F12,stroke:#FACC15,color:#FFFFFF,stroke-width:2px;
-    classDef output fill:#14532D,stroke:#4ADE80,color:#FFFFFF,stroke-width:2px;
-
-    class A source;
-    class B process;
-    class C cache;
-    class D exporter;
-    class E monitor;
-    class F,G output;
-
-    linkStyle default stroke:#94A3B8,stroke-width:2px;
+    A["Visitor batch"] --> B["Feature validation"]
+    B --> C["Champion scoring"]
+    C --> D["Intent probability"]
+    D --> E["Threshold classification"]
+    E --> F["Capacity-aware ranking"]
+    F --> G["Campaign audience"]
+    G --> H["Recommended action"]
+    H --> I["Export and activation"]
 ```
 
-This design is useful because monitoring tools should be fast and stable. Prometheus should read lightweight metrics, not repeatedly process heavy analytical files.
+The app supports:
+
+- score distributions;
+- campaign capacity scenarios;
+- audience-size trade-offs;
+- threshold effects;
+- high-intent segment composition;
+- conversion-risk context;
+- action recommendations;
+- exportable campaign lists.
 
 ---
 
-## Deployment
+## Explainability and Similarity Intelligence
 
-The project supports both local and Kubernetes-style deployment.
+The platform combines global model evidence with local visitor-level context.
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"background": "#0D1117", "primaryTextColor": "#FFFFFF", "lineColor": "#94A3B8", "fontFamily": "Arial"}}}%%
-flowchart TD
-    A["Project Source Code"] --> B["Docker Image Build"]
-    B --> C["Docker Compose Stack"]
-    C --> D["Streamlit App"]
-    C --> E["Prometheus"]
-    C --> F["Grafana"]
-    C --> G["Metrics Exporter"]
-    C --> H["Blackbox Exporter"]
+flowchart TB
+    A["Scored visitor"] --> B["Feature values"]
+    A --> C["Nearest real visitors"]
+    A --> D["Segment membership"]
+    A --> E["Anomaly context"]
 
-    B --> I["Kubernetes Manifests"]
-    I --> J["Helm Chart"]
-    J --> K["Kubernetes Release"]
+    B --> F["Feature contribution explanation"]
+    C --> G["Similarity and difference breakdown"]
+    D --> H["Segment profile"]
+    E --> I["Risk flags"]
 
-    K --> L["Streamlit Service"]
-    K --> M["Grafana Service"]
-    K --> N["Prometheus Service"]
-
-    classDef source fill:#0F3D64,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
-    classDef container fill:#14532D,stroke:#4ADE80,color:#FFFFFF,stroke-width:2px;
-    classDef service fill:#1F2937,stroke:#94A3B8,color:#FFFFFF,stroke-width:1.5px;
-    classDef orchestration fill:#7C2D12,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
-    classDef release fill:#334155,stroke:#CBD5E1,color:#FFFFFF,stroke-width:2.5px;
-
-    class A source;
-    class B,C container;
-    class D,E,F,G,H,L,M,N service;
-    class I,J orchestration;
-    class K release;
-
-    linkStyle default stroke:#94A3B8,stroke-width:2px;
+    F --> J["Governed visitor explanation"]
+    G --> J
+    H --> J
+    I --> J
 ```
 
-Docker Compose proves that the project can run as a local multi-service stack.
+This supports more responsible business use by showing:
 
-Kubernetes and Helm show how the same project can be packaged for an orchestration environment.
+- why a visitor received a score;
+- which behaviours are most influential;
+- how the visitor compares with similar real visitors;
+- whether the visitor belongs to a specific behavioural segment;
+- whether anomaly signals require additional review.
 
 ---
 
-## Docker Compose Run
+## MLflow Experiment Tracking Architecture
 
-Run from the project root:
+MLflow is isolated from the lightweight app runtime and uses its own pinned environment.
+
+```mermaid
+flowchart LR
+    A["Training and benchmark scripts"] --> B["MLflow bridge"]
+    B --> C["Run parameters"]
+    B --> D["Evaluation metrics"]
+    B --> E["Model artifacts"]
+    B --> F["Environment provenance"]
+
+    C --> G["MLflow tracking server"]
+    D --> G
+    E --> G
+    F --> G
+
+    G --> H["SQLite tracking backend"]
+    G --> I["Artifact store"]
+    H --> J["Experiment comparison"]
+    I --> J
+    J --> K["Champion decision evidence"]
+```
+
+### MLflow responsibilities
+
+- record model parameters and evaluation metrics;
+- preserve experiment and environment provenance;
+- validate model serialization and loading;
+- support champion/challenger evidence;
+- provide an auditable bridge between training and deployment metadata.
+
+**Isolated dependency file:** `requirements-mlflow.txt`
+
+**Validated MLflow version:** `3.14.0`
+
+---
+
+## Evidently Drift and Monitoring Architecture
+
+Evidently is used in an isolated monitoring environment to avoid dependency conflicts with the application runtime.
+
+```mermaid
+flowchart TB
+    subgraph REFERENCE["Reference population"]
+        R1["Reference visitor features"]
+        R2["Reference predictions"]
+    end
+
+    subgraph CURRENT["Current population"]
+        C1["Current visitor features"]
+        C2["Current predictions"]
+    end
+
+    R1 --> E["Evidently bridge"]
+    R2 --> E
+    C1 --> E
+    C2 --> E
+
+    E --> F["Feature drift report"]
+    E --> G["Prediction drift report"]
+    F --> H["Drift summary"]
+    G --> H
+    H --> I["Monitoring provenance"]
+    I --> J["Streamlit monitoring page"]
+    I --> K["Monitoring snapshot"]
+    K --> L["Prometheus metrics"]
+    L --> M["Grafana and alerts"]
+```
+
+### Evidently responsibilities
+
+- compare reference and current feature distributions;
+- evaluate prediction drift;
+- summarize drifted features and affected populations;
+- preserve report provenance;
+- feed drift evidence into the monitoring layer and Streamlit application.
+
+**Isolated dependency file:** `requirements-evidently.txt`
+
+**Validated Evidently version:** `0.7.21`
+
+---
+
+## Delayed Labels and Production Performance
+
+Purchase outcomes may arrive after predictions are made. The project therefore separates prediction-time evidence from later outcome evaluation.
+
+```mermaid
+sequenceDiagram
+    participant App as Streamlit / Batch Scoring
+    participant Ledger as Prediction Ledger
+    participant Outcome as Delayed Outcomes
+    participant Eval as Production Evaluation
+    participant Monitor as Monitoring Layer
+
+    App->>Ledger: Store visitor ID, score, threshold, model version
+    Outcome->>Ledger: Attach later purchase outcome
+    Ledger->>Eval: Build matched prediction/outcome sample
+    Eval->>Eval: Calculate precision, recall, conversion, calibration evidence
+    Eval->>Monitor: Publish production-performance summary
+    Monitor->>App: Display health and performance evidence
+```
+
+This prevents a common MLOps mistake: evaluating only training metrics while ignoring real post-deployment outcomes.
+
+---
+
+## Monitoring and Observability Stack
+
+The full local monitoring stack includes application, model, and infrastructure signals.
+
+```mermaid
+flowchart LR
+    APP["Streamlit app"] --> BLACKBOX["Blackbox Exporter<br/>:9115"]
+    SNAPSHOT["Monitoring snapshot"] --> EXPORTER["Metrics Exporter<br/>:8000"]
+    LEDGER["Prediction and delayed-label outputs"] --> SNAPSHOT
+    DRIFT["Evidently drift summaries"] --> SNAPSHOT
+
+    BLACKBOX --> PROM["Prometheus<br/>:9090"]
+    EXPORTER --> PROM
+
+    PROM --> GRAFANA["Grafana<br/>:3000"]
+    PROM --> ALERT["Alertmanager<br/>:9093"]
+    ALERT --> WEBHOOK["Alert Webhook<br/>:5001"]
+    WEBHOOK --> NOTIFY["Local alert evidence"]
+```
+
+### Monitored areas
+
+| Area | Examples |
+|---|---|
+| Application health | Streamlit availability and probe status |
+| Model output | Score distribution, high-intent rate, threshold outcomes |
+| Data quality | Missingness, invalid values, population changes |
+| Drift | Feature drift and prediction drift |
+| Production outcomes | Delayed-label precision, recall, and conversion evidence |
+| Business health | Campaign audience size, forecast movement, anomaly rate |
+| Infrastructure | Metrics endpoint health, alert routing, dashboard availability |
+
+### Monitoring snapshot pattern
+
+Prometheus should scrape lightweight metrics, not repeatedly scan large analytical files. The project therefore uses a cached snapshot:
+
+```mermaid
+flowchart LR
+    A["Large CSV and JSON outputs"] --> B["Snapshot builder"]
+    B --> C["ecommerce_metrics_snapshot.json"]
+    C --> D["Metrics exporter"]
+    D --> E["Prometheus"]
+    E --> F["Grafana"]
+    E --> G["Alertmanager"]
+```
+
+---
+
+## Docker Compose Architecture
+
+The local platform runs as a multi-service Docker Compose stack.
+
+```mermaid
+flowchart TB
+    USER["Business user"] --> APP["streamlit-app<br/>8501"]
+    APP --> EXPORTER["metrics-exporter<br/>8000"]
+
+    PROM["Prometheus<br/>9090"] --> EXPORTER
+    PROM --> BLACKBOX["blackbox-exporter<br/>9115"]
+    BLACKBOX --> APP
+
+    PROM --> GRAFANA["Grafana<br/>3000"]
+    PROM --> ALERTMANAGER["Alertmanager<br/>9093"]
+    ALERTMANAGER --> WEBHOOK["alert-webhook<br/>5001"]
+
+    DATA["Read-only data, reports and models"] --> APP
+    CACHE["Monitoring metric cache"] --> EXPORTER
+    NOTIFICATIONS["Alert notification evidence"] --> WEBHOOK
+```
+
+### Docker services
+
+| Service | Purpose | Local port |
+|---|---|---:|
+| `streamlit-app` | Business application | `8501` |
+| `metrics-exporter` | Prometheus-compatible project metrics | `8000` |
+| `prometheus` | Metrics collection and rule evaluation | `9090` |
+| `blackbox-exporter` | External application health probes | `9115` |
+| `alertmanager` | Alert grouping and routing | `9093` |
+| `alert-webhook` | Local alert receiver and evidence writer | `5001` |
+| `grafana` | Mission-control dashboards | `3000` |
+
+---
+
+## CI/CD and Quality Gates
+
+The GitHub Actions workflow validates code, security, machine learning integrations, containers, orchestration files, and monitoring configuration.
+
+```mermaid
+flowchart TB
+    A["Push / Pull Request / Manual / Weekly"] --> B["GitHub Actions"]
+
+    B --> C["Python 3.10 and dependency validation"]
+    C --> D["Import, structure and syntax checks"]
+    D --> E["Ruff lint and format checks"]
+    E --> F["pip-audit dependency scan"]
+    F --> G["Repository secret scan"]
+    G --> H["Sample-data smoke training"]
+    H --> I["pytest suite"]
+
+    I --> J{"Manual or weekly run?"}
+    J -- Yes --> K["MLflow integration tests"]
+    J -- Yes --> L["Evidently drift tests"]
+    J -- No --> M["Continue"]
+
+    K --> M
+    L --> M
+
+    M --> N["Docker image build"]
+    N --> O["Docker Compose validation"]
+    O --> P["Helm lint and render"]
+    P --> Q["Kubernetes YAML validation"]
+    Q --> R["Prometheus config and rule checks"]
+    R --> S["Alertmanager config check"]
+    S --> T["Grafana JSON validation"]
+    T --> U["Green pipeline"]
+
+    B --> V["Compact failure artifacts"]
+```
+
+### CI controls
+
+- Python 3.10 dependency installation and `pip check`;
+- project import and folder validation;
+- Python and shell syntax checks;
+- delayed-label and production-performance tests;
+- Ruff linting and format checks;
+- dependency vulnerability scanning with `pip-audit`;
+- repository secret scanning;
+- sample-data smoke training;
+- complete automated test suite;
+- scheduled/manual MLflow integration validation;
+- scheduled/manual Evidently integration validation;
+- Docker image and Docker Compose validation;
+- Helm linting and rendered Kubernetes validation;
+- Prometheus, alert-rule, Alertmanager, and Grafana validation;
+- compact failure-evidence uploads.
+
+> The CI workflow validates deployment assets but does not automatically deploy production infrastructure.
+
+---
+
+## Deployment Paths
+
+The repository supports three delivery modes.
+
+```mermaid
+flowchart TB
+    GIT["GitHub main branch"] --> CLOUD["Streamlit Community Cloud"]
+    CLOUD --> PUBLIC["Public portfolio application"]
+
+    GIT --> IMAGE["Docker image"]
+    IMAGE --> COMPOSE["Docker Compose"]
+    COMPOSE --> LOCAL["Local full MLOps stack"]
+
+    IMAGE --> K8S["Kubernetes manifests"]
+    K8S --> HELM["Helm chart"]
+    HELM --> CLUSTER["Kubernetes demo release"]
+
+    GIT --> CI["GitHub Actions"]
+    CI --> CLOUD
+    CI --> IMAGE
+    CI --> K8S
+    CI --> HELM
+```
+
+### Streamlit Community Cloud
+
+- **Repository:** `RuturajM31/E-Commerce-Conversion-Intelligence-Platform`
+- **Branch:** `main`
+- **Entrypoint:** `app/Executive_Overview.py`
+- **Validated Python:** `3.10`
+- **App dependencies:** `app/requirements.txt`
+- **Secrets required:** No
+- **Public URL:** `https://ecommerce-conversion-intelligence.streamlit.app`
+
+### Docker Compose
+
+Build the monitoring snapshot before starting the stack:
 
 ```bash
 python3 -m src.monitoring.build_monitoring_snapshot
@@ -541,331 +705,343 @@ docker compose up -d --build
 docker compose ps
 ```
 
-Open the services:
-
-| Service    | Local URL             |
-| ---------- | --------------------- |
-| Streamlit  | http://localhost:8501 |
-| Grafana    | http://localhost:3000 |
-| Prometheus | http://localhost:9090 |
-
-Do not store production secrets directly in public documentation. For production-style use, credentials should be handled through environment variables, `.env` files, or Kubernetes Secrets.
-
----
-
-## Kubernetes and Helm Run
-
-```bash
-export PATH="$HOME/.local/bin:$PATH"
-
-helm upgrade --install ecommerce-conversion-platform helm/ecommerce-conversion-platform \
-  --namespace ecommerce-mlops \
-  --create-namespace
-
-kubectl get pods -n ecommerce-mlops
-kubectl get svc -n ecommerce-mlops
-helm list -n ecommerce-mlops
-```
-
-Port-forward demo services:
-
-```bash
-kubectl port-forward -n ecommerce-mlops svc/streamlit-service 8502:8501
-kubectl port-forward -n ecommerce-mlops svc/grafana-service 3001:3000
-kubectl port-forward -n ecommerce-mlops svc/prometheus-service 9091:9090
-```
-
 Open:
 
-| Service    | Local URL             |
-| ---------- | --------------------- |
-| Streamlit  | http://localhost:8502 |
-| Grafana    | http://localhost:3001 |
-| Prometheus | http://localhost:9091 |
+- Streamlit: `http://localhost:8501`
+- Grafana: `http://localhost:3000`
+- Prometheus: `http://localhost:9090`
 
-Quick Kubernetes demo:
+### Kubernetes and Helm demo
 
 ```bash
-./scripts/k8s_demo_start.sh
+helm upgrade --install ecommerce-conversion-platform \
+  helm/ecommerce-conversion-platform \
+  --namespace ecommerce-mlops \
+  --create-namespace
 ```
 
-Stop port-forwards:
+The secure wrapper manages the local Kubernetes demo and generates a local Grafana password:
 
 ```bash
-./scripts/k8s_demo_stop.sh
+./E-Commerce-Conversion-Intelligence-Platform start
+./E-Commerce-Conversion-Intelligence-Platform password
+./E-Commerce-Conversion-Intelligence-Platform stop
 ```
 
 ---
 
-## CI/CD Quality Gates
+## Quick Start
 
-The project includes a GitHub Actions pipeline that validates the project automatically.
-
-```mermaid
-%%{init: {"theme": "base", "themeVariables": {"background": "#0D1117", "primaryTextColor": "#FFFFFF", "lineColor": "#94A3B8", "fontFamily": "Arial"}}}%%
-flowchart TB
-    A["GitHub Push"] --> B["GitHub Actions"]
-    B --> C
-
-    subgraph S1["Stage 1: Environment and Code Validation"]
-        direction TB
-        C["Install Dependencies"] --> D["Import Checks"]
-        D --> E["Project Structure Check"]
-        E --> F["Python Syntax Check"]
-        F --> G["pytest"]
-    end
-
-    G --> H
-
-    subgraph S2["Stage 2: Build and Deployment Validation"]
-        direction TB
-        H["Docker Build"] --> I["Docker Compose Config"]
-        I --> J["Helm Lint"]
-        J --> K["Kubernetes YAML<br/>Validation"]
-    end
-
-    K --> L
-
-    subgraph S3["Stage 3: Monitoring and Observability Validation"]
-        direction TB
-        L["Prometheus Config Check"] --> M["Alertmanager Config Check"]
-        M --> N["Grafana JSON Check"]
-    end
-
-    N --> O["Green Pipeline"]
-
-    classDef trigger fill:#0F3D64,stroke:#60A5FA,color:#FFFFFF,stroke-width:2px;
-    classDef check fill:#1F2937,stroke:#94A3B8,color:#FFFFFF,stroke-width:1.5px;
-    classDef test fill:#7C2D12,stroke:#FB923C,color:#FFFFFF,stroke-width:2px;
-    classDef success fill:#14532D,stroke:#4ADE80,color:#FFFFFF,stroke-width:2.5px;
-    classDef stage fill:#111827,stroke:#64748B,color:#FFFFFF,stroke-width:1.5px;
-
-    class A,B trigger;
-    class C,D,E,F,H,I,J,K,L,M,N check;
-    class G test;
-    class O success;
-    class S1,S2,S3 stage;
-
-    linkStyle default stroke:#94A3B8,stroke-width:2px;
-```
-
-### CI/CD checks included
-
-| Quality gate                   | Purpose                                |
-| ------------------------------ | -------------------------------------- |
-| Python import checks           | Confirms core modules load correctly   |
-| Project structure checks       | Confirms important folders exist       |
-| Syntax validation              | Confirms Python files compile          |
-| pytest                         | Runs automated tests                   |
-| Docker build                   | Confirms the app image can be built    |
-| Docker Compose validation      | Confirms local stack config is valid   |
-| Helm lint                      | Confirms Helm chart structure is valid |
-| Kubernetes YAML validation     | Confirms Kubernetes manifest structure |
-| Prometheus config validation   | Confirms monitoring config is valid    |
-| Alertmanager config validation | Confirms alert config is valid         |
-| Grafana JSON validation        | Confirms dashboard JSON is valid       |
-
----
-
-## Recommended Run Order
-
-Run commands from the project root:
+### 1. Clone the repository
 
 ```bash
-python3 -m src.data.build_visitor_features
-python3 -m src.models.train_baseline_model
-python3 -m src.models.analyze_thresholds
-python3 -m src.models.run_model_selection
-python3 -m src.models.finalize_true_champion
-python3 -m src.forecasting.build_business_forecasts
-python3 -m src.anomaly.build_anomaly_signals
-python3 -m src.models.build_mvd_method_coverage
-python3 -m streamlit run app/Executive_Overview.py
+git clone https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform.git
+cd E-Commerce-Conversion-Intelligence-Platform
 ```
 
----
-
-## Project Structure
-
-```text
-app/
-  Executive_Overview.py
-  app_utils.py
-  pages/
-
-src/
-  data/
-  models/
-  forecasting/
-  anomaly/
-  monitoring/
-
-data/
-  raw/
-  processed/
-
-models/
-  trained/
-  metadata/
-
-reports/
-  tables/
-  figures/
-  final/
-
-outputs/
-  charts/
-
-monitoring/
-  prediction_logs/
-  prometheus/
-  grafana/
-  alertmanager/
-  metrics_cache/
-
-helm/
-  ecommerce-conversion-platform/
-
-k8s/
-
-tests/
-
-.github/
-  workflows/
-```
-
----
-
-## Main Outputs
-
-Final champion workflow:
+### 2. Create a Python 3.10 environment
 
 ```bash
-python3 -m src.models.finalize_true_champion
+python3.10 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
 ```
 
-Expected key outputs:
+### 3. Install the project
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+### 4. Launch Streamlit
+
+```bash
+python -m streamlit run app/Executive_Overview.py
+```
+
+### 5. Run tests
+
+```bash
+python -m pytest -q
+```
+
+---
+
+## Optional Isolated MLOps Environments
+
+The main application remains lightweight. MLflow and Evidently are intentionally isolated.
+
+### MLflow validation environment
+
+```bash
+python3.10 -m venv .venv-mlflow
+source .venv-mlflow/bin/activate
+python -m pip install -r requirements-mlflow.txt
+python -m pytest tests/test_mlflow_bridge.py -q
+```
+
+### Evidently validation environment
+
+```bash
+python3.10 -m venv .venv-evidently
+source .venv-evidently/bin/activate
+python -m pip install -r requirements-evidently.txt
+python -m pytest \
+  tests/test_evidently_bridge.py \
+  tests/test_drift_summary.py \
+  -q
+```
+
+---
+
+## Reproducibility and Security
+
+The project uses explicit controls to make results repeatable and repository operations safer.
+
+### Dependency strategy
+
+| File | Purpose |
+|---|---|
+| `requirements.txt` | Full validated project environment |
+| `requirements-app.txt` | Lightweight application runtime |
+| `app/requirements.txt` | Streamlit Community Cloud runtime |
+| `requirements-mlflow.txt` | Isolated MLflow environment |
+| `requirements-evidently.txt` | Isolated Evidently environment |
+| `requirements-ci.txt` | CI-only quality and security tools |
+
+### Security and reproducibility controls
+
+- exact dependency pinning;
+- `pip check` compatibility validation;
+- `pip-audit` vulnerability scanning;
+- repository secret scanning;
+- CI-only disposable fixtures for large local artifacts;
+- smoke training from sample data;
+- environment provenance recording;
+- model serialization and loading tests;
+- read-only mounts for data, reports, and models in Docker Compose;
+- generated local Grafana password for the Kubernetes demo;
+- no committed production credentials.
+
+---
+
+## Repository Structure
 
 ```text
-models/trained/final_champion_model.joblib
-models/metadata/final_champion_metadata.json
-reports/tables/final_true_champion_comparison.csv
-reports/tables/final_true_champion_summary.csv
-reports/tables/final_true_champion_thresholds.csv
-reports/tables/final_true_champion_stability.csv
-reports/tables/final_true_champion_sensitivity.csv
-data/processed/final_champion_visitor_scores.csv
+E-Commerce-Conversion-Intelligence-Platform/
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+├── .streamlit/
+│   └── config.toml
+├── app/
+│   ├── Executive_Overview.py
+│   ├── app_utils.py
+│   ├── requirements.txt
+│   ├── pages/
+│   │   ├── 1_Visitor_Intent_Predictor.py
+│   │   ├── 2_Batch_Scoring.py
+│   │   ├── 3_Model_Benchmark_Selection.py
+│   │   ├── 4_Business_KPI_Forecasting.py
+│   │   ├── 5_Anomaly_Outlier.py
+│   │   ├── 6_Monitoring_Drift_Health.py
+│   │   ├── 7_MLOps_Architecture.py
+│   │   ├── 8_ML_Validation_Evidence.py
+│   │   └── 9_Customer_Segmentation_Journey.py
+│   └── ui/
+├── src/
+│   ├── anomaly/
+│   ├── config/
+│   ├── data/
+│   ├── features/
+│   ├── forecasting/
+│   ├── models/
+│   ├── monitoring/
+│   ├── segmentation/
+│   └── visualization/
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   └── sample/
+├── models/
+│   ├── trained/
+│   └── metadata/
+├── reports/
+│   ├── figures/
+│   ├── final/
+│   ├── monitoring/
+│   ├── qa/
+│   └── tables/
+├── monitoring/
+│   ├── alertmanager/
+│   ├── blackbox/
+│   ├── grafana/
+│   ├── metrics_cache/
+│   ├── prediction_logs/
+│   └── prometheus/
+├── helm/
+│   └── ecommerce-conversion-platform/
+├── k8s/
+├── scripts/
+├── tests/
+├── Dockerfile
+├── docker-compose.yml
+├── Makefile
+├── pyproject.toml
+└── README.md
 ```
 
-Large raw data and trained binary model files may be excluded from GitHub if they exceed repository size or submission limits. The project includes scripts to regenerate important outputs.
+---
+
+## Key Outputs
+
+| Output | Purpose |
+|---|---|
+| `models/trained/final_champion_model.joblib` | Serialized champion model |
+| `models/metadata/final_champion_metadata.json` | Model identity, threshold, metrics, and provenance |
+| `data/processed/final_champion_visitor_scores.csv` | Visitor-level scores and campaign decisions |
+| `reports/tables/final_true_champion_comparison.csv` | Candidate comparison |
+| `reports/tables/final_true_champion_thresholds.csv` | Threshold trade-offs |
+| `reports/tables/final_true_champion_stability.csv` | Stability evidence |
+| `reports/tables/final_true_champion_sensitivity.csv` | Sensitivity evidence |
+| `monitoring/metrics_cache/ecommerce_metrics_snapshot.json` | Lightweight Prometheus source |
+| `monitoring/prediction_logs/` | Prediction ledger and delayed-label evidence |
+| `monitoring/grafana/dashboards/` | Provisioned Grafana dashboards |
+
+Large raw files and trained binary artifacts may be excluded from GitHub. Reproducible scripts and sample-data smoke workflows are included so important outputs can be regenerated and validated.
 
 ---
 
-## Portfolio and Recruiter Value
+## Visual Intelligence Governance
 
-This project demonstrates a complete analytics-to-MLOps workflow.
+The final Streamlit enhancement program is controlled by a **204-row visual intelligence matrix**.
 
-| Skill area         | Evidence in this project                                             |
-| ------------------ | -------------------------------------------------------------------- |
-| Business analytics | Conversion problem framing, KPI interpretation, campaign targeting   |
-| Data engineering   | Event-level to visitor-level transformation                          |
-| Machine learning   | Model benchmarking, final champion selection, threshold optimization |
-| BI/dashboarding    | Streamlit executive application and business pages                   |
-| MLOps              | Monitoring, metrics exporter, Prometheus, Grafana, Alertmanager      |
-| Deployment         | Docker Compose, Kubernetes, Helm                                     |
-| CI/CD              | GitHub Actions quality gates                                         |
-| Communication      | Clear business interpretation and executive project reporting        |
+| Status | Count |
+|---|---:|
+| Verified | **177** |
+| Conditional | **25** |
+| Excluded | **2** |
+| Open | **0** |
+| Total | **204** |
 
-This project is useful for roles such as:
+The matrix covers:
 
-* Data Analyst
-* BI Analyst
-* Junior Data Scientist
-* Analytics Engineer
-* ML Engineer
-* MLOps Engineer
+- executive intelligence;
+- batch scoring and campaigns;
+- model selection and explainability;
+- KNN similarity evidence;
+- segmentation and journey intelligence;
+- forecasting and anomaly investigation;
+- monitoring and drift;
+- architecture and governance;
+- shared UI and UX quality;
+- validation and audit evidence.
 
----
-
-## Limitations
-
-This project is designed as a strong local and portfolio-grade MLOps project, not a full cloud production system.
-
-Current limitations:
-
-* Deployment is local/demo-oriented, not cloud production.
-* Production secrets should be managed with Kubernetes Secrets or a secret manager.
-* Real campaign impact should be validated with A/B testing.
-* Monitoring snapshot refresh should be scheduled in production.
-* Model drift should be monitored continuously over time.
-* Retraining should be automated before real production use.
+This provides explicit evidence that the final application was reviewed as a governed product rather than assembled as an untracked collection of charts.
 
 ---
 
-## Future Improvements
+## Portfolio Value
 
-Planned improvements:
+This project demonstrates evidence across the complete analytics lifecycle.
 
-* Add scheduled model retraining.
-* Add a model registry promotion workflow.
-* Deploy to a cloud environment.
-* Add real-time event streaming.
-* Add campaign uplift measurement.
-* Add Kubernetes CronJob for monitoring snapshot refresh.
-* Add stronger drift detection and automated alerts.
-* Add role-based access for dashboard users.
+| Skill area | Evidence |
+|---|---|
+| Business analytics | Conversion framing, KPI interpretation, campaign prioritization |
+| Data engineering | Event-to-visitor transformation and reproducible feature generation |
+| Machine learning | Rare-event modelling, benchmark selection, tuning, threshold economics |
+| Explainable AI | Feature contributions, local similarity, segment and anomaly context |
+| Customer analytics | Segmentation, journey intelligence, campaign capacity |
+| Forecasting | KPI scenarios, uncertainty, residual diagnostics |
+| Monitoring | Evidently drift, prediction ledger, delayed labels, service metrics |
+| MLOps | MLflow, provenance, model metadata, monitoring snapshots |
+| BI and product design | Multi-page Streamlit executive application |
+| DevOps | Docker Compose, Kubernetes, Helm, GitHub Actions |
+| Security and quality | Ruff, pytest, pip-audit, secret scan, smoke training |
+| Technical communication | Architecture diagrams, documented assumptions, decision evidence |
 
----
+The project is directly relevant to roles such as:
 
-## Final Message
-
-This project shows the full path from raw e-commerce behaviour to business-ready machine learning:
-
-```text
-raw visitor events
-        ↓
-visitor-level features
-        ↓
-purchase-intent model
-        ↓
-high-intent campaign audience
-        ↓
-Streamlit business app
-        ↓
-Prometheus + Grafana monitoring
-        ↓
-Docker + Kubernetes + Helm deployment path
-        ↓
-CI/CD validated project
-```
-
-The strongest value of the project is that it connects machine learning output to a real business decision: identifying which visitors should be prioritized for marketing action.
+- Data Analyst;
+- BI Analyst;
+- Product Analyst;
+- Marketing Analyst;
+- Analytics Engineer;
+- Data Scientist;
+- Machine Learning Engineer;
+- MLOps Engineer.
 
 ---
 
-## Streamlit Visual Intelligence Closure
+## Honest Limitations
 
-The final Streamlit closure adds:
+This is a strong portfolio and local production-style platform, but it is not presented as a fully operated enterprise system.
 
-- campaign-capacity and targeting-scenario intelligence;
-- model decision, threshold, confusion, stability, and economics views;
-- real-visitor similarity and governed explanation evidence;
-- a dedicated Customer Segmentation & Journey page;
-- forecast scenario and residual diagnostics;
-- anomaly investigation and monitoring lineage views;
-- interactive architecture and deployment evidence;
-- a deployment-ready Streamlit Community Cloud configuration.
+Current boundaries:
 
-Persistent deployment coordinates:
+- model results are based on a public historical dataset;
+- campaign uplift has not yet been validated through a live randomized experiment;
+- Streamlit Community Cloud is a portfolio deployment, not a high-availability enterprise serving layer;
+- Docker and Kubernetes configurations demonstrate deployment readiness but are not continuously operated cloud infrastructure;
+- monitoring snapshots must be scheduled in a real production environment;
+- automated retraining and formal model-promotion approval can be expanded;
+- access control, audit identity, and centralized secret management would be required for enterprise use.
 
-```text
-Repository: RuturajM31/E-Commerce-Conversion-Intelligence-Platform
-Branch: main
-Entrypoint: app/Executive_Overview.py
-Python: 3.10
-```
+---
 
-The repository includes `app/requirements.txt` so Streamlit Community Cloud
-installs the validated dashboard runtime from the entrypoint directory. The
-final GitHub authorization and Deploy click are completed by the project owner
-in the Streamlit Community Cloud interface.
+## Roadmap
+
+- [ ] Add campaign A/B testing and uplift measurement
+- [ ] Add scheduled retraining and champion promotion
+- [ ] Add automated monitoring snapshot refresh
+- [ ] Add production feature-store integration
+- [ ] Add event streaming for near-real-time scoring
+- [ ] Add role-based access control
+- [ ] Add managed cloud storage and model registry
+- [ ] Add service-level objectives and incident runbooks
+- [ ] Add formal data-contract enforcement
+
+---
+
+## Dataset
+
+The project uses the public **RetailRocket E-Commerce Dataset**:
+
+- visitor events;
+- item properties;
+- category hierarchy.
+
+Dataset source: [RetailRocket recommender system dataset on Kaggle](https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset)
+
+The original event grain is transformed into a visitor-level decision table suitable for purchase-intent modelling and campaign activation.
+
+---
+
+## Author
+
+**Ruturaj Mokashi**
+
+Data Analyst & BI Specialist focused on transforming complex data into clear, measurable business decisions.
+
+[![GitHub](https://img.shields.io/badge/GitHub-RuturajM31-181717?logo=github&logoColor=white)](https://github.com/RuturajM31)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Ruturaj%20Mokashi-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ruturaj-mokashi-09627588)
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+<div align="center">
+
+### From raw visitor behaviour to monitored, explainable, campaign-ready intelligence
+
+[Launch App](https://ecommerce-conversion-intelligence.streamlit.app)
+·
+[View Repository](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform)
+·
+[View CI/CD](https://github.com/RuturajM31/E-Commerce-Conversion-Intelligence-Platform/actions/workflows/ci.yml)
+
+</div>
