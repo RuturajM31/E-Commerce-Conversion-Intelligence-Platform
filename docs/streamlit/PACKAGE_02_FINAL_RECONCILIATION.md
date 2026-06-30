@@ -89,10 +89,10 @@ evidence sheet therefore mark the row `EXCLUDED`, not `VERIFIED`.
 
 Package 1 is the committed and pushed baseline at `82c3f66`.
 
-Package 2 is functionally verified, but this reconciliation package does not
-stage, commit, push, merge, or modify the stash. The next controlled action is a
-reviewed Package 2 closure commit on
-`feat/streamlit-visual-intelligence-enhancement`.
+Package 2 was committed and pushed on
+`feat/streamlit-visual-intelligence-enhancement` at `a60dcbd` after the
+approved 13-file diff, 37 focused tests, whitespace validation, and clean
+working-tree review. The Package 2 reconciliation installer does not stage, commit, push, merge, or modify the stash.
 
 ## Honest phase boundary
 

@@ -75,7 +75,7 @@ Shared control sections also exist for governance, current-state audit, UX, filt
 
 ## First action in a new chat
 
-Do not start a new implementation package until the Package 2 Git checkpoint is confirmed.
+Package 3 inventory is closed with a documented browser-capture QA exception. Begin the next feature package only from the committed Package 3 checkpoint.
 
 First run or request:
 
@@ -87,7 +87,7 @@ test -f docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_COVERAGE_MATRIX.md && echo "
 test -f docs/streamlit/STREAMLIT_VISUAL_ENHANCEMENT_HANDOFF.md && echo "Handoff found"
 ```
 
-Then read the full matrix, Package 1 and Package 2 reconciliation files, and inspect the current app files before proposing changes. The immediate controlled action is the Package 2 diff review, commit, and push; after that, select the next logical matrix package.
+Then read the full matrix, Package 1 and Package 2 reconciliation files, and inspect the current app files before proposing changes. The immediate controlled action is Package 4 — Batch Scoring and Campaign Intelligence.
 
 ## Working rules
 
@@ -110,17 +110,18 @@ Then read the full matrix, Package 1 and Package 2 reconciliation files, and ins
 
 - Active branch: `feat/streamlit-visual-intelligence-enhancement`
 - Package 1: committed and pushed at `82c3f66`
-- Package 2: automated and user visual QA passed; closure commit pending
-- Package 2 automated result: `31 passed in 7.00s`
+- Package 2: committed and pushed at `a60dcbd`
+- Package 2 final isolated verification: `37 passed in 4.94s`
 - Package 2 matrix result: 10 `VERIFIED`, 2 `EXCLUDED`
 - Accepted exclusions: visible investigation links and visible executive brief CSV download
+- Package 3: verified with a documented local browser-capture QA exception; 175 components inventoried and 33 quarantine items classified
 - Existing stash remains untouched
 
 ## Matrix facts
 
 - Total rows: 204
 - Areas: GOV, AUDIT, UX, SHARED, EXEC, SEG, KNN, BATCH, MODEL, XAI, FCST, JOURNEY, ANOM, MON, ARCH, QA
-- Current statuses: 31 VERIFIED, 24 IN PROGRESS, 134 PLANNED, 13 CONDITIONAL, 2 EXCLUDED
+- Current statuses after Package 3 closure: 44 VERIFIED, 24 IN PROGRESS, 121 PLANNED, 13 CONDITIONAL, 2 EXCLUDED
 
 ## Final completion rule
 
